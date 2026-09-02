@@ -1,0 +1,9 @@
+/* Clientele Section */
+.clientele-section { background: var(--color-secondary-off); }
+.clientele-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
+.client-card { background: var(--color-secondary); border-radius: var(--radius-lg); padding: var(--space-8) var(--space-6); text-align: center; border: 1px solid var(--color-border); transition: all var(--transition-base); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 140px; }
+.client-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--color-accent-medium); }
+.client-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--color-primary); color: var(--color-accent); border-radius: var(--radius-md); margin-bottom: var(--space-4); font-family: var(--font-heading); font-weight: var(--weight-bold); font-size: 1.25rem; }
+.client-name { font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--color-primary); line-height: var(--leading-snug); }
+@media (max-width: 1024px) { .clientele-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .clientele-grid { grid-template-columns: 1fr 1fr; gap: var(--space-4); } .client-card { padding: var(--space-5); min-height: 120px; } }

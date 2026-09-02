@@ -1,0 +1,24 @@
+/* Success Screen */
+.success-overlay { position: fixed; inset: 0; z-index: var(--z-modal); background: var(--color-overlay-heavy); display: none; align-items: center; justify-content: center; padding: var(--space-6); }
+.success-overlay.open { display: flex; animation: overlayIn 0.3s ease; }
+.success-modal { background: var(--color-secondary); border-radius: var(--radius-xl); width: 100%; max-width: 560px; padding: var(--space-12) var(--space-8); text-align: center; animation: modalIn 0.4s ease; box-shadow: var(--shadow-2xl); }
+.success-icon { width: 80px; height: 80px; margin: 0 auto var(--space-6); background: var(--color-success-light); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; }
+.success-icon svg { width: 40px; height: 40px; color: var(--color-success); }
+.success-checkmark { stroke-dasharray: 100; animation: checkmark 0.8s ease 0.3s both; }
+.success-modal h2 { margin-bottom: var(--space-4); }
+.success-modal p { color: var(--color-text-muted); margin-bottom: var(--space-8); }
+.success-summary { background: var(--color-secondary-off); border-radius: var(--radius-lg); padding: var(--space-6); margin-bottom: var(--space-8); text-align: left; }
+.success-summary-row { display: flex; justify-content: space-between; padding: var(--space-2) 0; }
+.success-summary-row:not(:last-child) { border-bottom: 1px solid var(--color-border-light); }
+.success-summary-label { font-size: var(--text-small); color: var(--color-text-muted); }
+.success-summary-value { font-size: var(--text-small); font-weight: var(--weight-semibold); }
+.success-summary-value.highlight { color: var(--color-accent); font-weight: var(--weight-bold); }
+.success-actions { display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap; }
+.success-demo-link { margin-top: var(--space-6); }
+.success-demo-link button { font-size: var(--text-small); color: var(--color-text-muted); background: none; border: none; cursor: pointer; text-decoration: underline; }
+.success-demo-link button:hover { color: var(--color-accent); }
+@media (max-width: 640px) {
+  .success-modal { padding: var(--space-8) var(--space-5); border-radius: var(--radius-lg); }
+  .success-actions { flex-direction: column; }
+  .success-actions .btn { width: 100%; }
+}

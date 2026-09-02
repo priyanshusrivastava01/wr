@@ -1,0 +1,143 @@
+/* ============================================
+   VARDHA WAREHOUSING — CSS DESIGN TOKENS
+   ============================================ */
+
+:root {
+  /* ── Colors ── */
+  --color-primary: #0F1B2D;
+  --color-primary-light: #1A2D47;
+  --color-primary-medium: #243B5C;
+  --color-primary-dark: #0A1220;
+
+  --color-secondary: #FFFFFF;
+  --color-secondary-off: #F7F8FA;
+  --color-secondary-warm: #FAFAF8;
+
+  --color-accent: #C8965A;
+  --color-accent-hover: #B5833F;
+  --color-accent-light: rgba(200, 150, 90, 0.1);
+  --color-accent-medium: rgba(200, 150, 90, 0.2);
+
+  --color-text: #1A1A2E;
+  --color-text-light: #FFFFFF;
+  --color-text-muted: #64748B;
+  --color-text-subtle: #94A3B8;
+
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+
+  --color-success: #10B981;
+  --color-success-light: rgba(16, 185, 129, 0.1);
+  --color-warning: #F59E0B;
+  --color-warning-light: rgba(245, 158, 11, 0.1);
+  --color-error: #EF4444;
+  --color-error-light: rgba(239, 68, 68, 0.1);
+
+  --color-whatsapp: #25D366;
+  --color-whatsapp-hover: #1EBE57;
+
+  --color-overlay: rgba(15, 27, 45, 0.7);
+  --color-overlay-heavy: rgba(15, 27, 45, 0.85);
+
+  /* ── Typography ── */
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --text-h1: 3.5rem;
+  --text-h2: 2.625rem;
+  --text-h3: 1.75rem;
+  --text-h4: 1.25rem;
+  --text-body: 1.0625rem;
+  --text-body-sm: 0.9375rem;
+  --text-small: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-xs: 0.6875rem;
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* ── Spacing ── */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+  --space-32: 8rem;     /* 128px */
+
+  /* ── Shadows ── */
+  --shadow-xs: 0 1px 2px rgba(15, 27, 45, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 27, 45, 0.06), 0 1px 2px rgba(15, 27, 45, 0.04);
+  --shadow-md: 0 4px 16px rgba(15, 27, 45, 0.08);
+  --shadow-lg: 0 8px 32px rgba(15, 27, 45, 0.12);
+  --shadow-xl: 0 16px 48px rgba(15, 27, 45, 0.16);
+  --shadow-2xl: 0 24px 64px rgba(15, 27, 45, 0.2);
+  --shadow-accent: 0 4px 16px rgba(200, 150, 90, 0.3);
+  --shadow-inner: inset 0 2px 4px rgba(15, 27, 45, 0.06);
+
+  /* ── Border Radius ── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
+
+  /* ── Transitions ── */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+  --transition-smooth: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Layout ── */
+  --container-max: 1280px;
+  --container-narrow: 960px;
+  --container-wide: 1440px;
+  --header-height: 72px;
+
+  /* ── Z-index ── */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 500;
+  --z-modal: 1000;
+  --z-whatsapp: 900;
+  --z-toast: 1100;
+}
+
+/* ── Responsive Typography ── */
+@media (max-width: 1024px) {
+  :root {
+    --text-h1: 2.75rem;
+    --text-h2: 2rem;
+    --text-h3: 1.5rem;
+    --text-h4: 1.125rem;
+    --text-body: 1rem;
+    --header-height: 64px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --text-h1: 2.125rem;
+    --text-h2: 1.625rem;
+    --text-h3: 1.25rem;
+    --text-h4: 1.0625rem;
+    --text-body: 0.9375rem;
+    --header-height: 60px;
+  }
+}

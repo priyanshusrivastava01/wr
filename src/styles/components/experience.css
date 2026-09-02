@@ -1,0 +1,17 @@
+/* Experience Section */
+.experience-section { background: var(--color-primary); color: var(--color-text-light); position: relative; overflow: hidden; }
+.experience-inner { display: flex; align-items: center; gap: var(--space-16); }
+.experience-year { font-family: var(--font-heading); font-size: 12rem; font-weight: var(--weight-extrabold); line-height: 1; color: transparent; -webkit-text-stroke: 2px rgba(200,150,90,0.3); user-select: none; white-space: nowrap; }
+.experience-content { max-width: 560px; }
+.experience-content .section-label { color: var(--color-accent); }
+.experience-content h2 { margin-bottom: var(--space-6); color: var(--color-text-light); }
+.experience-content p { color: rgba(255,255,255,0.7); line-height: var(--leading-relaxed); margin-bottom: var(--space-6); }
+.experience-badge { display: inline-flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); background: rgba(200,150,90,0.15); border: 1px solid rgba(200,150,90,0.3); border-radius: var(--radius-full); }
+.experience-badge-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: var(--color-accent); border-radius: var(--radius-full); color: white; }
+.experience-badge-text { font-size: var(--text-small); font-weight: var(--weight-semibold); color: var(--color-accent); }
+@media (max-width: 1024px) {
+  .experience-inner { flex-direction: column; text-align: center; gap: var(--space-6); }
+  .experience-year { font-size: 8rem; }
+  .experience-content { max-width: 100%; }
+}
+@media (max-width: 640px) { .experience-year { font-size: 5rem; } }

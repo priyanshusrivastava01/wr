@@ -1,0 +1,99 @@
+/* ============================================
+   VARDHA WAREHOUSING — TYPOGRAPHY
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+h1, .h1 {
+  font-size: var(--text-h1);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.02em;
+}
+
+h2, .h2 {
+  font-size: var(--text-h2);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.015em;
+}
+
+h3, .h3 {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+h4, .h4 {
+  font-size: var(--text-h4);
+  font-weight: var(--weight-semibold);
+}
+
+.text-body {
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+}
+
+.text-body-sm {
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-normal);
+}
+
+.text-small {
+  font-size: var(--text-small);
+  line-height: var(--leading-normal);
+}
+
+.text-caption {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-subtle {
+  color: var(--color-text-subtle);
+}
+
+.text-accent {
+  color: var(--color-accent);
+}
+
+.text-white {
+  color: var(--color-text-light);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+/* Section label — small uppercase accent text above headings */
+.section-label {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+  margin-bottom: var(--space-4);
+  display: inline-block;
+}
+
+/* Section subtitle — supporting text below headings */
+.section-subtitle {
+  font-size: var(--text-body);
+  color: var(--color-text-muted);
+  line-height: var(--leading-relaxed);
+  max-width: 640px;
+}
+
+.section-subtitle.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
