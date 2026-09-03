@@ -1,11 +1,66 @@
 /* ============================================
-   PROPERTY & CONNECTIVITY SECTION
+   PROPERTY & CONNECTIVITY SECTION STYLES
    ============================================ */
 
 .property-section {
   background: var(--color-secondary-off);
 }
 
+/* ── Space Highlight Banner ── */
+.space-highlight-banner {
+  background: var(--color-secondary);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-accent);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-8);
+  margin-bottom: var(--space-10);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.space-highlight-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.space-badge {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+.space-range {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: var(--weight-extrabold);
+  color: var(--color-primary);
+  letter-spacing: -0.01em;
+}
+
+.space-highlight-desc {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.space-highlight-desc strong {
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+}
+
+/* ── Property Details Grid ── */
 .property-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -16,7 +71,7 @@
 .property-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
+  gap: var(--space-5);
 }
 
 .property-card {
@@ -25,6 +80,7 @@
   padding: var(--space-6);
   border: 1px solid var(--color-border);
   transition: all var(--transition-base);
+  box-shadow: var(--shadow-xs);
 }
 
 .property-card:hover {
@@ -34,8 +90,8 @@
 }
 
 .property-card-icon {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,20 +102,24 @@
 }
 
 .property-card-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 
 .property-card h4 {
-  font-size: var(--text-body-sm);
+  font-family: var(--font-heading);
+  font-size: var(--text-h4);
+  font-weight: var(--weight-bold);
   margin-bottom: var(--space-2);
   color: var(--color-primary);
 }
 
 .property-card p {
-  font-size: var(--text-small);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
   color: var(--color-text-muted);
   line-height: var(--leading-normal);
+  margin: 0;
 }
 
 .property-image {
@@ -74,12 +134,333 @@
   object-fit: cover;
 }
 
-/* ── Transit Hubs ── */
+/* ============================================
+   CONNECTIVITY SECTION TYPOGRAPHY & LAYOUT
+   ============================================ */
+
+.connectivity-wrapper {
+  padding-top: var(--space-16);
+}
+
+/* ── Visual Hub-and-Route Network Diagram ── */
+.connectivity-diagram-container {
+  background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.connectivity-network-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.network-badge {
+  display: inline-block;
+  background: var(--color-accent-light);
+  color: var(--color-accent-hover);
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-2);
+}
+
+.connectivity-network-header p {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: var(--leading-normal);
+}
+
+.connectivity-hub-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1fr;
+  gap: var(--space-6);
+  align-items: center;
+  max-width: 1060px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Central Gorakhpur Hub */
+.route-central-hub-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.route-pulse-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 26px;
+  border: 2px dashed rgba(200, 150, 90, 0.35);
+  pointer-events: none;
+}
+
+.route-central-hub {
+  background: #0F1B2D;
+  color: #FFFFFF;
+  border-radius: 20px;
+  padding: var(--space-6) var(--space-6);
+  text-align: center;
+  border: 2px solid #C8965A;
+  box-shadow: 0 10px 30px rgba(15, 27, 45, 0.3), 0 0 0 6px rgba(200, 150, 90, 0.12);
+  width: 100%;
+}
+
+.hub-location-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(200, 150, 90, 0.2);
+  color: #D49A58;
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-3);
+}
+
+.hub-location-tag svg {
+  color: #D49A58;
+}
+
+.hub-main-city {
+  font-family: var(--font-heading);
+  font-size: 2.15rem;
+  font-weight: var(--weight-extrabold);
+  color: #FFFFFF;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.hub-address {
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  color: #94A3B8;
+  margin-bottom: var(--space-4);
+  line-height: var(--leading-normal);
+}
+
+.hub-base-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  color: #F1F5F9;
+}
+
+.hub-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #25D366;
+  box-shadow: 0 0 8px #25D366;
+}
+
+/* Route Node Columns & Cards */
+.route-nodes-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.route-dest-card {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  transition: all var(--transition-base);
+  position: relative;
+  box-shadow: var(--shadow-xs);
+}
+
+.route-dest-card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  background: #FFFDF9;
+}
+
+.route-dest-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.route-dest-pin {
+  color: var(--color-accent);
+  font-size: 0.95rem;
+}
+
+.route-dest-header h4 {
+  font-family: var(--font-heading);
+  font-size: var(--text-h4);
+  font-weight: var(--weight-bold);
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.route-dest-desc {
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: var(--leading-normal);
+}
+
+/* Bottom Row Destinations */
+.connectivity-bottom-routes {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  max-width: 680px;
+  margin: var(--space-6) auto 0;
+}
+
+.bottom-dest {
+  flex: 1;
+  text-align: center;
+}
+
+.bottom-dest .route-dest-header {
+  justify-content: center;
+}
+
+/* ── Business Benefit Panel ── */
+.connectivity-benefits-panel {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-accent);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-8);
+  margin-top: var(--space-8);
+  box-shadow: var(--shadow-sm);
+}
+
+.benefits-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--space-5);
+}
+
+.benefits-panel-title svg {
+  color: var(--color-accent);
+}
+
+.benefits-panel-title h3 {
+  font-family: var(--font-heading);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-bold);
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.benefits-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.benefit-check {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border-radius: 50%;
+  background: var(--color-success-light);
+  color: var(--color-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+.benefit-text strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: var(--weight-bold);
+  color: var(--color-primary);
+  margin-bottom: 3px;
+}
+
+.benefit-text p {
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: var(--leading-normal);
+}
+
+/* ── Major Transport Points Block ── */
+.transit-section-block {
+  margin-top: var(--space-10);
+}
+
+.transit-block-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.transit-label {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: inline-block;
+  margin-bottom: var(--space-2);
+}
+
+.transit-block-header h3 {
+  font-family: var(--font-heading);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+}
+
+.transit-block-header p {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
 .transit-hubs-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-6);
-  margin-bottom: var(--space-8);
 }
 
 .transit-hub-card {
@@ -88,9 +469,10 @@
   padding: var(--space-6) var(--space-8);
   border: 1px solid var(--color-border);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-5);
   transition: all var(--transition-base);
+  box-shadow: var(--shadow-xs);
 }
 
 .transit-hub-card:hover {
@@ -100,143 +482,98 @@
 }
 
 .transit-hub-icon {
-  width: 58px;
-  height: 58px;
-  min-width: 58px;
+  width: 54px;
+  height: 54px;
+  min-width: 54px;
   border-radius: var(--radius-lg);
   background: var(--color-accent-light);
   color: var(--color-accent);
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 2px;
 }
 
-.transit-hub-info h4 {
-  font-size: 1.1rem;
+.transit-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.transit-type-tag {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: var(--weight-bold);
   color: var(--color-primary);
-  margin-bottom: 4px;
+  background: var(--color-secondary-off);
+  border: 1px solid var(--color-border-light);
+  padding: 2px 8px;
+  border-radius: 6px;
 }
 
 .transit-time-badge {
   display: inline-block;
   background: rgba(200, 150, 90, 0.15);
   color: var(--color-accent);
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 20px;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.transit-hub-info p {
+  font-family: var(--font-body);
   font-size: var(--text-small);
-  color: var(--color-text-muted);
-  line-height: 1.4;
-  margin: 0;
+  font-weight: var(--weight-bold);
+  padding: 2px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-/* ── Regional Corridors ── */
-.connectivity-corridors {
-  background: var(--color-secondary);
-  border-radius: var(--radius-xl);
-  padding: var(--space-8);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-}
-
-.connectivity-hub-center {
-  text-align: center;
-  margin-bottom: var(--space-6);
-}
-
-.hub-center-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: 0.6rem 1.5rem;
-  background: #0F1B2D;
-  color: #FFFFFF;
-  border-radius: 30px;
-  box-shadow: 0 4px 16px rgba(15, 27, 45, 0.2);
-}
-
-.hub-dot {
-  width: 10px;
-  height: 10px;
-  background: #25D366;
-  border-radius: 50%;
-  display: inline-block;
-  box-shadow: 0 0 8px #25D366;
-}
-
-.hub-center-badge strong {
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
-  color: #D49A58;
-}
-
-.hub-center-badge small {
-  color: #94A3B8;
-  font-size: 0.78rem;
-}
-
-.corridors-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-4);
-}
-
-.corridor-card {
-  background: var(--color-secondary-off);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
-  border: 1px solid var(--color-border-light);
-  transition: all var(--transition-base);
-}
-
-.corridor-card:hover {
-  background: var(--color-secondary);
-  border-color: var(--color-accent-medium);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-}
-
-.corridor-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.transit-hub-info h4 {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: var(--weight-bold);
+  color: var(--color-primary);
   margin-bottom: 4px;
 }
 
-.corridor-indicator {
-  color: var(--color-accent);
-  font-weight: bold;
-}
-
-.corridor-header h4 {
-  font-size: 1.05rem;
-  color: var(--color-primary);
-  margin: 0;
-}
-
-.corridor-tag {
-  font-size: 0.78rem;
+.transit-hub-info p {
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
   color: var(--color-text-muted);
+  line-height: var(--leading-normal);
   margin: 0;
 }
 
+/* ── Responsive ── */
 @media (max-width: 1024px) {
   .property-grid { grid-template-columns: 1fr; }
   .property-image img { height: 350px; }
+  .connectivity-hub-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+  .route-central-hub-wrapper {
+    order: -1;
+  }
+  .benefits-panel-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .transit-hubs-grid { grid-template-columns: 1fr; }
-  .corridors-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 640px) {
   .property-cards { grid-template-columns: 1fr; }
-  .property-image img { height: 250px; }
-  .corridors-grid { grid-template-columns: 1fr; }
-  .transit-hub-card { padding: var(--space-5); flex-direction: column; text-align: center; }
+  .property-image img { height: 230px; }
+  .connectivity-diagram-container { padding: var(--space-4) var(--space-3); }
+  .connectivity-bottom-routes { flex-direction: column; gap: var(--space-4); }
+  .benefits-panel-grid { grid-template-columns: 1fr; }
+  .connectivity-benefits-panel { padding: var(--space-4); }
+  .transit-hub-card { padding: var(--space-4); flex-direction: column; gap: var(--space-3); }
+  .route-central-hub { padding: var(--space-5) var(--space-3); border-radius: 16px; }
+  .hub-main-city { font-size: clamp(1.4rem, 6vw, 2rem); }
+}
+
+@media (max-width: 360px) {
+  .connectivity-diagram-container { padding: var(--space-3) var(--space-2); }
+  .connectivity-benefits-panel { padding: var(--space-3) var(--space-2); }
+  .benefit-check-card { padding: var(--space-3); }
+  .route-destination-card { padding: var(--space-3); }
 }

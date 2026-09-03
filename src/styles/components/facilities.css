@@ -1,165 +1,265 @@
 /* ============================================
    FACILITIES & 24×7 OPERATIONS CSS
+   ============================================
+   Visual journey flow + Day/Night comparison
    ============================================ */
 
 .facilities-section {
   background: var(--color-secondary);
 }
 
-.facilities-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-6);
+/* ── Operations Journey Flow ── */
+.ops-journey {
+  margin-bottom: var(--space-8);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.facility-card {
-  background: var(--color-secondary-off);
-  border-radius: var(--radius-xl);
-  padding: var(--space-8) var(--space-6);
-  border: 1px solid var(--color-border);
-  transition: all var(--transition-base);
-  text-align: center;
-  position: relative;
+.ops-journey-track {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  min-width: max-content;
+  padding: var(--space-4) 0;
+}
+
+.ops-step {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
+  min-width: 140px;
+  max-width: 160px;
+  position: relative;
+  padding: 0 var(--space-2);
 }
 
-.facility-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-accent-medium);
-  background: var(--color-secondary);
-}
-
-.facility-badge {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.ops-step-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-light);
   color: var(--color-accent);
-  background: rgba(200, 150, 90, 0.12);
-  padding: 3px 10px;
-  border-radius: 20px;
-  margin-bottom: var(--space-4);
-}
-
-.facility-icon {
-  width: 58px;
-  height: 58px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-accent-light);
-  border-radius: var(--radius-lg);
-  color: var(--color-accent);
-  margin: 0 auto var(--space-4);
+  margin-bottom: var(--space-3);
   transition: all var(--transition-base);
 }
 
-.facility-card:hover .facility-icon {
+.ops-step:hover .ops-step-icon {
   background: var(--color-accent);
-  color: white;
-  transform: scale(1.05);
+  color: #FFFFFF;
+  transform: scale(1.08);
 }
 
-.facility-icon svg {
-  width: 28px;
-  height: 28px;
+.ops-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #FFFFFF;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: var(--weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-2);
 }
 
-.facility-card h3 {
-  font-size: 1.15rem;
-  margin-bottom: var(--space-3);
+.ops-step-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: var(--weight-bold);
   color: var(--color-primary);
+  margin-bottom: 4px;
 }
 
-.facility-card p {
+.ops-step-desc {
+  font-family: var(--font-body);
   font-size: var(--text-small);
   color: var(--color-text-muted);
-  line-height: var(--leading-relaxed);
+  line-height: var(--leading-normal);
   margin: 0;
 }
 
-/* ── Spotlights Grid ── */
-.facility-spotlights-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-8);
+.ops-step-arrow {
+  position: absolute;
+  right: -14px;
+  top: 28px;
+  color: var(--color-accent);
+  z-index: 2;
 }
 
-.facility-spotlight-card {
-  background: var(--color-secondary-off);
+/* ── Day & Night 24×7 Section ── */
+.daynight-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+.daynight-card {
   border-radius: var(--radius-xl);
   overflow: hidden;
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-md);
+  background: var(--color-secondary-off);
   transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
-.facility-spotlight-card:hover {
+.daynight-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-lg);
   border-color: var(--color-accent);
 }
 
-.spotlight-image {
+.daynight-image {
   position: relative;
-  height: 260px;
+  height: 240px;
   overflow: hidden;
 }
 
-.spotlight-image img {
+.daynight-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform var(--transition-slow);
 }
 
-.facility-spotlight-card:hover .spotlight-image img {
+.daynight-card:hover .daynight-image img {
   transform: scale(1.04);
 }
 
-.spotlight-badge {
+.daynight-badge {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: rgba(15, 27, 45, 0.85);
-  backdrop-filter: blur(8px);
-  color: #D49A58;
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 20px;
-  border: 1px solid rgba(200, 150, 90, 0.3);
-}
-
-.spotlight-content {
-  padding: var(--space-6) var(--space-8);
-}
-
-.spotlight-content h3 {
-  font-size: 1.25rem;
-  color: var(--color-primary);
-  margin-bottom: var(--space-2);
-}
-
-.spotlight-content p {
+  top: var(--space-4);
+  left: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
   font-size: var(--text-small);
-  color: var(--color-text-muted);
-  line-height: var(--leading-relaxed);
-  margin: 0;
+  font-weight: var(--weight-bold);
+  backdrop-filter: blur(8px);
 }
 
+.daynight-badge-day {
+  background: rgba(251, 191, 36, 0.2);
+  color: #F59E0B;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.daynight-badge-night {
+  background: rgba(99, 102, 241, 0.2);
+  color: #818CF8;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.daynight-content {
+  padding: var(--space-6);
+}
+
+.daynight-content h3 {
+  font-family: var(--font-heading);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-4);
+}
+
+.daynight-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.daynight-list li {
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  color: var(--color-text-muted);
+  padding-left: var(--space-6);
+  position: relative;
+  line-height: var(--leading-normal);
+}
+
+.daynight-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: var(--weight-bold);
+}
+
+/* ── Responsive ── */
 @media (max-width: 1024px) {
-  .facilities-grid { grid-template-columns: repeat(2, 1fr); }
-  .facility-spotlights-grid { grid-template-columns: 1fr; }
+  .daynight-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .ops-journey {
+    overflow-x: visible;
+  }
+
+  .ops-journey-track {
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 0;
+    width: 100%;
+    gap: var(--space-3);
+  }
+
+  .ops-step {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    flex-direction: row;
+    text-align: left;
+    gap: var(--space-4);
+    align-items: flex-start;
+    background: var(--color-secondary-off);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+  }
+
+  .ops-step-icon {
+    margin-bottom: 0;
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  .ops-step-arrow {
+    display: none;
+  }
+
+  .ops-step-num {
+    display: none;
+  }
 }
 
 @media (max-width: 640px) {
-  .facilities-grid { grid-template-columns: 1fr; }
-  .facility-card { padding: var(--space-6); }
-  .spotlight-image { height: 200px; }
-  .spotlight-content { padding: var(--space-5); }
+  .daynight-image {
+    height: 200px;
+  }
+
+  .daynight-content {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 360px) {
+  .ops-step {
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
 }

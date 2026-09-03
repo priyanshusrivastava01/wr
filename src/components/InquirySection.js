@@ -4,31 +4,70 @@
 
 import { CONFIG } from '../config.js';
 import { validateStep, attachPhoneMask } from '../utils/validation.js';
+import { scrollToSection } from '../utils/scroll.js';
 
 export function renderInquirySection(container) {
   container.innerHTML = `
     <div class="inquiry-section section">
       <div class="container">
         <div class="inquiry-grid">
+          <!-- Left: Dual Option Selection & Clear Guidance -->
           <div class="inquiry-content reveal-left">
-            <span class="section-label">Get in Touch</span>
-            <h2>Let's Find the Right Warehouse Space for Your Business</h2>
-            <p>Tell us what you need and our team will help you explore the next step. Whether you have a specific space requirement or just want to understand your options, we're here to help.</p>
+            <span class="section-label" style="color: var(--color-accent);">Get in Touch</span>
+            <h2>Let's Discuss Your Warehouse Requirement</h2>
+            <p class="inquiry-lead">Tell us what you need and our local Gorakhpur team will guide you to the right space or setup solution.</p>
+
+            <!-- Dual Option Selector Cards -->
+            <div class="inquiry-options-box">
+              <div class="inquiry-option-card active">
+                <div class="option-card-header">
+                  <span class="option-pill">OPTION 1</span>
+                  <strong>I Need Warehouse Space</strong>
+                </div>
+                <p>Looking to store goods or run distribution from 1,000 to 42,000 sq. ft. Fill out the quick form on the right.</p>
+              </div>
+
+              <div class="inquiry-option-card clickable" id="inq-switch-project-btn">
+                <div class="option-card-header">
+                  <span class="option-pill alt">OPTION 2</span>
+                  <strong>I Want to Build a Warehouse</strong>
+                </div>
+                <p>Have land or planning a new warehouse project in Eastern UP? Go to our Project Consultation form →</p>
+              </div>
+            </div>
+
+            <!-- Direct Contact Info -->
+            <div class="inquiry-direct-info">
+              <div class="direct-info-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>Main Gorakhnath Temple Road, Bargadwa, Gorakhpur</span>
+              </div>
+              <div class="direct-info-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>24×7 Operations & Loading Support</span>
+              </div>
+            </div>
           </div>
 
+          <!-- Right: Clear Space Inquiry Form -->
           <div class="inquiry-form-card reveal-right" id="inquiry-form-container">
+            <div class="inquiry-form-heading">
+              <h3>Send Warehouse Space Inquiry</h3>
+              <p>Fill in your basic details and required area.</p>
+            </div>
+
             <form id="inquiry-form" novalidate>
               <div class="form-group">
-                <label class="form-label" for="inq-name">Full Name</label>
+                <label class="form-label" for="inq-name">Full Name *</label>
                 <input type="text" class="form-input" id="inq-name" placeholder="Rahul Sharma" />
               </div>
               <div class="form-group">
                 <label class="form-label" for="inq-company">Business / Company Name</label>
                 <input type="text" class="form-input" id="inq-company" placeholder="Sharma Logistics Pvt. Ltd." />
               </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+              <div class="inquiry-form-row-2">
                 <div class="form-group">
-                  <label class="form-label" for="inq-phone">Phone Number</label>
+                  <label class="form-label" for="inq-phone">Phone Number *</label>
                   <input type="tel" class="form-input" id="inq-phone" placeholder="9876543210" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" />
                 </div>
                 <div class="form-group">
@@ -47,7 +86,7 @@ export function renderInquirySection(container) {
               <div class="inquiry-form-actions">
                 <button type="submit" class="btn btn-primary btn-lg" id="inq-submit-btn">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="m22 2-11 11"/></svg>
-                  Send Inquiry
+                  Send Space Inquiry
                 </button>
                 <button type="button" class="btn btn-whatsapp" id="inq-whatsapp">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -64,6 +103,10 @@ export function renderInquirySection(container) {
   // Attach 10-digit mobile filter
   const phoneInput = document.getElementById('inq-phone');
   if (phoneInput) attachPhoneMask(phoneInput);
+
+  document.getElementById('inq-switch-project-btn')?.addEventListener('click', () => {
+    scrollToSection('#warehouse-setup');
+  });
 
   const form = document.getElementById('inquiry-form');
   form?.addEventListener('submit', (e) => {

@@ -5,46 +5,62 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 h1, .h1 {
+  font-family: var(--font-heading);
   font-size: var(--text-h1);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--leading-tight);
+  color: var(--color-primary);
   letter-spacing: -0.02em;
 }
 
 h2, .h2 {
+  font-family: var(--font-heading);
   font-size: var(--text-h2);
   font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  color: var(--color-primary);
   letter-spacing: -0.015em;
 }
 
 h3, .h3 {
+  font-family: var(--font-heading);
   font-size: var(--text-h3);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  color: var(--color-primary);
   letter-spacing: -0.01em;
 }
 
 h4, .h4 {
+  font-family: var(--font-heading);
   font-size: var(--text-h4);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  color: var(--color-primary);
 }
 
 .text-body {
+  font-family: var(--font-body);
   font-size: var(--text-body);
   line-height: var(--leading-normal);
 }
 
 .text-body-sm {
+  font-family: var(--font-body);
   font-size: var(--text-body-sm);
   line-height: var(--leading-normal);
 }
 
 .text-small {
+  font-family: var(--font-body);
   font-size: var(--text-small);
   line-height: var(--leading-normal);
 }
 
 .text-caption {
+  font-family: var(--font-body);
   font-size: var(--text-caption);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -73,27 +89,42 @@ h4, .h4 {
   font-family: var(--font-heading);
 }
 
+.font-body {
+  font-family: var(--font-body);
+}
+
 /* Section label — small uppercase accent text above headings */
 .section-label {
   font-family: var(--font-body);
   font-size: var(--text-caption);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--color-accent);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
   display: inline-block;
 }
 
 /* Section subtitle — supporting text below headings */
 .section-subtitle {
+  font-family: var(--font-body);
   font-size: var(--text-body);
   color: var(--color-text-muted);
-  line-height: var(--leading-relaxed);
-  max-width: 640px;
+  line-height: var(--leading-normal);
+  max-width: 680px;
 }
 
 .section-subtitle.centered {
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Common Section Header */
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-10);
+}
+
+.section-header h2 {
+  margin-bottom: var(--space-3);
 }

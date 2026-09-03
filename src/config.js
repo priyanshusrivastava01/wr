@@ -67,12 +67,12 @@ export const CONFIG = {
       { name: 'Gorakhpur Airport', time: 'Approx. 30 mins away', icon: 'plane' },
     ],
     connectivityRoutes: [
-      { destination: 'Lucknow', tag: 'State Capital & Central Hub' },
-      { destination: 'Prayagraj', tag: 'Southern UP Logistics Corridor' },
-      { destination: 'Varanasi', tag: 'Major Trade & Commercial Hub' },
-      { destination: 'Delhi', tag: 'National Capital Region Highway' },
-      { destination: 'Bihar', tag: 'Eastern Trade Border Connectivity' },
-      { destination: 'Nepal', tag: 'International Cross-Border Trade' },
+      { destination: 'Delhi NCR', tag: 'National Business & Distribution Access', dir: 'north' },
+      { destination: 'Lucknow', tag: 'Key Uttar Pradesh Business Connection', dir: 'west' },
+      { destination: 'Bihar', tag: 'Eastern Market Connectivity', dir: 'east' },
+      { destination: 'Prayagraj', tag: 'Important Regional Business Route', dir: 'south-west' },
+      { destination: 'Varanasi', tag: 'Major Trade & Commercial Connection', dir: 'south' },
+      { destination: 'Nepal', tag: 'Cross-Border Business Connectivity', dir: 'north-east' },
     ],
   },
 
@@ -87,47 +87,48 @@ export const CONFIG = {
   // ── WhatsApp ──
   whatsapp: {
     defaultMessage: 'Hello, I am interested in warehouse space at Vardha Warehousing, Gorakhpur. Please share details.',
+    constructionMessage: 'Hello, I am interested in discussing a warehouse construction/development requirement. I would like to share my project details.',
     contextMessage: (area) => 
       `Hello, I am interested in approximately ${area.toLocaleString('en-IN')} sq. ft. of warehouse space at Vardha Warehousing, Gorakhpur. Please share more details.`,
   },
 
-  // ── Modern Operational Facilities ──
+  // ── Approved Warehouse Operational Capabilities ──
   facilities: [
-    {
-      icon: 'clock',
-      title: '24×7 Continuous Operations',
-      description: 'Loading and unloading of trucks continues day and night so your business movement never halts.',
-      badge: 'Non-Stop Movement',
-    },
     {
       icon: 'shopping-cart',
       title: 'E-commerce Operations',
-      description: 'Dedicated infrastructure for online retail fulfillment, organized stocking, and fast dispatches.',
+      description: 'Support for organized warehouse-based order handling and fulfillment operations.',
       badge: 'Fulfillment Ready',
     },
     {
+      icon: 'clipboard',
+      title: 'Order Processing',
+      description: 'Help manage and prepare orders for smoother business operations.',
+      badge: 'Systematic Handling',
+    },
+    {
       icon: 'package',
-      title: 'Packaging & Order Processing',
-      description: 'Systematic sorting, professional carton packing, labeling, and pallet wrapping services.',
-      badge: 'Order Handling',
+      title: 'Packaging',
+      description: 'Dedicated support for preparing and packaging goods.',
+      badge: 'Packing Support',
     },
     {
       icon: 'scan',
-      title: 'Barcode Scanning & Tracking',
-      description: 'Digitized inventory scanning ensures accurate inbound and outbound stock visibility.',
+      title: 'Barcode Scanning',
+      description: 'Support for organized inventory handling and product identification.',
       badge: 'Accurate Tracking',
     },
     {
       icon: 'truck',
-      title: 'Heavy Commercial Dock Bays',
-      description: 'Multiple wide roll-up dock shutters with spacious concrete apron for smooth truck maneuvering.',
-      badge: 'Wide Road Access',
+      title: 'Loading & Unloading',
+      description: 'Efficient movement of goods through warehouse operations.',
+      badge: 'Wide Dock Bays',
     },
     {
-      icon: 'building',
-      title: 'Flexible Space (1,000–42,000 sq. ft.)',
-      description: 'Configurable floor layouts and 14 ft / 22 ft height options tailored to your business scale.',
-      badge: 'Tailored Capacity',
+      icon: 'clock',
+      title: '24×7 Operations',
+      description: 'Operational support designed for day and night business movement.',
+      badge: 'Round-The-Clock',
     },
   ],
 
@@ -204,11 +205,37 @@ export const CONFIG = {
 
   // ── Realistic Indian Warehouse Gallery Images ──
   gallery: [
-    { src: '/images/hero-warehouse-bg.webp', alt: 'Vardha Warehousing — Main commercial warehouse exterior with loading dock bays', featured: true },
-    { src: '/images/warehouse-indian-dock.jpg', alt: 'Active commercial truck loading bays at Vardha Warehousing, Gorakhpur' },
-    { src: '/images/warehouse-night-loading.jpg', alt: '24x7 Night truck loading and unloading operations under floodlights' },
-    { src: '/images/warehouse-fulfillment-scan.jpg', alt: 'E-commerce order packaging and barcode scanning operations' },
-    { src: '/images/warehouse-interior-racks.jpg', alt: 'Organized high-capacity pallet racking and commercial storage interior' },
+    { 
+      src: '/images/hero-warehouse-bg.webp', 
+      category: 'Outside the Warehouse', 
+      label: 'Commercial Building & Frontage', 
+      alt: 'Vardha Warehousing — Main commercial warehouse exterior with loading dock bays', 
+      featured: true 
+    },
+    { 
+      src: '/images/warehouse-indian-dock.jpg', 
+      category: 'Loading Area', 
+      label: 'Truck Movement & Loading Bays', 
+      alt: 'Active commercial truck loading bays at Vardha Warehousing, Gorakhpur' 
+    },
+    { 
+      src: '/images/warehouse-interior-racks.jpg', 
+      category: 'Inside the Warehouse', 
+      label: 'Storage & Operational Areas', 
+      alt: 'Organized high-capacity pallet racking and commercial storage interior' 
+    },
+    { 
+      src: '/images/warehouse-fulfillment-scan.jpg', 
+      category: 'Business Operations', 
+      label: 'Packaging & Order Processing', 
+      alt: 'E-commerce order packaging and barcode scanning operations' 
+    },
+    { 
+      src: '/images/warehouse-night-loading.jpg', 
+      category: '24×7 Operations', 
+      label: 'Round-The-Clock Night Dispatch', 
+      alt: '24x7 Night truck loading and unloading operations under floodlights' 
+    },
   ],
 
   // ── Navigation ──
@@ -218,8 +245,7 @@ export const CONFIG = {
     { label: '24×7 Operations', href: '#facilities' },
     { label: 'Connectivity', href: '#connectivity' },
     { label: 'Space & Pricing', href: '#calculator' },
-    { label: 'Industries', href: '#industries' },
-    { label: 'Expertise', href: '#expertise' },
+    { label: 'Build a Warehouse', href: '#warehouse-setup' },
     { label: 'Clients', href: '#clients' },
     { label: 'Contact', href: '#contact' },
   ],

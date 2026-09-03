@@ -1,65 +1,121 @@
 /* ============================================
    WAREHOUSE FACILITIES & 24×7 OPERATIONS COMPONENT
+   ============================================
+   Redesigned as a visual operational journey
+   + Day/Night comparison for 24×7 understanding.
    ============================================ */
 
 import { CONFIG } from '../config.js';
 
-const FACILITY_ICONS = {
-  clock: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  'shopping-cart': '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>',
-  package: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',
-  scan: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" x2="17" y1="12" y2="12"/></svg>',
-  truck: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
-  building: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>',
-};
+const JOURNEY_STEPS = [
+  {
+    icon: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+    title: 'Truck Arrives',
+    desc: 'Goods reach the warehouse for storage or further processing.',
+  },
+  {
+    icon: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3-4 4-4-4"/><path d="M12 7v14"/><path d="M4 11h16"/></svg>',
+    title: 'Loading & Unloading',
+    desc: 'Goods can be moved in and out through warehouse operations.',
+  },
+  {
+    icon: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="m17 2-5 5-5-5"/></svg>',
+    title: 'Storage',
+    desc: 'Space can be organized according to your business requirement.',
+  },
+  {
+    icon: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="m9 14 2 2 4-4"/></svg>',
+    title: 'Order Processing',
+    desc: 'Orders can be prepared for smoother business operations.',
+  },
+  {
+    icon: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',
+    title: 'Packaging',
+    desc: 'Products can be prepared and packed for movement.',
+  },
+  {
+    icon: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" x2="17" y1="12" y2="12"/></svg>',
+    title: 'Barcode Scanning',
+    desc: 'Products can be identified and managed more systematically.',
+  },
+  {
+    icon: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>',
+    title: 'Dispatch',
+    desc: 'Goods can move forward according to your business requirement.',
+  },
+];
 
 export function renderWarehouseFacilities(container) {
-  const { facilities } = CONFIG;
-
   container.innerHTML = `
     <div class="facilities-section section" id="facilities">
       <div class="container">
         <div class="section-header reveal">
-          <span class="section-label">Operational Capabilities</span>
-          <h2>A Modern Commercial Warehouse Ecosystem</h2>
-          <p class="section-subtitle centered">Equipped for e-commerce, systematic order fulfillment, packaging, barcode scanning, and 24×7 non-stop truck operations.</p>
+          <span class="section-label">How It Can Work</span>
+          <h2>How Your Warehouse Operations Can Work</h2>
+          <p class="section-subtitle centered">
+            From the moment goods arrive to the moment they move forward — here's a simple look at the operational journey.
+          </p>
         </div>
 
-        <!-- 6 Capability Cards -->
-        <div class="facilities-grid stagger-children">
-          ${facilities.map(f => `
-            <div class="facility-card reveal">
-              <div class="facility-badge">${f.badge}</div>
-              <div class="facility-icon">
-                ${FACILITY_ICONS[f.icon] || ''}
+        <!-- Visual Operations Journey -->
+        <div class="ops-journey reveal">
+          <div class="ops-journey-track">
+            ${JOURNEY_STEPS.map((step, i) => `
+              <div class="ops-step">
+                <div class="ops-step-icon">${step.icon}</div>
+                <div class="ops-step-num">${i + 1}</div>
+                <h4 class="ops-step-title">${step.title}</h4>
+                <p class="ops-step-desc">${step.desc}</p>
+                ${i < JOURNEY_STEPS.length - 1 ? '<div class="ops-step-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>' : ''}
               </div>
-              <h3>${f.title}</h3>
-              <p>${f.description}</p>
-            </div>
-          `).join('')}
+            `).join('')}
+          </div>
         </div>
 
-        <!-- 24x7 Operations & Modern Fulfillment Spotlight -->
-        <div class="facility-spotlights-grid" style="margin-top: var(--space-12);">
-          <div class="facility-spotlight-card reveal-left">
-            <div class="spotlight-image">
-              <img src="/images/warehouse-night-loading.jpg" alt="24x7 Night truck loading and unloading operations in Gorakhpur" loading="lazy" />
-              <div class="spotlight-badge">24×7 Round-The-Clock</div>
-            </div>
-            <div class="spotlight-content">
-              <h3>Day & Night Fleet Loading Support</h3>
-              <p>Your business does not stop when the sun sets. We support seamless commercial truck loading, unloading, and cross-docking 24 hours a day, 7 days a week.</p>
-            </div>
+        <!-- Day & Night 24×7 Comparison -->
+        <div class="daynight-section" style="margin-top: var(--space-12);">
+          <div class="section-header reveal">
+            <span class="section-label">Round-The-Clock</span>
+            <h2>The Warehouse Keeps Moving — Day & Night</h2>
           </div>
 
-          <div class="facility-spotlight-card reveal-right">
-            <div class="spotlight-image">
-              <img src="/images/warehouse-fulfillment-scan.jpg" alt="E-commerce order packaging and barcode inventory scanning" loading="lazy" />
-              <div class="spotlight-badge">E-Commerce & Retail</div>
+          <div class="daynight-grid">
+            <div class="daynight-card daynight-day reveal-left">
+              <div class="daynight-image">
+                <img src="/images/warehouse-indian-dock.jpg" alt="Daytime warehouse loading operations in Gorakhpur" loading="lazy" />
+                <div class="daynight-badge daynight-badge-day">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                  Day Operations
+                </div>
+              </div>
+              <div class="daynight-content">
+                <h3>Daytime Activity</h3>
+                <ul class="daynight-list">
+                  <li>Truck loading & unloading</li>
+                  <li>Order processing & packaging</li>
+                  <li>Warehouse management</li>
+                  <li>Business coordination</li>
+                </ul>
+              </div>
             </div>
-            <div class="spotlight-content">
-              <h3>Order Processing, Packing & Barcoding</h3>
-              <p>Equipped for fast inventory receiving, organized palletized storage, barcode tracking, and professional carton packaging for regional fulfillment.</p>
+
+            <div class="daynight-card daynight-night reveal-right">
+              <div class="daynight-image">
+                <img src="/images/warehouse-night-loading.jpg" alt="Nighttime 24x7 warehouse operations under floodlights in Gorakhpur" loading="lazy" />
+                <div class="daynight-badge daynight-badge-night">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                  Night Operations
+                </div>
+              </div>
+              <div class="daynight-content">
+                <h3>Nighttime Activity</h3>
+                <ul class="daynight-list">
+                  <li>Continued loading & unloading</li>
+                  <li>Night dispatch support</li>
+                  <li>Operational readiness</li>
+                  <li>Business movement continues</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>

@@ -98,8 +98,12 @@ export function validateStep(step, data) {
       const emailErr = validateEmail(data.email);
       if (emailErr) errors.email = emailErr;
 
-      if (!data.requirement || data.requirement.trim() === '') {
-        errors.requirement = 'Please describe your warehouse requirement.';
+      if (!data.location || data.location.trim() === '') {
+        errors.location = 'Please enter your project location.';
+      }
+
+      if (!data.hasLand || data.hasLand.trim() === '') {
+        errors.hasLand = 'Please select whether you have land.';
       }
       break;
     }

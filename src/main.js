@@ -12,6 +12,7 @@ import { renderHeader } from './components/Header.js';
 import { renderHeroSection } from './components/HeroSection.js';
 import { renderQuickIntroduction } from './components/QuickIntroduction.js';
 import { renderPropertyInformation } from './components/PropertyInformation.js';
+import { renderVideoSection } from './components/VideoSection.js';
 import { renderWarehouseFacilities } from './components/WarehouseFacilities.js';
 import { renderWarehouseGallery } from './components/WarehouseGallery.js';
 import { renderSpaceCalculator } from './components/SpaceCalculator.js';
@@ -39,6 +40,7 @@ function init() {
   renderHeroSection(document.getElementById('home'));
   renderQuickIntroduction(document.getElementById('introduction'));
   renderPropertyInformation(document.getElementById('warehouse'));
+  renderVideoSection(document.getElementById('video-tour'));
   renderWarehouseFacilities(document.getElementById('facilities'));
   renderWarehouseGallery(document.getElementById('gallery'));
   renderSpaceCalculator(document.getElementById('calculator'));

@@ -1,17 +1,196 @@
-/* Experience Section */
-.experience-section { background: var(--color-primary); color: var(--color-text-light); position: relative; overflow: hidden; }
-.experience-inner { display: flex; align-items: center; gap: var(--space-16); }
-.experience-year { font-family: var(--font-heading); font-size: 12rem; font-weight: var(--weight-extrabold); line-height: 1; color: transparent; -webkit-text-stroke: 2px rgba(200,150,90,0.3); user-select: none; white-space: nowrap; }
-.experience-content { max-width: 560px; }
-.experience-content .section-label { color: var(--color-accent); }
-.experience-content h2 { margin-bottom: var(--space-6); color: var(--color-text-light); }
-.experience-content p { color: rgba(255,255,255,0.7); line-height: var(--leading-relaxed); margin-bottom: var(--space-6); }
-.experience-badge { display: inline-flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); background: rgba(200,150,90,0.15); border: 1px solid rgba(200,150,90,0.3); border-radius: var(--radius-full); }
-.experience-badge-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: var(--color-accent); border-radius: var(--radius-full); color: white; }
-.experience-badge-text { font-size: var(--text-small); font-weight: var(--weight-semibold); color: var(--color-accent); }
-@media (max-width: 1024px) {
-  .experience-inner { flex-direction: column; text-align: center; gap: var(--space-6); }
-  .experience-year { font-size: 8rem; }
-  .experience-content { max-width: 100%; }
+/* ============================================
+   EXPERIENCE SECTION STYLES
+   ============================================ */
+
+.experience-section {
+  background: var(--color-primary);
+  color: var(--color-text-light);
+  position: relative;
+  overflow: hidden;
 }
-@media (max-width: 640px) { .experience-year { font-size: 5rem; } }
+
+.experience-inner {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: var(--space-12);
+  align-items: center;
+}
+
+/* Left: Year graphic */
+.experience-year-wrapper {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.experience-year {
+  font-family: var(--font-heading);
+  font-size: 10rem;
+  font-weight: var(--weight-extrabold);
+  line-height: 0.9;
+  color: transparent;
+  -webkit-text-stroke: 3px rgba(200, 150, 90, 0.4);
+  user-select: none;
+  letter-spacing: -0.04em;
+  margin-bottom: var(--space-3);
+  text-shadow: 0 0 40px rgba(200, 150, 90, 0.15);
+}
+
+.experience-year-tag {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
+  color: var(--color-accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(200, 150, 90, 0.12);
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+}
+
+/* Right: Content */
+.experience-content {
+  max-width: 600px;
+}
+
+.experience-content h2 {
+  color: var(--color-text-light);
+  margin-bottom: var(--space-4);
+}
+
+.experience-lead {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  color: rgba(255, 255, 255, 0.8);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-6);
+}
+
+/* ── 3-Point Visual Timeline ── */
+.experience-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-bottom: var(--space-8);
+  position: relative;
+  padding-left: var(--space-4);
+  border-left: 2px dashed rgba(200, 150, 90, 0.3);
+}
+
+.timeline-item {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: var(--space-6);
+}
+
+.timeline-marker {
+  position: absolute;
+  left: calc(-1 * var(--space-4) - 6px);
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(200, 150, 90, 0.2);
+}
+
+.timeline-dot.active {
+  background: #25D366;
+  box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.25);
+}
+
+.timeline-year {
+  display: none;
+}
+
+.timeline-body strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: var(--weight-bold);
+  color: #FFFFFF;
+  margin-bottom: 2px;
+}
+
+.timeline-body p {
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  color: rgba(255, 255, 255, 0.65);
+  line-height: var(--leading-normal);
+  margin: 0;
+}
+
+.experience-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-6);
+  background: rgba(200, 150, 90, 0.15);
+  border: 1px solid rgba(200, 150, 90, 0.3);
+  border-radius: var(--radius-full);
+}
+
+.experience-badge-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent);
+  border-radius: var(--radius-full);
+  color: white;
+}
+
+.experience-badge-text {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  color: var(--color-accent);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .experience-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--space-8);
+  }
+  .experience-year {
+    font-size: clamp(5rem, 15vw, 7rem);
+  }
+  .experience-timeline {
+    text-align: left;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+  .experience-content {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .experience-year {
+    font-size: clamp(3.5rem, 14vw, 5rem);
+  }
+  .experience-timeline {
+    padding-left: var(--space-3);
+  }
+  .timeline-item {
+    padding-left: var(--space-4);
+  }
+  .experience-badge {
+    padding: var(--space-2) var(--space-4);
+    font-size: 0.8rem;
+  }
+}
