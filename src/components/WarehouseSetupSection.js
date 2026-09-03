@@ -48,35 +48,35 @@ export function renderWarehouseSetupSection(container) {
             <form id="setup-form" novalidate>
               <div class="form-group">
                 <label class="form-label" for="setup-name">Full Name</label>
-                <input type="text" class="form-input" id="setup-name" placeholder="e.g. Vikramaditya Singh" />
+                <input type="text" class="form-input" id="setup-name" placeholder="Rahul Sharma" />
               </div>
               <div class="form-group">
-                <label class="form-label" for="setup-company">Company</label>
-                <input type="text" class="form-input" id="setup-company" placeholder="e.g. Verma Supply Chain Solutions" />
+                <label class="form-label" for="setup-company">Business / Company Name</label>
+                <input type="text" class="form-input" id="setup-company" placeholder="Sharma Logistics Pvt. Ltd." />
               </div>
               <div class="form-group">
                 <label class="form-label" for="setup-location">Location</label>
-                <input type="text" class="form-input" id="setup-location" placeholder="e.g. Gorakhpur, Uttar Pradesh" />
+                <input type="text" class="form-input" id="setup-location" placeholder="Gorakhpur, Uttar Pradesh" />
               </div>
               <div class="form-group">
-                <label class="form-label" for="setup-requirement">Requirement</label>
-                <textarea class="form-input" id="setup-requirement" rows="3" placeholder="e.g. Need a 15,000 sq. ft. multi-bay warehouse with office setup and 24x7 transport connectivity..."></textarea>
+                <label class="form-label" for="setup-requirement">Storage Requirement</label>
+                <textarea class="form-input" id="setup-requirement" rows="3" placeholder="e.g. I need space for storing FMCG products and palletized inventory."></textarea>
               </div>
               <div class="form-group">
-                <label class="form-label" for="setup-space">Approximate Space</label>
-                <input type="text" class="form-input" id="setup-space" placeholder="e.g. 15,000 sq. ft." />
+                <label class="form-label" for="setup-space">Required Warehouse Space</label>
+                <input type="text" class="form-input" id="setup-space" placeholder="e.g. 10,000 sq. ft." />
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
                 <div class="form-group">
-                  <label class="form-label" for="setup-phone">Mobile (10 Digits)</label>
-                  <input type="tel" class="form-input" id="setup-phone" placeholder="e.g. 9876543210" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" />
+                  <label class="form-label" for="setup-phone">Phone Number</label>
+                  <input type="tel" class="form-input" id="setup-phone" placeholder="9876543210" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" />
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="setup-email">Email Address</label>
-                  <input type="email" class="form-input" id="setup-email" placeholder="e.g. vikram.singh@example.com" />
+                  <input type="email" class="form-input" id="setup-email" placeholder="rahul.sharma@example.com" />
                 </div>
               </div>
-              <button type="submit" class="btn btn-primary btn-full">Submit Requirement</button>
+              <button type="submit" class="btn btn-primary btn-full" id="setup-submit-btn">Submit Requirement</button>
             </form>
           </div>
         </div>
@@ -117,13 +117,24 @@ export function renderWarehouseSetupSection(container) {
       return;
     }
 
-    const container = document.getElementById('setup-form-container');
-    container.innerHTML = `
-      <div class="setup-form-success">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-        <h3>Requirement Submitted</h3>
-        <p style="color: var(--color-text-muted);">Thank you, ${data.name}! Our team will review your warehouse setup requirement and contact you shortly.</p>
-      </div>
-    `;
+    const submitBtn = document.getElementById('setup-submit-btn');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        Submitting your request...
+      `;
+    }
+
+    setTimeout(() => {
+      const container = document.getElementById('setup-form-container');
+      container.innerHTML = `
+        <div class="setup-form-success">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+          <h3>Thank you! Your warehouse requirement has been submitted successfully.</h3>
+          <p style="color: var(--color-text-muted);">Our team will review your requirement and contact you shortly.</p>
+        </div>
+      `;
+    }, 600);
   });
 }

@@ -1,19 +1,20 @@
 /* ============================================
    FORM VALIDATION & INPUT HELPERS
+   Clean, human-readable, non-technical validation
    ============================================ */
 
 /**
- * Validate a required field with friendly Indian contextual message.
+ * Validate a required field with friendly, non-technical message.
  */
 export function validateRequired(value, fieldName) {
   if (!value || value.toString().trim() === '') {
-    return `Please enter your ${fieldName}.`;
+    return `Please enter your ${fieldName.toLowerCase()}.`;
   }
   return '';
 }
 
 /**
- * Validate email with strict format checking.
+ * Validate email address with clean user-friendly message.
  */
 export function validateEmail(email) {
   if (!email || email.trim() === '') {
@@ -22,62 +23,63 @@ export function validateEmail(email) {
   const trimmed = email.trim();
   const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!pattern.test(trimmed)) {
-    return 'Please enter a valid email address (e.g. rahul.sharma@example.com).';
+    return 'Please enter a valid email address.';
   }
   return '';
 }
 
 /**
- * Validate Indian 10-digit phone number.
+ * Validate Indian 10-digit phone number strictly without technical jargon.
  */
 export function validatePhone(phone) {
   if (!phone || phone.trim() === '') {
-    return 'Please enter your 10-digit mobile number.';
+    return 'Please enter a valid 10-digit mobile number.';
   }
   const digitsOnly = phone.replace(/\D/g, '');
   if (digitsOnly.length !== 10) {
-    return 'Please enter a complete 10-digit mobile number.';
+    return 'Please enter a valid 10-digit mobile number.';
   }
   if (!/^[6-9]\d{9}$/.test(digitsOnly)) {
-    return 'Please enter a valid Indian mobile number starting with 6, 7, 8, or 9.';
+    return 'Please enter a valid 10-digit mobile number.';
   }
   return '';
 }
 
 /**
- * Validate area input with friendly message.
+ * Validate warehouse area input.
  */
 export function validateArea(area) {
   if (!area || area.toString().trim() === '') {
-    return 'Please enter your required warehouse area.';
+    return 'Please enter the required warehouse space.';
   }
   const num = parseFloat(area);
   if (isNaN(num) || num <= 0) {
-    return 'Please enter a valid area in square feet.';
+    return 'Please enter a valid warehouse area in square feet.';
   }
   return '';
 }
 
 /**
- * Validate a form step — returns object with isValid and errors.
+ * Validate a form step with friendly, human-readable error messages.
  */
 export function validateStep(step, data) {
   const errors = {};
 
   switch (step) {
     case 'business': {
-      const nameErr = validateRequired(data.businessName, 'business name');
-      if (nameErr) errors.businessName = nameErr;
-
-      const typeErr = validateRequired(data.businessType, 'business type');
-      if (typeErr) errors.businessType = typeErr;
+      if (!data.businessName || data.businessName.trim() === '') {
+        errors.businessName = 'Please enter your business or company name.';
+      }
+      if (!data.businessType || data.businessType.trim() === '') {
+        errors.businessType = 'Please select your business type.';
+      }
       break;
     }
 
     case 'contact': {
-      const fullNameErr = validateRequired(data.fullName, 'full name');
-      if (fullNameErr) errors.fullName = fullNameErr;
-
+      if (!data.fullName || data.fullName.trim() === '') {
+        errors.fullName = 'Please enter your full name.';
+      }
       const phoneErr = validatePhone(data.phone);
       if (phoneErr) errors.phone = phoneErr;
 
@@ -87,24 +89,25 @@ export function validateStep(step, data) {
     }
 
     case 'setup': {
-      const nameErr = validateRequired(data.name, 'full name');
-      if (nameErr) errors.name = nameErr;
-
+      if (!data.name || data.name.trim() === '') {
+        errors.name = 'Please enter your full name.';
+      }
       const phoneErr = validatePhone(data.phone);
       if (phoneErr) errors.phone = phoneErr;
 
       const emailErr = validateEmail(data.email);
       if (emailErr) errors.email = emailErr;
 
-      const reqErr = validateRequired(data.requirement, 'requirement');
-      if (reqErr) errors.requirement = reqErr;
+      if (!data.requirement || data.requirement.trim() === '') {
+        errors.requirement = 'Please describe your warehouse requirement.';
+      }
       break;
     }
 
     case 'inquiry': {
-      const nameErr = validateRequired(data.name, 'full name');
-      if (nameErr) errors.name = nameErr;
-
+      if (!data.name || data.name.trim() === '') {
+        errors.name = 'Please enter your full name.';
+      }
       const phoneErr = validatePhone(data.phone);
       if (phoneErr) errors.phone = phoneErr;
 
@@ -121,7 +124,7 @@ export function validateStep(step, data) {
 }
 
 /**
- * Enforce only digits and max 10 characters on any phone input element.
+ * Enforce only digits and max 10 characters on phone inputs.
  */
 export function attachPhoneMask(input) {
   if (!input) return;
@@ -129,7 +132,6 @@ export function attachPhoneMask(input) {
   input.setAttribute('maxlength', '10');
   input.setAttribute('pattern', '[0-9]{10}');
 
-  // Filter out any non-digits in real-time
   const handleInput = (e) => {
     const clean = e.target.value.replace(/\D/g, '').slice(0, 10);
     if (e.target.value !== clean) {
@@ -141,7 +143,7 @@ export function attachPhoneMask(input) {
   input.addEventListener('input', handleInput);
 
   input.addEventListener('keypress', (e) => {
-    if (!/[0-9]/.test(e.key) && e.key !== 'Enter' && e.key !== 'Backspace' && e.key !== 'Tab') {
+    if (!/[0-9]/.test(e.key) && e.key !== 'Enter') {
       e.preventDefault();
     }
   });

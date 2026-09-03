@@ -130,11 +130,11 @@ function getStepContent() {
         <div class="wizard-space-summary">
           <div class="wizard-space-grid">
             <div class="wizard-space-item">
-              <div class="wizard-space-label">Required Area</div>
+              <div class="wizard-space-label">Required Warehouse Space</div>
               <div class="wizard-space-value">${formatArea(formData.area)}</div>
             </div>
             <div class="wizard-space-item">
-              <div class="wizard-space-label">Preferred Height</div>
+              <div class="wizard-space-label">Preferred Warehouse Height</div>
               <div class="wizard-space-value">${formData.height ? (formData.height === 'Not Sure' ? 'Not Sure' : formData.height + ' ft') : 'Not selected'}</div>
             </div>
             <div class="wizard-space-item">
@@ -156,8 +156,8 @@ function getStepContent() {
     case 'business':
       return `
         <div class="form-group">
-          <label class="form-label" for="wiz-business-name">Business Name</label>
-          <input type="text" class="form-input" id="wiz-business-name" placeholder="e.g. Sharma Logistics & Retail Pvt. Ltd." value="${formData.businessName}" />
+          <label class="form-label" for="wiz-business-name">Business / Company Name</label>
+          <input type="text" class="form-input" id="wiz-business-name" placeholder="Sharma Logistics Pvt. Ltd." value="${formData.businessName}" />
         </div>
         <div class="form-group">
           <label class="form-label" for="wiz-business-type">Business Type</label>
@@ -167,9 +167,9 @@ function getStepContent() {
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label" for="wiz-storage">What would you like to store?</label>
-          <textarea class="form-input" id="wiz-storage" rows="3" placeholder="e.g. FMCG packaged food products, garments, consumer electronics...">${formData.storageDescription}</textarea>
-          <span class="form-helper">A brief description helps us understand your storage requirement better.</span>
+          <label class="form-label" for="wiz-storage">Storage Requirement</label>
+          <textarea class="form-input" id="wiz-storage" rows="3" placeholder="e.g. I need space for storing FMCG products and palletized inventory.">${formData.storageDescription}</textarea>
+          <span class="form-helper">Briefly describe what you need to store.</span>
         </div>
       `;
 
@@ -177,22 +177,22 @@ function getStepContent() {
       return `
         <div class="form-group">
           <label class="form-label" for="wiz-fullname">Full Name</label>
-          <input type="text" class="form-input" id="wiz-fullname" placeholder="e.g. Rajesh Sharma" value="${formData.fullName}" />
+          <input type="text" class="form-input" id="wiz-fullname" placeholder="Rahul Sharma" value="${formData.fullName}" />
         </div>
         <div class="form-group">
-          <label class="form-label" for="wiz-phone">Mobile Number (10 Digits)</label>
-          <input type="tel" class="form-input" id="wiz-phone" placeholder="e.g. 9876543210" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" value="${formData.phone}" />
-          <span class="form-helper">Enter 10-digit Indian mobile number without +91 or 0.</span>
+          <label class="form-label" for="wiz-phone">Phone Number</label>
+          <input type="tel" class="form-input" id="wiz-phone" placeholder="9876543210" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" value="${formData.phone}" />
+          <span class="form-helper">Enter 10-digit mobile number.</span>
         </div>
         <div class="form-group">
           <label class="form-label" for="wiz-email">Email Address</label>
-          <input type="email" class="form-input" id="wiz-email" placeholder="e.g. rajesh.sharma@example.com" value="${formData.email}" />
+          <input type="email" class="form-input" id="wiz-email" placeholder="rahul.sharma@example.com" value="${formData.email}" />
         </div>
         <div class="form-group">
           <label class="form-label">Preferred Contact Method</label>
           <div class="calc-height-options" style="margin-top: var(--space-2);">
             ${CONFIG.contactMethods.map(m => `
-              <button class="calc-height-option ${formData.contactMethod === m.value ? 'active' : ''}" data-method="${m.value}" style="min-width: 80px;">${m.label}</button>
+              <button class="calc-height-option ${formData.contactMethod === m.value ? 'active' : ''}" data-method="${m.value}" style="min-width: 90px;">${m.label}</button>
             `).join('')}
           </div>
         </div>
@@ -204,11 +204,11 @@ function getStepContent() {
           <h4>Your Warehouse Requirement</h4>
           <div class="wizard-review-card">
             <div class="wizard-review-row">
-              <span class="wizard-review-label">Required Area</span>
+              <span class="wizard-review-label">Required Warehouse Space</span>
               <span class="wizard-review-value">${formatArea(formData.area)}</span>
             </div>
             <div class="wizard-review-row">
-              <span class="wizard-review-label">Preferred Height</span>
+              <span class="wizard-review-label">Preferred Warehouse Height</span>
               <span class="wizard-review-value">${formData.height ? (formData.height === 'Not Sure' ? 'Not Sure' : formData.height + ' ft') : 'Not selected'}</span>
             </div>
             <div class="wizard-review-row">
@@ -225,7 +225,7 @@ function getStepContent() {
           <h4>Business Details</h4>
           <div class="wizard-review-card">
             <div class="wizard-review-row">
-              <span class="wizard-review-label">Business Name</span>
+              <span class="wizard-review-label">Business / Company Name</span>
               <span class="wizard-review-value">${formData.businessName || '—'}</span>
             </div>
             <div class="wizard-review-row">
@@ -242,20 +242,20 @@ function getStepContent() {
           <h4>Contact Details</h4>
           <div class="wizard-review-card">
             <div class="wizard-review-row">
-              <span class="wizard-review-label">Name</span>
+              <span class="wizard-review-label">Full Name</span>
               <span class="wizard-review-value">${formData.fullName}</span>
             </div>
             <div class="wizard-review-row">
-              <span class="wizard-review-label">Mobile Number</span>
+              <span class="wizard-review-label">Phone Number</span>
               <span class="wizard-review-value">${formData.phone}</span>
             </div>
             <div class="wizard-review-row">
-              <span class="wizard-review-label">Email</span>
+              <span class="wizard-review-label">Email Address</span>
               <span class="wizard-review-value">${formData.email}</span>
             </div>
             <div class="wizard-review-row">
-              <span class="wizard-review-label">Preferred Contact</span>
-              <span class="wizard-review-value" style="text-transform: capitalize;">${formData.contactMethod}</span>
+              <span class="wizard-review-label">Preferred Contact Method</span>
+              <span class="wizard-review-value">${getContactMethodLabel(formData.contactMethod)}</span>
             </div>
           </div>
         </div>
@@ -266,6 +266,11 @@ function getStepContent() {
         </div>
       `;
   }
+}
+
+function getContactMethodLabel(method) {
+  const found = CONFIG.contactMethods.find(m => m.value === method);
+  return found ? found.label : method;
 }
 
 function saveStepData() {
@@ -332,14 +337,25 @@ function showErrors(errors) {
 }
 
 function submitInquiry(container) {
-  const referenceNumber = generateReferenceNumber();
-  formData.referenceNumber = referenceNumber;
+  const submitBtn = document.getElementById('wizard-submit');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="animate-spin" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+      Submitting your request...
+    `;
+  }
 
-  // Close wizard
-  closeWizard(container);
+  setTimeout(() => {
+    const referenceNumber = generateReferenceNumber();
+    formData.referenceNumber = referenceNumber;
 
-  // Open success screen
-  window.dispatchEvent(new CustomEvent('show-success', { detail: formData }));
+    // Close wizard
+    closeWizard(container);
+
+    // Open success screen
+    window.dispatchEvent(new CustomEvent('show-success', { detail: formData }));
+  }, 600);
 }
 
 // Initialize contact method buttons after render

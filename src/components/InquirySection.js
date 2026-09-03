@@ -20,32 +20,32 @@ export function renderInquirySection(container) {
             <form id="inquiry-form" novalidate>
               <div class="form-group">
                 <label class="form-label" for="inq-name">Full Name</label>
-                <input type="text" class="form-input" id="inq-name" placeholder="e.g. Amit Patel" />
+                <input type="text" class="form-input" id="inq-name" placeholder="Rahul Sharma" />
               </div>
               <div class="form-group">
-                <label class="form-label" for="inq-company">Company Name</label>
-                <input type="text" class="form-input" id="inq-company" placeholder="e.g. Patel Trading & Logistics (optional)" />
+                <label class="form-label" for="inq-company">Business / Company Name</label>
+                <input type="text" class="form-input" id="inq-company" placeholder="Sharma Logistics Pvt. Ltd." />
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
                 <div class="form-group">
-                  <label class="form-label" for="inq-phone">Mobile (10 Digits)</label>
-                  <input type="tel" class="form-input" id="inq-phone" placeholder="e.g. 9876543210" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" />
+                  <label class="form-label" for="inq-phone">Phone Number</label>
+                  <input type="tel" class="form-input" id="inq-phone" placeholder="9876543210" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" />
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="inq-email">Email Address</label>
-                  <input type="email" class="form-input" id="inq-email" placeholder="e.g. amit.patel@example.com" />
+                  <input type="email" class="form-input" id="inq-email" placeholder="rahul.sharma@example.com" />
                 </div>
               </div>
               <div class="form-group">
-                <label class="form-label" for="inq-space">Required Space</label>
-                <input type="text" class="form-input" id="inq-space" placeholder="e.g. 5,000 sq. ft." />
+                <label class="form-label" for="inq-space">Required Warehouse Space</label>
+                <input type="text" class="form-input" id="inq-space" placeholder="e.g. 2,000 sq. ft." />
               </div>
               <div class="form-group">
-                <label class="form-label" for="inq-message">Message</label>
-                <textarea class="form-input" id="inq-message" rows="3" placeholder="e.g. Looking for ready-to-move storage space for FMCG distribution near Gorakhnath Road."></textarea>
+                <label class="form-label" for="inq-message">Storage Requirement</label>
+                <textarea class="form-input" id="inq-message" rows="3" placeholder="e.g. I need space for storing FMCG products and palletized inventory."></textarea>
               </div>
               <div class="inquiry-form-actions">
-                <button type="submit" class="btn btn-primary btn-lg">
+                <button type="submit" class="btn btn-primary btn-lg" id="inq-submit-btn">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="m22 2-11 11"/></svg>
                   Send Inquiry
                 </button>
@@ -92,14 +92,25 @@ export function renderInquirySection(container) {
       return;
     }
 
-    const container = document.getElementById('inquiry-form-container');
-    container.innerHTML = `
-      <div class="inquiry-form-success">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-        <h3>Inquiry Sent Successfully</h3>
-        <p style="color: rgba(255,255,255,0.7);">Thank you, ${data.name}! Our team will review your inquiry and get in touch with you shortly.</p>
-      </div>
-    `;
+    const submitBtn = document.getElementById('inq-submit-btn');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        Submitting your request...
+      `;
+    }
+
+    setTimeout(() => {
+      const container = document.getElementById('inquiry-form-container');
+      container.innerHTML = `
+        <div class="inquiry-form-success">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+          <h3>Thank you! Your warehouse requirement has been submitted successfully.</h3>
+          <p style="color: rgba(255,255,255,0.7);">Our team will review your inquiry and get in touch with you shortly.</p>
+        </div>
+      `;
+    }, 600);
   });
 
   document.getElementById('inq-whatsapp')?.addEventListener('click', () => {

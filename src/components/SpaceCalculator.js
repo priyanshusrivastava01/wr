@@ -22,9 +22,9 @@ export function renderSpaceCalculator(container) {
     <div class="calculator-section section" id="calculator-section">
       <div class="container">
         <div class="section-header reveal">
-          <span class="section-label">Space & Pricing</span>
-          <h2>Find the Space You Need</h2>
-          <p class="section-subtitle centered">Tell us how much space you require and instantly see an estimated price.</p>
+          <span class="section-label">Flexible Space & Estimated Pricing</span>
+          <h2>Choose the Space That Fits Your Business</h2>
+          <p class="section-subtitle centered">Select your required commercial warehouse space between 1,000 sq. ft. and 42,000 sq. ft. and instantly view your estimated pricing.</p>
         </div>
 
         <div class="calc-container reveal">
@@ -41,11 +41,11 @@ export function renderSpaceCalculator(container) {
                 How much warehouse space do you need?
               </label>
               <p class="form-helper" style="margin-bottom: var(--space-4);">
-                Enter the total area you need in square feet, or pick a common size below.
+                Enter the total area you need (1,000 to 42,000 sq. ft.), or choose a common size below.
               </p>
               <div class="calc-area-input-group">
                 <input type="number" class="calc-area-input" id="calc-area-direct" 
-                  placeholder="e.g. 2,000" min="0" step="100" aria-label="Required area in square feet" />
+                  placeholder="e.g. 2,000" min="1000" max="42000" step="100" aria-label="Required area in square feet" />
                 <span class="calc-area-unit">sq. ft.</span>
               </div>
               <div class="calc-presets" id="calc-presets">
@@ -103,7 +103,7 @@ export function renderSpaceCalculator(container) {
             <div class="calc-summary empty" id="calc-summary">
               <div class="calc-summary-grid">
                 <div class="calc-summary-item">
-                  <div class="calc-summary-label">Required Area</div>
+                  <div class="calc-summary-label">Required Warehouse Space</div>
                   <div class="calc-summary-value" id="summary-area">— sq. ft.</div>
                 </div>
                 <div class="calc-summary-item">

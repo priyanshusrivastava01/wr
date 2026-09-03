@@ -22,8 +22,8 @@ function showSuccess(container, data) {
             <path class="success-checkmark" d="M20 6 9 17l-5-5"/>
           </svg>
         </div>
-        <h2>Your Warehouse Request Has Been Received</h2>
-        <p>Thank you for sharing your requirement. Our team will review your request and contact you.</p>
+        <h2>Thank you! Your warehouse requirement has been submitted successfully.</h2>
+        <p>Our team will review your request and contact you shortly.</p>
         
         <div class="success-summary">
           <div class="success-summary-row">
@@ -31,7 +31,7 @@ function showSuccess(container, data) {
             <span class="success-summary-value">${data.referenceNumber}</span>
           </div>
           <div class="success-summary-row">
-            <span class="success-summary-label">Required Space</span>
+            <span class="success-summary-label">Required Warehouse Space</span>
             <span class="success-summary-value">${formatArea(data.area)}</span>
           </div>
           <div class="success-summary-row">
