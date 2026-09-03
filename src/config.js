@@ -157,9 +157,30 @@ export const CONFIG = {
 
   // ── Real Clientele ──
   clients: [
-    { name: 'DPS / Delhi Public School', logo: null },
-    { name: 'FCI Fertilizer, Gorakhpur', logo: null },
-    { name: 'Lord of the Drinks', logo: null },
+    {
+      name: 'Delhi Public School (DPS)',
+      tag: 'Education Sector',
+      subtitle: 'Gorakhpur Campus',
+      description: 'Institutional goods, equipment & material warehousing partner.',
+      logo: '/images/comp/dps-logo.webp',
+      alt: 'Delhi Public School Gorakhpur',
+    },
+    {
+      name: 'FCI Fertilizer (FCIL)',
+      tag: 'Agriculture & Fertilizer',
+      subtitle: 'Gorakhpur Unit',
+      description: 'Reliable high-capacity commercial storage and distribution partner.',
+      logo: '/images/comp/fcil-logo.webp',
+      alt: 'FCI Fertilizer Gorakhpur',
+    },
+    {
+      name: 'Lord of the Drinks',
+      tag: 'Hospitality & F&B',
+      subtitle: 'Gorakhpur',
+      description: 'Commercial supply chain and dedicated storage infrastructure.',
+      logo: '/images/comp/lord-of-the-drinks-logo.webp',
+      alt: 'Lord of the Drinks Gorakhpur',
+    },
   ],
 
   // ── Business Types (Dropdown) ──
