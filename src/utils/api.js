@@ -6,24 +6,28 @@
    - Form 2 (Warehouse Build / Custom Planning)     -> /api/warehouse-build-requests -> warehousebuildrequests
    ============================================ */
 
-const API_BASE = '/api';
-const DIRECT_BACKEND_URL = 'http://127.0.0.1:5000/api';
+// Dynamically resolve backend endpoint for production (ware.vardha.live) or local development
+const customBackendUrl = (typeof import.meta !== 'undefined' && import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL)) || '';
+const cleanCustomUrl = customBackendUrl.replace(/\/+$/, '');
+const API_BASE = cleanCustomUrl ? (cleanCustomUrl.endsWith('/api') ? cleanCustomUrl : `${cleanCustomUrl}/api`) : '/api';
+const DIRECT_BACKEND_URL = cleanCustomUrl ? API_BASE : 'http://127.0.0.1:5000/api';
 
 /**
  * Generic Fetch Wrapper with proper error parsing and direct fallback
  */
 async function apiRequest(endpoint, payload) {
   let response = null;
+  const targetPath = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
 
-  // 1. Try relative URL via Vite proxy (/api/...)
+  // 1. Try primary configured API endpoint (/api/... or https://your-backend.onrender.com/api/...)
   try {
-    response = await fetch(`${API_BASE}${endpoint}`, {
+    response = await fetch(`${API_BASE}${targetPath}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
   } catch (err) {
-    // Proxy threw network exception, fallback below
+    // Primary request threw network exception, fallback below
   }
 
   // 2. Fallback to direct backend URL if proxy failed or returned bad gateway
@@ -121,7 +125,8 @@ export function warmupBackendReadiness() {
   hasWarmedUp = true;
 
   const ping = () => {
-    fetch('/health', { method: 'GET', cache: 'no-store' }).catch(() => {
+    const healthUrl = cleanCustomUrl ? `${cleanCustomUrl}/health` : '/health';
+    fetch(healthUrl, { method: 'GET', cache: 'no-store' }).catch(() => {
       // Fallback silently if proxy or network is pending
       fetch('http://127.0.0.1:5000/health', { method: 'GET', cache: 'no-store' }).catch(() => {});
     });
