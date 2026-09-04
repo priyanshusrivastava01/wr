@@ -1,0 +1,65 @@
+name: Render Backend Keep-Alive Ping
+
+# ==============================================================================
+# Scheduled Keep-Alive Workflow for Render Web Service (Free Tier)
+# ==============================================================================
+# Purpose:
+#   Sends a lightweight HTTP GET request to the deployed backend's /health endpoint
+#   every 10 minutes to prevent Render Free tier services from spinning down due to
+#   inactivity (which causes 50+ second cold-start delays for real users).
+#
+# Configuration:
+#   Set the repository secret or variable:
+#     - Secret / Variable Name: RENDER_BACKEND_URL
+#     - Example Value: https://vardha-warehousing-api.onrender.com
+#
+# Safety:
+#   - Pings ONLY the lightweight /health endpoint (Zero database read/write)
+#   - Does not submit any form data or create MongoDB records
+#   - Uses safe timeouts and does not leak secrets in logs
+# ==============================================================================
+
+on:
+  schedule:
+    # Runs every 10 minutes (cron format: minute hour day month day-of-week)
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+    # Allows manual trigger from GitHub Actions web interface for testing
+
+jobs:
+  keep-alive:
+    name: Ping /health Endpoint
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Perform Health Ping
+        env:
+          RENDER_URL: ${{ secrets.RENDER_BACKEND_URL || vars.RENDER_BACKEND_URL }}
+        run: |
+          if [ -z "$RENDER_URL" ]; then
+            echo "⚠️ [CONFIG WARNING] RENDER_BACKEND_URL is not set in GitHub Secrets or Variables."
+            echo "   Please navigate to: Repository -> Settings -> Secrets and variables -> Actions"
+            echo "   Add a secret or variable named 'RENDER_BACKEND_URL' with your Render backend URL."
+            echo "   Example: https://your-app-name.onrender.com"
+            exit 0
+          fi
+
+          # Strip any trailing slashes from the configured URL
+          BASE_URL="${RENDER_URL%/}"
+          TARGET_URL="${BASE_URL}/health"
+
+          echo "🚀 Sending lightweight keep-alive ping to: ${TARGET_URL}"
+
+          # Send HTTP GET with max 15s timeout
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 --connect-timeout 10 "$TARGET_URL" || echo "ERR")
+
+          echo "📊 HTTP Status Code: ${HTTP_STATUS}"
+
+          if [ "$HTTP_STATUS" = "200" ]; then
+            echo "✅ Render backend is active and responding with HTTP 200 OK."
+          elif [ "$HTTP_STATUS" = "502" ] || [ "$HTTP_STATUS" = "503" ] || [ "$HTTP_STATUS" = "504" ]; then
+            echo "⏳ Service returned HTTP ${HTTP_STATUS}. Backend may be warming up from cold start."
+          else
+            echo "ℹ️ Ping finished with response code: ${HTTP_STATUS}"
+          fi

@@ -19,6 +19,7 @@ import { renderBuildWarehousePage } from './pages/BuildWarehousePage.js';
 
 // Router & Utilities
 import { initRouter } from './utils/router.js';
+import { warmupBackendReadiness } from './utils/api.js';
 
 /**
  * Initialize the application and mount router.
@@ -76,6 +77,9 @@ function init() {
       }
     }
   });
+
+  // 5. Non-blocking backend readiness warmup (for seamless instant form submissions)
+  warmupBackendReadiness();
 
   console.log('%c✓ Vardha Warehousing — 3-Level Architecture Ready', 'color: #C8965A; font-weight: bold; font-size: 14px;');
 }

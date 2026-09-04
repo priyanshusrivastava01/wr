@@ -1,5 +1,9 @@
 /* ============================================
    CENTRALIZED FRONTEND API CLIENT
+   ============================================
+   Dedicated 1-Form to 1-Collection API mapping:
+   - Form 1 (Warehouse Renting / Calculator Booking) -> /api/calculator-bookings -> calculatorbookings
+   - Form 2 (Warehouse Build / Custom Planning)     -> /api/warehouse-build-requests -> warehousebuildrequests
    ============================================ */
 
 const API_BASE = '/api';
@@ -35,7 +39,7 @@ async function apiRequest(endpoint, payload) {
       return {
         success: false,
         status: 0,
-        message: 'Unable to reach backend server. Please check if backend is running on port 5000.',
+        message: 'Unable to reach backend server. Please ensure backend is running on port 5000.',
       };
     }
   }
@@ -82,34 +86,52 @@ async function apiRequest(endpoint, payload) {
 }
 
 /**
- * FORM 1: Space Inquiry Submission
- * Endpoint: POST /api/space-inquiries
- * Collection: spaceinquiries
- */
-export async function submitSpaceInquiryApi(payload) {
-  return apiRequest('/space-inquiries', payload);
-}
-
-/**
- * FORM 2: Warehouse Build Request Submission
- * Endpoint: POST /api/warehouse-build-requests
- * Collection: warehousebuildrequests
- */
-export async function submitWarehouseBuildApi(payload) {
-  return apiRequest('/warehouse-build-requests', payload);
-}
-
-/**
- * FORM 3: Calculator Booking Submission
+ * FORM 1: Warehouse Rental Calculator Booking Submission
  * Endpoint: POST /api/calculator-bookings
- * Collection: calculatorbookings
+ * Target Collection: calculatorbookings
  */
 export async function submitCalculatorBookingApi(payload) {
   return apiRequest('/calculator-bookings', payload);
 }
 
+/**
+ * FORM 2: Warehouse Custom Build Request Submission
+ * Endpoint: POST /api/warehouse-build-requests
+ * Target Collection: warehousebuildrequests
+ */
+export async function submitWarehouseBuildApi(payload) {
+  return apiRequest('/warehouse-build-requests', payload);
+}
+
 // Aliases for compatibility
-export const submitInquiryApi = submitSpaceInquiryApi;
 export const submitBuildWarehouseApi = submitWarehouseBuildApi;
-export const submitEnquiryApi = submitSpaceInquiryApi;
-export const submitContactApi = submitSpaceInquiryApi;
+export const submitSpaceInquiryApi = submitCalculatorBookingApi;
+export const submitInquiryApi = submitCalculatorBookingApi;
+export const submitEnquiryApi = submitCalculatorBookingApi;
+export const submitContactApi = submitCalculatorBookingApi;
+
+/**
+ * Non-blocking fire-and-forget backend warmup.
+ * Sends a silent GET /health ping on page initialization to ensure 
+ * the backend connection is warm without affecting UI or blocking render.
+ */
+let hasWarmedUp = false;
+export function warmupBackendReadiness() {
+  if (hasWarmedUp || typeof window === 'undefined' || !window.fetch) return;
+  hasWarmedUp = true;
+
+  const ping = () => {
+    fetch('/health', { method: 'GET', cache: 'no-store' }).catch(() => {
+      // Fallback silently if proxy or network is pending
+      fetch('http://127.0.0.1:5000/health', { method: 'GET', cache: 'no-store' }).catch(() => {});
+    });
+  };
+
+  // Schedule during browser idle time or after initial render
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(ping, { timeout: 3000 });
+  } else {
+    setTimeout(ping, 1000);
+  }
+}
+
