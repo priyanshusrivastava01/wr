@@ -5,7 +5,7 @@
 import { CONFIG } from '../config.js';
 
 export function renderFooter(container) {
-  const { brand, navigation, contact } = CONFIG;
+  const { brand, contact } = CONFIG;
   const year = new Date().getFullYear();
 
   container.innerHTML = `
@@ -18,13 +18,19 @@ export function renderFooter(container) {
           </div>
 
           <div class="footer-col">
-            <h4>Navigate</h4>
-            ${navigation.slice(0, 4).map(n => `<a href="${n.href}">${n.label}</a>`).join('')}
+            <h4>Warehouse Services</h4>
+            <a href="/warehouse-renting">Rent Warehouse Space</a>
+            <a href="/build-a-warehouse">Build a Custom Warehouse</a>
+            <a href="/warehouse-renting#facilities">24×7 Operations & Facilities</a>
+            <a href="/warehouse-renting#connectivity">Location & Connectivity</a>
           </div>
 
           <div class="footer-col">
-            <h4>Explore</h4>
-            ${navigation.slice(4).map(n => `<a href="${n.href}">${n.label}</a>`).join('')}
+            <h4>Quick Links</h4>
+            <a href="/">Home</a>
+            <a href="/warehouse-renting#renting-inquiry">Space Inquiry Form</a>
+            <a href="/build-a-warehouse#build-inquiry">Project Discussion Form</a>
+            <a href="/warehouse-renting#video-tour">Warehouse Video Tour</a>
           </div>
 
           <div class="footer-col">

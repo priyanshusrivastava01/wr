@@ -7,6 +7,7 @@ import { calculatorState } from './SpaceCalculator.js';
 import { formatINR, formatArea, formatRate, generateReferenceNumber } from '../utils/formatting.js';
 import { validateStep, attachPhoneMask } from '../utils/validation.js';
 import { scrollToSection } from '../utils/scroll.js';
+import { submitCalculatorBookingApi } from '../utils/api.js';
 
 let currentStep = 0;
 const steps = ['space', 'business', 'contact', 'review'];
@@ -336,7 +337,7 @@ function showErrors(errors) {
   });
 }
 
-function submitInquiry(container) {
+async function submitInquiry(container) {
   const submitBtn = document.getElementById('wizard-submit');
   if (submitBtn) {
     submitBtn.disabled = true;
@@ -346,8 +347,25 @@ function submitInquiry(container) {
     `;
   }
 
-  setTimeout(() => {
-    const referenceNumber = generateReferenceNumber();
+  const cleanPhone = (formData.phone || '').replace(/\D/g, '').slice(0, 10);
+  const referenceNumber = generateReferenceNumber();
+  const payload = {
+    fullName: formData.fullName || 'Customer',
+    phone: cleanPhone,
+    email: formData.email || '',
+    companyName: formData.businessName || '',
+    areaSqFt: Number(formData.area) || 0,
+    ceilingHeightFt: Number(formData.height) || 0,
+    businessType: formData.businessType || '',
+    storageDescription: formData.storageDescription || '',
+    preferredContactMethod: formData.contactMethod || 'phone',
+    estimatedMonthlyTotal: Number(formData.total) || 0,
+    referenceNumber: referenceNumber,
+  };
+
+  const response = await submitCalculatorBookingApi(payload);
+
+  if (response.success) {
     formData.referenceNumber = referenceNumber;
 
     // Close wizard
@@ -355,7 +373,13 @@ function submitInquiry(container) {
 
     // Open success screen
     window.dispatchEvent(new CustomEvent('show-success', { detail: formData }));
-  }, 600);
+  } else {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `Submit Booking Request`;
+    }
+    alert(response.message || 'Unable to submit enquiry. Please try again.');
+  }
 }
 
 // Initialize contact method buttons after render

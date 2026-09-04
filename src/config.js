@@ -240,13 +240,10 @@ export const CONFIG = {
 
   // ── Navigation ──
   navigation: [
-    { label: 'Home', href: '#home' },
-    { label: 'Warehouse', href: '#warehouse' },
-    { label: '24×7 Operations', href: '#facilities' },
-    { label: 'Connectivity', href: '#connectivity' },
-    { label: 'Space & Pricing', href: '#calculator' },
-    { label: 'Build a Warehouse', href: '#warehouse-setup' },
-    { label: 'Clients', href: '#clients' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Home', href: '/' },
+    { label: 'Warehouse Space', href: '/warehouse-renting' },
+    { label: 'Build a Warehouse', href: '/build-a-warehouse' },
+    { label: 'Location & Connectivity', href: '/warehouse-renting#connectivity' },
+    { label: 'Contact', href: '/warehouse-renting#contact' },
   ],
 };

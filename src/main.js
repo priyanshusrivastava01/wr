@@ -1,73 +1,56 @@
 /* ============================================
-   VARDHA WAREHOUSING — MAIN APPLICATION
+   VARDHA WAREHOUSING — MAIN APPLICATION ENTRY
    ============================================
-   Orchestrates all components and initializes
-   the complete website experience.
+   Initializes router, global header, footer,
+   floating elements and multi-page routing.
    ============================================ */
 
 import './styles/index.css';
 
-// Components
+// Layout Components
 import { renderHeader } from './components/Header.js';
-import { renderHeroSection } from './components/HeroSection.js';
-import { renderQuickIntroduction } from './components/QuickIntroduction.js';
-import { renderPropertyInformation } from './components/PropertyInformation.js';
-import { renderVideoSection } from './components/VideoSection.js';
-import { renderWarehouseFacilities } from './components/WarehouseFacilities.js';
-import { renderWarehouseGallery } from './components/WarehouseGallery.js';
-import { renderSpaceCalculator } from './components/SpaceCalculator.js';
-import { renderHowItWorks } from './components/HowItWorks.js';
-import { renderInquiryWizard } from './components/InquiryWizard.js';
-import { renderSuccessScreen } from './components/SuccessScreen.js';
-import { renderDemoPayment } from './components/DemoPayment.js';
-import { renderIndustriesSection } from './components/IndustriesSection.js';
-import { renderExperienceSection } from './components/ExperienceSection.js';
-import { renderWarehouseSetupSection } from './components/WarehouseSetupSection.js';
-import { renderClienteleSection } from './components/ClienteleSection.js';
-import { renderInquirySection } from './components/InquirySection.js';
-import { renderWhatsAppButton } from './components/WhatsAppButton.js';
 import { renderFooter } from './components/Footer.js';
+import { renderWhatsAppButton } from './components/WhatsAppButton.js';
 
-// Utilities
-import { initScrollReveal, initActiveNav } from './utils/scroll.js';
+// Dedicated Page Renderers
+import { renderHomePage } from './pages/HomePage.js';
+import { renderWarehouseRentingPage } from './pages/WarehouseRentingPage.js';
+import { renderBuildWarehousePage } from './pages/BuildWarehousePage.js';
+
+// Router & Utilities
+import { initRouter } from './utils/router.js';
 
 /**
- * Initialize the entire application.
+ * Initialize the application and mount router.
  */
 function init() {
-  // ── Render all page components ──
-  renderHeader(document.getElementById('site-header'));
-  renderHeroSection(document.getElementById('home'));
-  renderQuickIntroduction(document.getElementById('introduction'));
-  renderPropertyInformation(document.getElementById('warehouse'));
-  renderVideoSection(document.getElementById('video-tour'));
-  renderWarehouseFacilities(document.getElementById('facilities'));
-  renderWarehouseGallery(document.getElementById('gallery'));
-  renderSpaceCalculator(document.getElementById('calculator'));
-  renderHowItWorks(document.getElementById('how-it-works'));
-  renderIndustriesSection(document.getElementById('industries'));
-  renderExperienceSection(document.getElementById('expertise'));
-  renderWarehouseSetupSection(document.getElementById('warehouse-setup'));
-  renderClienteleSection(document.getElementById('clients'));
-  renderInquirySection(document.getElementById('contact'));
-  renderFooter(document.getElementById('site-footer'));
+  const headerContainer = document.getElementById('site-header');
+  const footerContainer = document.getElementById('site-footer');
+  const whatsappContainer = document.getElementById('whatsapp-button');
+  const appRoot = document.getElementById('app-root');
 
-  // ── Floating elements ──
-  renderWhatsAppButton(document.getElementById('whatsapp-button'));
+  // 1. Render persistent layout elements
+  if (headerContainer) renderHeader(headerContainer);
+  if (footerContainer) renderFooter(footerContainer);
+  if (whatsappContainer) renderWhatsAppButton(whatsappContainer);
 
-  // ── Modal containers (event-driven) ──
-  renderInquiryWizard(document.getElementById('inquiry-wizard-modal'));
-  renderSuccessScreen(document.getElementById('success-screen-modal'));
-  renderDemoPayment(document.getElementById('demo-payment-modal'));
+  // 2. Define page routes
+  const routes = {
+    '/': (path) => {
+      if (appRoot) renderHomePage(appRoot);
+    },
+    '/warehouse-renting': (path) => {
+      if (appRoot) renderWarehouseRentingPage(appRoot);
+    },
+    '/build-a-warehouse': (path) => {
+      if (appRoot) renderBuildWarehousePage(appRoot);
+    },
+  };
 
-  // ── Initialize scroll animations ──
-  // Small delay to ensure DOM is fully painted
-  requestAnimationFrame(() => {
-    initScrollReveal();
-    initActiveNav();
-  });
+  // 3. Start client-side router
+  initRouter(routes);
 
-  // ── Global real-time input masks & error clearing ──
+  // 4. Global real-time input masks & error clearing
   document.addEventListener('input', (e) => {
     // Clear error styling on change
     if (e.target.classList.contains('error')) {
@@ -94,7 +77,7 @@ function init() {
     }
   });
 
-  console.log('%c✓ Vardha Warehousing loaded', 'color: #C8965A; font-weight: bold; font-size: 14px;');
+  console.log('%c✓ Vardha Warehousing — 3-Level Architecture Ready', 'color: #C8965A; font-weight: bold; font-size: 14px;');
 }
 
 // Boot

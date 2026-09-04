@@ -5,38 +5,41 @@
 import { CONFIG } from '../config.js';
 import { validateStep, attachPhoneMask } from '../utils/validation.js';
 import { scrollToSection } from '../utils/scroll.js';
+import { submitSpaceInquiryApi } from '../utils/api.js';
 
 export function renderInquirySection(container) {
+  const { contact } = CONFIG;
+
   container.innerHTML = `
-    <div class="inquiry-section section">
+    <div class="inquiry-section section" id="contact">
       <div class="container">
         <div class="inquiry-grid">
-          <!-- Left: Dual Option Selection & Clear Guidance -->
+          <!-- Left: Direct Contact Options -->
           <div class="inquiry-content reveal-left">
-            <span class="section-label" style="color: var(--color-accent);">Get in Touch</span>
-            <h2>Let's Discuss Your Warehouse Requirement</h2>
-            <p class="inquiry-lead">Tell us what you need and our local Gorakhpur team will guide you to the right space or setup solution.</p>
+            <span class="section-label" style="color: var(--color-accent);">GET IN TOUCH</span>
+            <h2 class="section-title">Ready to Store with Us? Let's Talk</h2>
+            <p class="section-subtitle">
+              Whether you need ready-to-move warehouse space or want to discuss a custom built warehouse project, our team in Gorakhpur is here to help.
+            </p>
 
-            <!-- Dual Option Selector Cards -->
+            <!-- Dual Option Selector -->
             <div class="inquiry-options-box">
               <div class="inquiry-option-card active">
-                <div class="option-card-header">
-                  <span class="option-pill">OPTION 1</span>
-                  <strong>I Need Warehouse Space</strong>
+                <div class="option-card-radio"></div>
+                <div class="option-card-info">
+                  <h4>Looking for Ready Warehouse Space</h4>
+                  <p>1,000 to 42,000 sq. ft. ready space with 24×7 operations and loading support.</p>
                 </div>
-                <p>Looking to store goods or run distribution from 1,000 to 42,000 sq. ft. Fill out the quick form on the right.</p>
               </div>
-
               <div class="inquiry-option-card clickable" id="inq-switch-project-btn">
-                <div class="option-card-header">
-                  <span class="option-pill alt">OPTION 2</span>
-                  <strong>I Want to Build a Warehouse</strong>
+                <div class="option-card-radio"></div>
+                <div class="option-card-info">
+                  <h4>Want a Custom Warehouse Built</h4>
+                  <p>Need a warehouse on your land or ours? Explore our Build-to-Suit service →</p>
                 </div>
-                <p>Have land or planning a new warehouse project in Eastern UP? Go to our Project Consultation form →</p>
               </div>
             </div>
 
-            <!-- Direct Contact Info -->
             <div class="inquiry-direct-info">
               <div class="direct-info-item">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -83,6 +86,7 @@ export function renderInquirySection(container) {
                 <label class="form-label" for="inq-message">Storage Requirement</label>
                 <textarea class="form-input" id="inq-message" rows="3" placeholder="e.g. I need space for storing FMCG products and palletized inventory."></textarea>
               </div>
+              <div id="inq-global-error" style="display: none; color: #EF4444; font-size: 0.85rem; margin-bottom: var(--space-3); background: rgba(239, 68, 68, 0.1); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.25);"></div>
               <div class="inquiry-form-actions">
                 <button type="submit" class="btn btn-primary btn-lg" id="inq-submit-btn">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="m22 2-11 11"/></svg>
@@ -109,8 +113,11 @@ export function renderInquirySection(container) {
   });
 
   const form = document.getElementById('inquiry-form');
-  form?.addEventListener('submit', (e) => {
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const globalErrorEl = document.getElementById('inq-global-error');
+    if (globalErrorEl) globalErrorEl.style.display = 'none';
+
     const data = {
       name: document.getElementById('inq-name').value.trim(),
       phone: document.getElementById('inq-phone').value.replace(/\D/g, '').slice(0, 10),
@@ -144,16 +151,55 @@ export function renderInquirySection(container) {
       `;
     }
 
-    setTimeout(() => {
-      const container = document.getElementById('inquiry-form-container');
-      container.innerHTML = `
-        <div class="inquiry-form-success">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-          <h3>Thank you! Your warehouse requirement has been submitted successfully.</h3>
-          <p style="color: rgba(255,255,255,0.7);">Our team will review your inquiry and get in touch with you shortly.</p>
-        </div>
-      `;
-    }, 600);
+    try {
+      const payload = {
+        fullName: data.name,
+        phone: data.phone,
+        email: data.email,
+        companyName: document.getElementById('inq-company')?.value.trim() || '',
+        requiredSpace: document.getElementById('inq-space')?.value.trim() || '',
+        message: document.getElementById('inq-message')?.value.trim() || '',
+        warehouseRequirement: 'Warehouse Space',
+        sourcePage: 'CONTACT',
+      };
+
+      const response = await submitSpaceInquiryApi(payload);
+
+      if (response.success) {
+        const container = document.getElementById('inquiry-form-container');
+        container.innerHTML = `
+          <div class="inquiry-form-success">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            <h3>Thank you! Your warehouse requirement has been submitted successfully.</h3>
+            <p style="color: rgba(255,255,255,0.7);">Our team will review your inquiry and get in touch with you shortly.</p>
+          </div>
+        `;
+      } else {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="m22 2-11 11"/></svg>
+            Send Space Inquiry
+          `;
+        }
+        if (globalErrorEl) {
+          globalErrorEl.textContent = response.message || 'Something went wrong. Please try again.';
+          globalErrorEl.style.display = 'block';
+        }
+      }
+    } catch (err) {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="m22 2-11 11"/></svg>
+          Send Space Inquiry
+        `;
+      }
+      if (globalErrorEl) {
+        globalErrorEl.textContent = 'Unable to reach backend server. Please check if backend is running.';
+        globalErrorEl.style.display = 'block';
+      }
+    }
   });
 
   document.getElementById('inq-whatsapp')?.addEventListener('click', () => {

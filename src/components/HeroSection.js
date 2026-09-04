@@ -31,17 +31,15 @@ export function renderHeroSection(container) {
           <div class="hero-buttons">
             <button class="btn btn-hero-primary" id="hero-find-space">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="m21 21-4.3-4.3"/>
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
               </svg>
-              Find Your Space
+              Find Warehouse Space
             </button>
-            <button class="btn btn-hero-secondary" id="hero-explore">
+            <button class="btn btn-hero-secondary" id="hero-build-warehouse">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
+                <path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/>
               </svg>
-              Explore Warehouse
+              Build a Warehouse
             </button>
           </div>
         </div>
@@ -117,10 +115,10 @@ export function renderHeroSection(container) {
 
   // CTA button handlers
   document.getElementById('hero-find-space')?.addEventListener('click', () => {
-    scrollToSection('#calculator');
+    scrollToSection('#services');
   });
 
-  document.getElementById('hero-explore')?.addEventListener('click', () => {
-    scrollToSection('#warehouse');
+  document.getElementById('hero-build-warehouse')?.addEventListener('click', () => {
+    scrollToSection('#warehouse-setup');
   });
 }

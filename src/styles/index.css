@@ -9,10 +9,11 @@
 @import './utilities.css';
 @import './animations.css';
 
-/* Component Styles */
+/* Component & Page Styles */
 @import './components/header.css';
 @import './components/hero.css';
 @import './components/introduction.css';
+@import './components/service-choice.css';
 @import './components/property.css';
 @import './components/video-section.css';
 @import './components/facilities.css';
@@ -24,8 +25,10 @@
 @import './components/demo-payment.css';
 @import './components/industries.css';
 @import './components/experience.css';
+@import './components/build-process.css';
 @import './components/warehouse-setup.css';
 @import './components/clientele.css';
 @import './components/inquiry-section.css';
 @import './components/whatsapp.css';
 @import './components/footer.css';
+@import './components/pages.css';

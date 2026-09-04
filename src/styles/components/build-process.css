@@ -1,0 +1,181 @@
+/* ============================================
+   BUILD PROCESS SECTION — STYLES
+   ============================================ */
+
+.build-process-section {
+  padding: var(--space-20) 0 var(--space-12);
+  background: var(--color-secondary);
+}
+
+/* ── Steps Container ── */
+.build-steps {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  margin-top: var(--space-12);
+  flex-wrap: nowrap;
+}
+
+/* ── Individual Step ── */
+.build-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  max-width: 200px;
+  position: relative;
+}
+
+.build-step__number {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-secondary);
+  font-family: var(--font-heading);
+  font-size: var(--text-h4);
+  font-weight: var(--weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+  flex-shrink: 0;
+}
+
+.build-step__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+  flex-shrink: 0;
+}
+
+.build-step__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin: 0 0 var(--space-2);
+  line-height: var(--leading-snug);
+}
+
+.build-step__desc {
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  color: var(--color-text-muted);
+  line-height: var(--leading-normal);
+  margin: 0;
+  max-width: 180px;
+}
+
+/* ── Connector Arrows ── */
+.build-step__connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-subtle);
+  padding-top: 56px; /* Align with icon area */
+  flex-shrink: 0;
+  width: 40px;
+}
+
+/* ── Bottom CTA ── */
+.build-process-cta {
+  text-align: center;
+  margin-top: var(--space-12);
+}
+
+.build-process-cta .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .build-steps {
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .build-step {
+    max-width: 160px;
+  }
+
+  .build-step__connector {
+    padding-top: 40px;
+    width: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .build-process-section {
+    padding: var(--space-16) 0 var(--space-10);
+  }
+
+  .build-steps {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-top: var(--space-8);
+  }
+
+  .build-step {
+    flex-direction: row;
+    text-align: left;
+    max-width: 100%;
+    width: 100%;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+  }
+
+  .build-step__number {
+    width: 36px;
+    height: 36px;
+    font-size: var(--text-body);
+    margin-bottom: 0;
+  }
+
+  .build-step__icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0;
+  }
+
+  .build-step__icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .build-step__desc {
+    max-width: 100%;
+  }
+
+  /* Vertical connector on mobile */
+  .build-step__connector {
+    padding-top: 0;
+    width: auto;
+    transform: rotate(90deg);
+    height: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .build-step__title {
+    font-size: var(--text-body-sm);
+  }
+
+  .build-step__desc {
+    font-size: var(--text-caption);
+  }
+}
