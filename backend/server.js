@@ -29,11 +29,18 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// ── 1. CORS Configuration ──
-app.use(cors());
+// ── 1. CORS Configuration (Allows frontend on ware.vardha.live, localhost, etc.) ──
+app.use(
+  cors({
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
+  })
+);
 
 // ── 2. Request Body Parsers ──
 app.use(express.json({ limit: '15kb' }));

@@ -4,6 +4,7 @@
 
 import mongoose from 'mongoose';
 import { WarehouseBuildRequest } from '../models/WarehouseBuildRequest.js';
+import { connectDB } from '../config/db.js';
 
 /**
  * @desc    Submit Warehouse Build Request (Form 2)
@@ -92,12 +93,10 @@ export const createWarehouseBuildRequest = async (req, res, next) => {
       });
     }
 
-    // 5. Check DB Connection
+    // 5. Ensure DB Connection is active
     if (mongoose.connection.readyState !== 1) {
-      return res.status(503).json({
-        success: false,
-        message: 'Database service is currently connecting. Please try again in a few moments.',
-      });
+      console.log('⚠️ [MongoDB] Database was not connected on request, attempting connection...');
+      await connectDB();
     }
 
     // 6. Save in warehousebuildrequests collection
@@ -127,8 +126,12 @@ export const createWarehouseBuildRequest = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error('❌ [Error in createWarehouseBuildRequest]:', error);
-    next(error);
+    console.error('❌ [Database Save Error in createWarehouseBuildRequest]:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Unable to save your project requirement at this moment. Please try again or reach out directly on WhatsApp.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
   }
 };
 

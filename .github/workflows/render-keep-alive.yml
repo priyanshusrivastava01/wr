@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Perform Health Ping
         env:
-          RENDER_URL: ${{ secrets.RENDER_BACKEND_URL || vars.RENDER_BACKEND_URL }}
+          RENDER_URL: ${{ secrets.RENDER_BACKEND_URL || vars.RENDER_BACKEND_URL || 'https://warehouse-xmhc.onrender.com' }}
         run: |
           if [ -z "$RENDER_URL" ]; then
             echo "⚠️ [CONFIG WARNING] RENDER_BACKEND_URL is not set in GitHub Secrets or Variables."

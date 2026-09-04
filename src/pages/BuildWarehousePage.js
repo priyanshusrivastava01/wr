@@ -814,9 +814,13 @@ function initBuildPageInteractions() {
     });
   });
 
-  // 5. Form Submission
+  // 5. Form Submission (with duplicate submission guard)
+  let isSubmitting = false;
+
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
 
     if (errorBox) errorBox.style.display = 'none';
     if (successBox) successBox.style.display = 'none';
@@ -832,19 +836,26 @@ function initBuildPageInteractions() {
     const notes = document.getElementById('build-notes')?.value.trim();
 
     // Validation
-    if (!name) {
-      showError('Please enter your full name.');
+    if (!name || name.length < 2) {
+      showError('Please enter your full name (at least 2 characters).');
       return;
     }
 
-    if (!phone || !/^[0-9]{10}$/.test(phone)) {
-      showError('Please enter a valid 10-digit Indian mobile number.');
+    const cleanPhone = String(phone || '').replace(/\D/g, '').slice(-10);
+    if (!cleanPhone || !/^[6-9]\d{9}$/.test(cleanPhone)) {
+      showError('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.');
       return;
     }
 
+    if (!location) {
+      showError('Please specify your project location or preferred city.');
+      return;
+    }
+
+    isSubmitting = true;
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.innerHTML = 'Submitting Project Request...';
+      submitBtn.innerHTML = '<span>Submitting Project Requirement...</span>';
     }
 
     try {
@@ -857,7 +868,7 @@ function initBuildPageInteractions() {
       const payload = {
         fullName: name,
         companyName: company || undefined,
-        phone: phone,
+        phone: cleanPhone,
         email: email || undefined,
         preferredLocation: location || undefined,
         landAvailability: landStatus || undefined,
@@ -873,15 +884,16 @@ function initBuildPageInteractions() {
         form.reset();
         if (successBox) {
           successBox.style.display = 'block';
-          successBox.innerHTML = `<strong>✓ Project Request Received!</strong> Thank you, ${name}. Our warehouse development engineers will contact you at ${phone} to discuss your site, blueprints, and build estimate.`;
+          successBox.innerHTML = `<strong>✓ Project Request Received!</strong> Thank you, ${name}. Our warehouse development engineers will contact you at ${cleanPhone} to discuss your site, blueprints, and build estimate.`;
           successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       } else {
-        showError(result.message || 'Unable to submit request. Please try again or reach out directly on WhatsApp.');
+        showError(result.message || 'Unable to submit your request. Please try again.');
       }
     } catch (err) {
-      showError('Network error. Please check your internet connection or reach out on WhatsApp.');
+      showError('Unable to submit your request right now. Please verify your connection or try again.');
     } finally {
+      isSubmitting = false;
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = `<span>Request a Warehouse Project Discussion</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;

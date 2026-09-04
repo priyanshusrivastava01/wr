@@ -4,13 +4,14 @@
 
 import mongoose from 'mongoose';
 import { CalculatorBooking } from '../models/CalculatorBooking.js';
+import { connectDB } from '../config/db.js';
 
 /**
  * @desc    Submit Calculator Booking Request (Form 3)
  * @route   POST /api/calculator-bookings
  */
 export const createCalculatorBooking = async (req, res, next) => {
-  console.log(`\n📥 [FORM 3 REQUEST] POST /api/calculator-bookings`);
+  console.log(`\n📥 [FORM 1 REQUEST] POST /api/calculator-bookings`);
   console.log('   Payload:', JSON.stringify(req.body));
 
   try {
@@ -90,12 +91,10 @@ export const createCalculatorBooking = async (req, res, next) => {
       });
     }
 
-    // 4. Check DB Connection
+    // 4. Ensure DB Connection is active
     if (mongoose.connection.readyState !== 1) {
-      return res.status(503).json({
-        success: false,
-        message: 'Database service is currently connecting. Please try again in a few moments.',
-      });
+      console.log('⚠️ [MongoDB] Database was not connected on request, attempting connection...');
+      await connectDB();
     }
 
     // 5. Save in calculatorbookings collection
@@ -132,8 +131,12 @@ export const createCalculatorBooking = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error('❌ [Error in createCalculatorBooking]:', error);
-    next(error);
+    console.error('❌ [Database Save Error in createCalculatorBooking]:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Unable to save your booking calculation at this moment. Please try again or reach out on WhatsApp.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
   }
 };
 
