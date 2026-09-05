@@ -1,5 +1,5 @@
 /* ============================================
-   FORM 3 MODEL: CALCULATOR BOOKING / WIZARD INQUIRY
+   FORM 1 MODEL: CALCULATOR BOOKING / WAREHOUSE RENTAL
    Collection: calculatorbookings
    ============================================ */
 
@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 
 const calculatorBookingSchema = new mongoose.Schema(
   {
+    // A. CUSTOMER CONTACT DETAILS
     fullName: {
       type: String,
       required: [true, 'Please provide your full name.'],
@@ -45,40 +46,35 @@ const calculatorBookingSchema = new mongoose.Schema(
       maxlength: [150, 'Company name cannot exceed 150 characters.'],
       default: '',
     },
+
+    // B. WAREHOUSE REQUIREMENT DETAILS (CALCULATED / VISIBLE)
     areaSqFt: {
       type: Number,
-      default: 0,
+      required: [true, 'Warehouse area is required.'],
+      min: [100, 'Area must be at least 100 sq. ft.'],
+      max: [100000, 'Area cannot exceed 100,000 sq. ft.'],
     },
-    ceilingHeightFt: {
+    ceilingHeight: {
       type: Number,
-      default: 0,
-    },
-    warehouseHeight: {
-      type: String,
-      trim: true,
-      default: '',
+      default: 0, // Numeric clear height in ft: 14, 22, or 0 (Not Sure)
     },
     pricingRate: {
       type: Number,
-      default: 0,
+      required: [true, 'Pricing rate is required.'],
+      min: [0, 'Pricing rate cannot be negative.'],
     },
-    city: {
-      type: String,
-      trim: true,
-      maxlength: [100, 'City cannot exceed 100 characters.'],
-      default: '',
+    estimatedMonthlyTotal: {
+      type: Number,
+      required: [true, 'Estimated monthly rent is required.'],
+      min: [0, 'Estimated monthly rent cannot be negative.'],
     },
-    message: {
-      type: String,
-      trim: true,
-      maxlength: [2000, 'Message cannot exceed 2000 characters.'],
-      default: '',
-    },
+
+    // C. BUSINESS / STORAGE REQUIREMENTS
     businessType: {
       type: String,
       trim: true,
       maxlength: [100, 'Business type cannot exceed 100 characters.'],
-      default: '',
+      default: 'General Commercial Storage',
     },
     storageDescription: {
       type: String,
@@ -86,26 +82,57 @@ const calculatorBookingSchema = new mongoose.Schema(
       maxlength: [2000, 'Storage description cannot exceed 2000 characters.'],
       default: '',
     },
+
+    // D. LOCATION AND TIMELINE
+    city: {
+      type: String,
+      required: [true, 'Location / City is required.'],
+      trim: true,
+      maxlength: [100, 'City cannot exceed 100 characters.'],
+      default: 'Gorakhpur',
+    },
+    message: {
+      type: String,
+      trim: true,
+      maxlength: [2000, 'Message cannot exceed 2000 characters.'],
+      default: '',
+    },
+
+    // E. CONTACT PREFERENCE
     preferredContactMethod: {
       type: String,
       trim: true,
-      enum: ['phone', 'email', 'whatsapp', 'call'],
+      enum: ['phone', 'whatsapp', 'email'],
       default: 'phone',
     },
-    estimatedMonthlyTotal: {
-      type: Number,
-      default: 0,
-    },
+
+    // F. SERVER-GENERATED SYSTEM VALUES
     referenceNumber: {
       type: String,
       trim: true,
-      default: '',
+      unique: true,
+      sparse: true,
     },
     status: {
       type: String,
       required: true,
       enum: ['NEW', 'CONTACTED', 'IN_PROGRESS', 'CLOSED'],
       default: 'NEW',
+    },
+
+    // LEGACY COMPATIBILITY FIELDS (Maintained for existing documents)
+    ceilingHeightFt: {
+      type: Number,
+      default: function () {
+        return this.ceilingHeight || 0;
+      },
+    },
+    warehouseHeight: {
+      type: String,
+      trim: true,
+      default: function () {
+        return this.ceilingHeight ? `${this.ceilingHeight} ft.` : 'Not Sure';
+      },
     },
   },
   {
@@ -115,9 +142,11 @@ const calculatorBookingSchema = new mongoose.Schema(
 
 calculatorBookingSchema.index({ status: 1 });
 calculatorBookingSchema.index({ createdAt: -1 });
+calculatorBookingSchema.index({ referenceNumber: 1 });
 
 export const CalculatorBooking = mongoose.model(
   'CalculatorBooking',
   calculatorBookingSchema,
   'calculatorbookings'
 );
+

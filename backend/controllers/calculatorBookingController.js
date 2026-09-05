@@ -1,5 +1,5 @@
 /* ============================================
-   FORM 3 CONTROLLER: CALCULATOR BOOKING
+   FORM 1 CONTROLLER: CALCULATOR BOOKING / WAREHOUSE RENTING
    ============================================ */
 
 import mongoose from 'mongoose';
@@ -7,7 +7,29 @@ import { CalculatorBooking } from '../models/CalculatorBooking.js';
 import { connectDB } from '../config/db.js';
 
 /**
- * @desc    Submit Calculator Booking Request (Form 3)
+ * Generates a human-friendly unique reference number
+ * Example: VAR-RENT-M4K9X-8241
+ */
+function generateReferenceNumber() {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+  return `VAR-RENT-${timestamp}-${randomSuffix}`;
+}
+
+/**
+ * Server-side Pricing Verification (Canonical Business Rule)
+ * - Area <= 5000 sq. ft. -> ₹60 / sq. ft.
+ * - Area > 5000 sq. ft.  -> ₹24 / sq. ft.
+ */
+function verifyPricing(areaSqFt) {
+  const area = Number(areaSqFt) || 0;
+  const rate = area <= 5000 ? 60 : 24;
+  const total = area * rate;
+  return { rate, total };
+}
+
+/**
+ * @desc    Submit Calculator Booking Request (Form 1)
  * @route   POST /api/calculator-bookings
  */
 export const createCalculatorBooking = async (req, res, next) => {
@@ -17,49 +39,33 @@ export const createCalculatorBooking = async (req, res, next) => {
   try {
     const {
       fullName,
-      name,
       phone,
       email,
       companyName,
-      company,
-      businessName,
-      city,
-      location,
-      area,
       areaSqFt,
-      warehouseArea,
-      height,
-      ceilingHeightFt,
-      warehouseHeight,
-      pricingRate,
-      rate,
+      ceilingHeight,
+      city,
       businessType,
       storageDescription,
-      message,
-      requirement,
       preferredContactMethod,
-      contactMethod,
-      total,
-      estimatedMonthlyTotal,
-      estimatedPrice,
-      referenceNumber,
+      message,
     } = req.body;
 
-    const resolvedName = (fullName || name || '').trim();
-    const resolvedCompany = (companyName || company || businessName || '').trim();
+    // ── 1. Sanitize & Normalize Inputs ──
+    const resolvedName = (fullName || '').trim();
+    const resolvedCompany = (companyName || '').trim();
     const resolvedEmail = (email || '').trim().toLowerCase();
-    const resolvedCity = (city || location || '').trim();
-    const resolvedArea = Number(warehouseArea || areaSqFt || area) || 0;
-    const resolvedHeightStr = (warehouseHeight || (height ? String(height) : '') || (ceilingHeightFt ? String(ceilingHeightFt) : '') || '').trim();
-    const resolvedHeightNum = Number(height || ceilingHeightFt) || (parseInt(warehouseHeight, 10) || 0);
-    const resolvedRate = Number(pricingRate || rate) || 0;
-    const resolvedType = (businessType || '').trim();
-    const resolvedMessage = (message || storageDescription || requirement || '').trim();
-    const resolvedMethod = (preferredContactMethod || contactMethod || 'phone').trim();
-    const resolvedTotal = Number(estimatedPrice || estimatedMonthlyTotal || total) || 0;
-    const resolvedRef = (referenceNumber || '').trim();
+    const resolvedCity = (city || 'Gorakhpur').trim();
+    const resolvedArea = Number(areaSqFt) || 0;
+    const resolvedCeilingHeight = Number(ceilingHeight) || (parseInt(req.body.warehouseHeight, 10) || 0);
+    const resolvedBusinessType = (businessType || 'General Commercial Storage').trim();
+    const resolvedStorageDesc = (storageDescription || '').trim();
+    const resolvedMethod = (preferredContactMethod || 'phone').trim().toLowerCase();
+    const resolvedMessage = (message || '').trim();
 
-    // 1. Validate Full Name
+    // ── 2. Field Validations ──
+
+    // Full Name
     if (!resolvedName || resolvedName.length < 2) {
       return res.status(400).json({
         success: false,
@@ -67,7 +73,7 @@ export const createCalculatorBooking = async (req, res, next) => {
       });
     }
 
-    // 2. Validate Phone
+    // Phone Number (10-digit Indian Mobile)
     if (!phone) {
       return res.status(400).json({
         success: false,
@@ -83,7 +89,7 @@ export const createCalculatorBooking = async (req, res, next) => {
       });
     }
 
-    // 3. Validate Email (if provided)
+    // Email (Optional, but validated if supplied)
     if (resolvedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resolvedEmail)) {
       return res.status(400).json({
         success: false,
@@ -91,42 +97,76 @@ export const createCalculatorBooking = async (req, res, next) => {
       });
     }
 
-    // 4. Ensure DB Connection is active
+    // Area Validation
+    if (!resolvedArea || resolvedArea < 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please specify a valid warehouse area of at least 100 sq. ft.',
+      });
+    }
+
+    // Location / City
+    if (!resolvedCity) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide your preferred warehouse location or city.',
+      });
+    }
+
+    // Contact Preference (Controlled Enum)
+    const validContactMethods = ['phone', 'whatsapp', 'email'];
+    const sanitizedContactMethod = validContactMethods.includes(resolvedMethod)
+      ? resolvedMethod
+      : 'phone';
+
+    // ── 3. Server-Side Calculation Security ──
+    const { rate: verifiedRate, total: verifiedTotal } = verifyPricing(resolvedArea);
+
+    // ── 4. Server-Generated System Values ──
+    const referenceNumber = generateReferenceNumber();
+    const status = 'NEW';
+
+    // ── 5. Ensure DB Connection is Active ──
     if (mongoose.connection.readyState !== 1) {
       console.log('⚠️ [MongoDB] Database was not connected on request, attempting connection...');
       await connectDB();
     }
 
-    // 5. Save in calculatorbookings collection
+    // ── 6. Save Normalized Document into MongoDB ──
     const booking = await CalculatorBooking.create({
       fullName: resolvedName.slice(0, 100),
       phone: cleanPhone,
       email: resolvedEmail,
       companyName: resolvedCompany.slice(0, 150),
-      city: resolvedCity.slice(0, 100),
       areaSqFt: resolvedArea,
-      ceilingHeightFt: resolvedHeightNum,
-      warehouseHeight: resolvedHeightStr,
-      pricingRate: resolvedRate,
+      ceilingHeight: resolvedCeilingHeight,
+      pricingRate: verifiedRate,
+      estimatedMonthlyTotal: verifiedTotal,
+      city: resolvedCity.slice(0, 100),
+      businessType: resolvedBusinessType.slice(0, 100),
+      storageDescription: resolvedStorageDesc.slice(0, 2000),
+      preferredContactMethod: sanitizedContactMethod,
       message: resolvedMessage.slice(0, 2000),
-      businessType: resolvedType.slice(0, 100),
-      storageDescription: resolvedMessage.slice(0, 2000),
-      preferredContactMethod: ['phone', 'email', 'whatsapp', 'call'].includes(resolvedMethod.toLowerCase())
-        ? resolvedMethod.toLowerCase()
-        : 'phone',
-      estimatedMonthlyTotal: resolvedTotal,
-      referenceNumber: resolvedRef,
-      status: 'NEW',
+      referenceNumber,
+      status,
     });
 
-    console.log(`✓ [Saved in Collection: calculatorbookings] ID: ${booking._id} | Area: ${booking.areaSqFt} sq ft`);
+    console.log(`✓ [MongoDB Saved: calculatorbookings] Ref: ${booking.referenceNumber} | Area: ${booking.areaSqFt} sq. ft. | Total: ₹${booking.estimatedMonthlyTotal}`);
 
     return res.status(201).json({
       success: true,
-      message: 'Your space calculation and booking request has been submitted successfully.',
+      message: 'Your warehouse space requirement has been submitted successfully.',
       data: {
         id: booking._id,
+        referenceNumber: booking.referenceNumber,
+        fullName: booking.fullName,
+        areaSqFt: booking.areaSqFt,
+        ceilingHeight: booking.ceilingHeight,
+        pricingRate: booking.pricingRate,
+        estimatedMonthlyTotal: booking.estimatedMonthlyTotal,
+        preferredContactMethod: booking.preferredContactMethod,
         collection: 'calculatorbookings',
+        status: booking.status,
         createdAt: booking.createdAt,
       },
     });
@@ -152,3 +192,4 @@ export const getCalculatorBookings = async (req, res, next) => {
     next(err);
   }
 };
+

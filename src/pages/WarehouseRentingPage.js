@@ -1115,6 +1115,7 @@ export function renderWarehouseRentingPage(container) {
       </section>
 
       <!-- ══ SECTION 9: FORM POPUP MODAL (PRESERVED WORKING FLOW) ══ -->
+      <!-- ══ SECTION 9: FORM POPUP MODAL (SYNCHRONIZED TRANSPARENT FLOW) ══ -->
       <div class="rent-modal-backdrop" id="rent-inquiry-modal" aria-hidden="true">
         <div class="rent-modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
           
@@ -1126,13 +1127,16 @@ export function renderWarehouseRentingPage(container) {
           <!-- Modal Body Content -->
           <div class="rent-modal-body" id="modal-form-view">
             <div class="rent-modal-header">
-              <h3 class="rent-modal-title" id="modal-heading">Almost There — Where Should We Contact You?</h3>
-              <p class="rent-modal-subtitle">Your warehouse requirement is ready. Share your details and our leasing team will contact you.</p>
+              <h3 class="rent-modal-title" id="modal-heading">Submit Your Warehouse Space Requirement</h3>
+              <p class="rent-modal-subtitle">Review your calculated estimate and provide your contact & storage details for prompt processing.</p>
             </div>
 
-            <!-- Compact Selected Requirement Summary Box -->
+            <!-- SECTION A: Compact Selected Requirement Summary Box (Calculated Automatically) -->
             <div class="modal-requirement-summary">
-              <div class="modal-summary-heading">YOUR CALCULATED REQUIREMENT</div>
+              <div class="modal-summary-header-row">
+                <span class="modal-summary-heading">YOUR CALCULATED REQUIREMENT</span>
+                <span class="calc-auto-badge">Calculated automatically</span>
+              </div>
               <div class="modal-summary-grid">
                 <div class="modal-summary-cell">
                   <span class="cell-label">Warehouse Space:</span>
@@ -1147,7 +1151,7 @@ export function renderWarehouseRentingPage(container) {
                   <span class="cell-val" id="modal-sum-rate">₹${rentState.rate} / sq. ft.</span>
                 </div>
                 <div class="modal-summary-cell highlight-cell">
-                  <span class="cell-label">Estimated Rent:</span>
+                  <span class="cell-label">Estimated Monthly Rent:</span>
                   <span class="cell-val" id="modal-sum-total">${formatIndianCurrency(rentState.total)}</span>
                 </div>
               </div>
@@ -1155,90 +1159,157 @@ export function renderWarehouseRentingPage(container) {
 
             <!-- Popup Contact Form -->
             <form class="rent-popup-form" id="rent-popup-inquiry-form" novalidate>
-              <div class="form-row-2col">
-                <div class="popup-form-group">
-                  <label for="popup-fullName">Full Name <span class="req">*</span></label>
-                  <input
-                    type="text"
-                    id="popup-fullName"
-                    name="fullName"
-                    class="popup-form-input"
-                    placeholder="e.g. Rahul Sharma"
-                    required
-                    autocomplete="name"
-                  />
-                  <span class="field-error" id="err-fullName"></span>
-                </div>
-
-                <div class="popup-form-group">
-                  <label for="popup-companyName">Business / Company Name</label>
-                  <input
-                    type="text"
-                    id="popup-companyName"
-                    name="companyName"
-                    class="popup-form-input"
-                    placeholder="e.g. Sharma Logistics / Retail"
-                    autocomplete="organization"
-                  />
-                </div>
-              </div>
-
-              <div class="form-row-2col">
-                <div class="popup-form-group">
-                  <label for="popup-phone">Phone Number <span class="req">*</span></label>
-                  <div class="phone-input-wrap">
-                    <span class="phone-prefix">+91</span>
+              
+              <!-- GROUP 1: Your Contact Details -->
+              <div class="modal-form-section">
+                <div class="modal-section-title">Your Contact Details</div>
+                
+                <div class="form-row-2col">
+                  <div class="popup-form-group">
+                    <label for="popup-fullName">Full Name <span class="req">*</span></label>
                     <input
-                      type="tel"
-                      id="popup-phone"
-                      name="phone"
-                      class="popup-form-input phone-masked"
-                      placeholder="98765 43210"
+                      type="text"
+                      id="popup-fullName"
+                      name="fullName"
+                      class="popup-form-input"
+                      placeholder="e.g. Rahul Sharma"
                       required
-                      maxlength="10"
-                      inputmode="numeric"
+                      autocomplete="name"
+                    />
+                    <span class="field-error" id="err-fullName"></span>
+                  </div>
+
+                  <div class="popup-form-group">
+                    <label for="popup-companyName">Business / Company Name</label>
+                    <input
+                      type="text"
+                      id="popup-companyName"
+                      name="companyName"
+                      class="popup-form-input"
+                      placeholder="e.g. Sharma Logistics / Retail"
+                      autocomplete="organization"
                     />
                   </div>
-                  <span class="field-error" id="err-phone"></span>
+                </div>
+
+                <div class="form-row-2col">
+                  <div class="popup-form-group">
+                    <label for="popup-phone">Mobile Phone Number <span class="req">*</span></label>
+                    <div class="phone-input-wrap">
+                      <span class="phone-prefix">+91</span>
+                      <input
+                        type="tel"
+                        id="popup-phone"
+                        name="phone"
+                        class="popup-form-input phone-masked"
+                        placeholder="98765 43210"
+                        required
+                        maxlength="10"
+                        inputmode="numeric"
+                      />
+                    </div>
+                    <span class="field-error" id="err-phone"></span>
+                  </div>
+
+                  <div class="popup-form-group">
+                    <label for="popup-email">Email Address</label>
+                    <input
+                      type="email"
+                      id="popup-email"
+                      name="email"
+                      class="popup-form-input"
+                      placeholder="e.g. rahul@company.com"
+                      autocomplete="email"
+                    />
+                    <span class="field-error" id="err-email"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GROUP 2: Business & Storage Requirements -->
+              <div class="modal-form-section">
+                <div class="modal-section-title">Business & Storage Requirements</div>
+                
+                <div class="popup-form-group">
+                  <label for="popup-businessType">Business / Industry Type <span class="req">*</span></label>
+                  <select id="popup-businessType" name="businessType" class="popup-form-select">
+                    <option value="General Commercial Storage">General Commercial Storage</option>
+                    <option value="E-commerce & Online Brands">E-commerce & D2C Brands</option>
+                    <option value="Distributors & Wholesalers">Distributors & Wholesalers</option>
+                    <option value="FMCG & Consumer Goods">FMCG & Consumer Goods</option>
+                    <option value="Manufacturers & Raw Materials">Manufacturers & Industrial</option>
+                    <option value="Retail Store Chains">Retail Store Inventory</option>
+                    <option value="Seasonal & Surge Stock">Seasonal / Overflow Storage</option>
+                    <option value="Other">Other Specialized Storage</option>
+                  </select>
                 </div>
 
                 <div class="popup-form-group">
-                  <label for="popup-email">Email Address</label>
+                  <label for="popup-storageDescription">Storage Description / Goods Type (Optional)</label>
                   <input
-                    type="email"
-                    id="popup-email"
-                    name="email"
+                    type="text"
+                    id="popup-storageDescription"
+                    name="storageDescription"
                     class="popup-form-input"
-                    placeholder="e.g. rahul@company.com"
-                    autocomplete="email"
+                    placeholder="e.g. Packaged foods, machinery parts, apparel, electronics, heavy cartons"
+                    maxlength="500"
                   />
-                  <span class="field-error" id="err-email"></span>
                 </div>
               </div>
 
-              <div class="popup-form-group">
-                <label for="popup-city">Preferred Location / City <span class="req">*</span></label>
-                <input
-                  type="text"
-                  id="popup-city"
-                  name="city"
-                  class="popup-form-input"
-                  value="Gorakhpur"
-                  placeholder="e.g. Gorakhpur, UP"
-                  required
-                />
-                <span class="field-error" id="err-city"></span>
+              <!-- GROUP 3: Location & Contact Preference -->
+              <div class="modal-form-section">
+                <div class="modal-section-title">Location & Contact Preference</div>
+
+                <div class="form-row-2col">
+                  <div class="popup-form-group">
+                    <label for="popup-city">Preferred Location / City <span class="req">*</span></label>
+                    <input
+                      type="text"
+                      id="popup-city"
+                      name="city"
+                      class="popup-form-input"
+                      value="Gorakhpur"
+                      placeholder="e.g. Gorakhpur, UP"
+                      required
+                    />
+                    <span class="field-error" id="err-city"></span>
+                  </div>
+
+                  <div class="popup-form-group">
+                    <label>Preferred Contact Method</label>
+                    <div class="contact-pref-row" id="contact-pref-row">
+                      <label class="contact-pref-pill">
+                        <input type="radio" name="preferredContactMethod" value="phone" checked />
+                        <span>Phone Call</span>
+                      </label>
+                      <label class="contact-pref-pill">
+                        <input type="radio" name="preferredContactMethod" value="whatsapp" />
+                        <span>WhatsApp</span>
+                      </label>
+                      <label class="contact-pref-pill">
+                        <input type="radio" name="preferredContactMethod" value="email" />
+                        <span>Email</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div class="popup-form-group">
-                <label for="popup-message">Additional Requirement / Timeline (Optional)</label>
-                <textarea
-                  id="popup-message"
-                  name="message"
-                  class="popup-form-textarea"
-                  rows="2"
-                  placeholder="Any specific requirement or timeline (e.g. Need space from next month, FMCG storage, etc.)"
-                ></textarea>
+              <!-- GROUP 4: Additional Requirement / Timeline -->
+              <div class="modal-form-section">
+                <div class="modal-section-title">Additional Requirement / Timeline</div>
+
+                <div class="popup-form-group">
+                  <label for="popup-message">Specific Requirements or Expected Move-in Date (Optional)</label>
+                  <textarea
+                    id="popup-message"
+                    name="message"
+                    class="popup-form-textarea"
+                    rows="2"
+                    placeholder="e.g. Ready to occupy by next month, need 3-phase power backup, container truck loading dock access"
+                  ></textarea>
+                </div>
               </div>
 
               <!-- General Form Error Notice -->
@@ -1259,10 +1330,16 @@ export function renderWarehouseRentingPage(container) {
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             </div>
 
-            <h3 class="success-title">Your Warehouse Inquiry Has Been Received</h3>
+            <h3 class="success-title">Your Warehouse Requirement Has Been Received</h3>
             <p class="success-desc">
-              Thank you. Our leasing manager will review your requirement and connect with you shortly.
+              Thank you. Your space inquiry has been logged in our system. Our leasing manager will review your requirement and connect with you shortly.
             </p>
+
+            <!-- Server-Generated Reference Number Box -->
+            <div class="reference-number-box">
+              <span class="ref-label">ENQUIRY REFERENCE NUMBER</span>
+              <span class="ref-code" id="success-ref-code">VAR-RENT-XXXXX</span>
+            </div>
 
             <div class="success-summary-box">
               <div class="success-sum-item">
@@ -1270,7 +1347,11 @@ export function renderWarehouseRentingPage(container) {
                 <span class="sum-value" id="success-sum-space">5,000 sq. ft.</span>
               </div>
               <div class="success-sum-item">
-                <span class="sum-label">Estimated Rent:</span>
+                <span class="sum-label">Clear Height:</span>
+                <span class="sum-value" id="success-sum-height">14 ft.</span>
+              </div>
+              <div class="success-sum-item">
+                <span class="sum-label">Estimated Monthly Rent:</span>
                 <span class="sum-value highlight-price" id="success-sum-price">₹3,00,000</span>
               </div>
             </div>
@@ -1601,6 +1682,9 @@ function initVisualRentingEvents(container, whatsappBaseUrl) {
       const phone = (container.querySelector('#popup-phone')?.value || '').trim();
       const email = (container.querySelector('#popup-email')?.value || '').trim();
       const city = (container.querySelector('#popup-city')?.value || '').trim();
+      const businessType = (container.querySelector('#popup-businessType')?.value || 'General Commercial Storage').trim();
+      const storageDescription = (container.querySelector('#popup-storageDescription')?.value || '').trim();
+      const preferredContactMethod = (container.querySelector('input[name="preferredContactMethod"]:checked')?.value || 'phone').trim();
       const message = (container.querySelector('#popup-message')?.value || '').trim();
 
       const errFullName = container.querySelector('#err-fullName');
@@ -1646,40 +1730,51 @@ function initVisualRentingEvents(container, whatsappBaseUrl) {
 
       if (hasError) return;
 
-      // Prepare payload
+      // Prepare explicit 1-to-1 payload (Single Source of Truth)
+      const numericCeilingHeight = parseInt(rentState.height, 10) || 0;
       const payload = {
         fullName,
-        companyName,
         phone,
         email,
-        city,
-        message,
-        warehouseArea: rentState.area,
+        companyName,
         areaSqFt: rentState.area,
-        warehouseHeight: rentState.height,
-        ceilingHeightFt: parseInt(rentState.height, 10) || 0,
+        ceilingHeight: numericCeilingHeight,
         pricingRate: rentState.rate,
-        estimatedPrice: rentState.total,
         estimatedMonthlyTotal: rentState.total,
-        businessType: companyName ? 'Commercial Business' : 'General Storage',
-        preferredContactMethod: 'phone',
+        city,
+        businessType,
+        storageDescription,
+        preferredContactMethod,
+        message,
       };
 
       try {
         rentState.isSubmitting = true;
         if (btnSubmit) {
           btnSubmit.disabled = true;
-          btnSubmit.querySelector('.btn-text').textContent = 'Submitting...';
+          const btnText = btnSubmit.querySelector('.btn-text');
+          if (btnText) btnText.textContent = 'Submitting...';
         }
 
         const res = await submitCalculatorBookingApi(payload);
 
         if (res && res.success) {
-          // Success View
+          // Success View populated with explicit confirmation details
+          const successRefCode = container.querySelector('#success-ref-code');
           const successSpace = container.querySelector('#success-sum-space');
+          const successHeight = container.querySelector('#success-sum-height');
           const successPrice = container.querySelector('#success-sum-price');
+
+          const returnedRef = res.data?.referenceNumber || 'VAR-RENT-CONFIRMED';
+
+          if (successRefCode) {
+            successRefCode.textContent = returnedRef;
+          }
           if (successSpace) {
             successSpace.textContent = `${rentState.area.toLocaleString('en-IN')} sq. ft.`;
+          }
+          if (successHeight) {
+            successHeight.textContent = rentState.height;
           }
           if (successPrice) {
             successPrice.textContent = formatIndianCurrency(rentState.total);
@@ -1688,29 +1783,30 @@ function initVisualRentingEvents(container, whatsappBaseUrl) {
           modalFormView.style.display = 'none';
           modalSuccessView.style.display = 'block';
 
-          // Update WhatsApp button with booking context
+          // Update WhatsApp button with booking context & reference code
           if (btnSuccessWhatsapp) {
-            const waMsg = `Hello Vardha Warehousing, I have submitted a warehouse space inquiry for ${rentState.area.toLocaleString('en-IN')} sq. ft. (${formatIndianCurrency(rentState.total)}) under name: ${fullName}.`;
+            const waMsg = `Hello Vardha Warehousing, I have submitted a warehouse space requirement (Ref: ${returnedRef}) for ${rentState.area.toLocaleString('en-IN')} sq. ft. (${formatIndianCurrency(rentState.total)}/mo) under name: ${fullName}.`;
             btnSuccessWhatsapp.href = `${whatsappBaseUrl}?text=${encodeURIComponent(waMsg)}`;
           }
 
           popupForm.reset();
         } else {
           if (generalErr) {
-            generalErr.textContent = res?.message || 'Unable to submit inquiry. Please try again or call us.';
+            generalErr.textContent = res?.message || 'Unable to submit requirement. Please check your details and try again.';
             generalErr.style.display = 'block';
           }
         }
       } catch (err) {
         if (generalErr) {
-          generalErr.textContent = 'An unexpected error occurred. Please try again.';
+          generalErr.textContent = 'An unexpected network error occurred. Please try again.';
           generalErr.style.display = 'block';
         }
       } finally {
         rentState.isSubmitting = false;
         if (btnSubmit) {
           btnSubmit.disabled = false;
-          btnSubmit.querySelector('.btn-text').textContent = 'Submit My Requirement';
+          const btnText = btnSubmit.querySelector('.btn-text');
+          if (btnText) btnText.textContent = 'Submit My Requirement';
         }
       }
     });
@@ -1724,3 +1820,4 @@ function initVisualRentingEvents(container, whatsappBaseUrl) {
   // Initialize
   updateCalculatorUI();
 }
+
