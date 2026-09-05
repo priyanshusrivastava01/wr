@@ -16,6 +16,7 @@ import { connectDB } from './config/db.js';
 import calculatorBookingRoutes from './routes/calculatorBookingRoutes.js';
 import warehouseBuildRoutes from './routes/warehouseBuildRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
+import diagRoutes from './routes/diagRoutes.js';
 
 // Central Error Handlers
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -119,6 +120,10 @@ app.use('/api/contact-inquiries', inquiryRoutes);
 app.use('/api/space-inquiries', inquiryRoutes);
 app.use('/api/space-inquiry', inquiryRoutes);
 app.use('/api/contact', inquiryRoutes);
+
+// DIAGNOSTIC & HEALTH ROUTES (Safe runtime environment audit & Resend probe)
+app.use('/api/diag', diagRoutes);
+app.use('/api/test-email', diagRoutes);
 
 // ── 6. Centralized Error Handling ──
 app.use(notFound);
