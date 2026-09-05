@@ -124,20 +124,35 @@ app.use('/api/contact', inquiryRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-// ── 7. Server Initialization ──
+// ── 7. Server Initialization with Safe Environment Diagnostics ──
+const printStartupDiagnostics = () => {
+  const hasMongo = !!(process.env.MONGODB_URI && !process.env.MONGODB_URI.includes('your_mongodb_atlas'));
+  const hasResend = !!(process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.startsWith('re_') && !process.env.RESEND_API_KEY.includes('your_resend_api_key'));
+  const fromEmail = process.env.EMAIL_FROM || 'Vardha Warehousing <onboarding@resend.dev>';
+  const toEmail = process.env.EMAIL_TO || 'linksvardha1@gmail.com';
+
+  console.log(`\n==================================================`);
+  console.log(`🚀 Vardha Warehousing Clean 1-to-1 Backend Server`);
+  console.log(`📍 Port: http://localhost:${PORT}`);
+  console.log(`🩺 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`📦 Form 1 (Calculator & Space): POST /api/calculator-bookings [-> calculatorbookings]`);
+  console.log(`🏗️ Form 2 (Warehouse Build):    POST /api/warehouse-build-requests [-> warehousebuildrequests]`);
+  console.log(`✉️ Form 3 (Inquiries & Contact): POST /api/inquiries [-> inquiries]`);
+  console.log(`🌍 Environment: ${NODE_ENV}`);
+  console.log(`--------------------------------------------------`);
+  console.log(`📋 [Configuration Audit]`);
+  console.log(`   • MONGODB_URI:    ${hasMongo ? '✓ Configured' : '❌ MISSING (Set in Render Environment Variables)'}`);
+  console.log(`   • RESEND_API_KEY: ${hasResend ? '✓ Configured (re_***)' : '⚠️ MISSING (Email notifications will be skipped until added in Render)'}`);
+  console.log(`   • EMAIL_FROM:     ${fromEmail}`);
+  console.log(`   • EMAIL_TO:       ${toEmail}`);
+  console.log(`==================================================\n`);
+};
+
 const startServer = async () => {
   await connectDB();
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`\n==================================================`);
-    console.log(`🚀 Vardha Warehousing Clean 1-to-1 Backend Server`);
-    console.log(`📍 Port: http://localhost:${PORT}`);
-    console.log(`🩺 Health check: http://localhost:${PORT}/api/health`);
-    console.log(`📦 Form 1 (Calculator & Space): http://localhost:${PORT}/api/calculator-bookings [-> calculatorbookings]`);
-    console.log(`🏗️ Form 2 (Warehouse Build):    http://localhost:${PORT}/api/warehouse-build-requests [-> warehousebuildrequests]`);
-    console.log(`✉️ Form 3 (Inquiries & Contact): http://localhost:${PORT}/api/inquiries [-> inquiries]`);
-    console.log(`🌍 Environment: ${NODE_ENV}`);
-    console.log(`==================================================\n`);
+    printStartupDiagnostics();
   });
 };
 

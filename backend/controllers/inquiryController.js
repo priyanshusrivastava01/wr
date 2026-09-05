@@ -110,16 +110,25 @@ export const createInquiry = async (req, res, next) => {
       sourcePage: resolvedSource.slice(0, 50),
     });
 
-    console.log(`✅ [MongoDB] Saved to inquiries collection with ID: ${inquiry._id} (Ref: ${referenceNumber})`);
+    console.log(`✅ [MongoDB Saved: inquiries] ID: ${inquiry._id} | Ref: ${referenceNumber} | Name: ${inquiry.fullName}`);
 
-    // Trigger Admin Email Notification via Resend (Non-blocking / safe)
-    sendInquiryNotification(inquiry).catch((emailErr) => {
-      console.error('⚠️ [Email Notification Warning]:', emailErr);
-    });
+    // Trigger Admin Email Notification via Resend (Awaited & non-crashing)
+    let emailResult = { success: false };
+    try {
+      emailResult = await sendInquiryNotification(inquiry);
+      if (emailResult.success) {
+        console.log(`✉️ [FORM 3 EMAIL] Notification delivered to admin (ID: ${emailResult.id})`);
+      } else {
+        console.warn(`⚠️ [FORM 3 EMAIL] Notification status: ${emailResult.error || emailResult.status || 'Email not sent'}`);
+      }
+    } catch (emailErr) {
+      console.error('⚠️ [FORM 3 EMAIL Warning]:', emailErr.message || emailErr);
+    }
 
     // ── 6. Return Clean Success Response ──
     return res.status(201).json({
       success: true,
+      emailSent: !!emailResult.success,
       message: 'Your warehouse space inquiry has been received. Our team will contact you shortly.',
       data: {
         id: inquiry._id,

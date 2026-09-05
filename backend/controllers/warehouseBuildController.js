@@ -117,13 +117,22 @@ export const createWarehouseBuildRequest = async (req, res, next) => {
 
     console.log(`✓ [Saved in Collection: warehousebuildrequests] ID: ${buildRequest._id} | Location: ${buildRequest.preferredLocation}`);
 
-    // Trigger Admin Email Notification via Resend (Non-blocking / safe)
-    sendWarehouseBuildNotification(buildRequest).catch((emailErr) => {
-      console.error('⚠️ [Email Notification Warning]:', emailErr);
-    });
+    // Trigger Admin Email Notification via Resend (Awaited & non-crashing)
+    let emailResult = { success: false };
+    try {
+      emailResult = await sendWarehouseBuildNotification(buildRequest);
+      if (emailResult.success) {
+        console.log(`✉️ [FORM 2 EMAIL] Notification delivered to admin (ID: ${emailResult.id})`);
+      } else {
+        console.warn(`⚠️ [FORM 2 EMAIL] Notification status: ${emailResult.error || emailResult.status || 'Email not sent'}`);
+      }
+    } catch (emailErr) {
+      console.error('⚠️ [FORM 2 EMAIL Warning]:', emailErr.message || emailErr);
+    }
 
     return res.status(201).json({
       success: true,
+      emailSent: !!emailResult.success,
       message: 'Your warehouse project requirement has been submitted. Our development team will contact you shortly.',
       data: {
         id: buildRequest._id,

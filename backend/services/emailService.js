@@ -192,12 +192,12 @@ function buildHtmlTemplate({
 async function sendNotificationEmail({ subject, html, text, replyTo }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey || apiKey.trim() === '' || apiKey.includes('your_resend_api_key')) {
-    console.log('ℹ️ [Resend] RESEND_API_KEY not configured in environment. Skipping email dispatch safely.');
+    console.warn('⚠️ [Resend Warning] RESEND_API_KEY is not configured in environment variables. Email notification skipped safely.');
     return { success: false, status: 'SKIPPED_NO_KEY' };
   }
 
   const fromEmail = process.env.EMAIL_FROM || 'Vardha Warehousing <onboarding@resend.dev>';
-  const toEmail = process.env.EMAIL_TO || 'vardhawarehousing@gmail.com';
+  const toEmail = process.env.EMAIL_TO || 'linksvardha1@gmail.com';
 
   const resend = new Resend(apiKey.trim());
 
@@ -214,18 +214,19 @@ async function sendNotificationEmail({ subject, html, text, replyTo }) {
       payload.reply_to = replyTo.trim();
     }
 
+    console.log(`✉️ [Resend Dispatching] To: ${toEmail} | From: ${fromEmail} | Subject: "${subject}"`);
     const { data, error } = await resend.emails.send(payload);
 
     if (error) {
-      console.error('❌ [Resend Email Error]:', error);
+      console.error('❌ [Resend Email Error]:', error.message || error);
       return { success: false, error: error.message || error };
     }
 
-    console.log(`✉️ [Resend Email Sent Successfully] Message ID: ${data?.id} | Subject: "${subject}"`);
+    console.log(`✅ [Resend Email Delivered Successfully] Message ID: ${data?.id}`);
     return { success: true, id: data?.id };
   } catch (err) {
-    console.error('❌ [Resend Email Exception]:', err);
-    return { success: false, error: err.message };
+    console.error('❌ [Resend Email Exception]:', err.message || err);
+    return { success: false, error: err.message || 'Unknown email dispatch exception' };
   }
 }
 

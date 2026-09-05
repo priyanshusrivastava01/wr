@@ -154,13 +154,22 @@ export const createCalculatorBooking = async (req, res, next) => {
 
     console.log(`✓ [MongoDB Saved: calculatorbookings] Ref: ${booking.referenceNumber} | Area: ${booking.areaSqFt} sq. ft. | Total: ₹${booking.estimatedMonthlyTotal}`);
 
-    // Trigger Admin Email Notification via Resend (Non-blocking / safe)
-    sendCalculatorBookingNotification(booking).catch((emailErr) => {
-      console.error('⚠️ [Email Notification Warning]:', emailErr);
-    });
+    // Trigger Admin Email Notification via Resend (Awaited & non-crashing)
+    let emailResult = { success: false };
+    try {
+      emailResult = await sendCalculatorBookingNotification(booking);
+      if (emailResult.success) {
+        console.log(`✉️ [FORM 1 EMAIL] Notification delivered to admin (ID: ${emailResult.id})`);
+      } else {
+        console.warn(`⚠️ [FORM 1 EMAIL] Notification status: ${emailResult.error || emailResult.status || 'Email not sent'}`);
+      }
+    } catch (emailErr) {
+      console.error('⚠️ [FORM 1 EMAIL Warning]:', emailErr.message || emailErr);
+    }
 
     return res.status(201).json({
       success: true,
+      emailSent: !!emailResult.success,
       message: 'Your warehouse space requirement has been submitted successfully.',
       data: {
         id: booking._id,
