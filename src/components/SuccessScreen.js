@@ -8,7 +8,7 @@ import { scrollToSection } from '../utils/scroll.js';
 
 export function renderSuccessScreen(container) {
   window.addEventListener('show-success', (e) => {
-    const data = e.detail;
+    const data  = e.detail;
     showSuccess(container, data);
   });
 }
