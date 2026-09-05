@@ -5,7 +5,7 @@
 import { CONFIG } from '../config.js';
 import { validateStep, attachPhoneMask } from '../utils/validation.js';
 import { scrollToSection } from '../utils/scroll.js';
-import { submitSpaceInquiryApi } from '../utils/api.js';
+import { submitInquiryApi } from '../utils/api.js';
 
 export function renderInquirySection(container) {
   const { contact } = CONFIG;
@@ -157,13 +157,13 @@ export function renderInquirySection(container) {
         phone: data.phone,
         email: data.email,
         companyName: document.getElementById('inq-company')?.value.trim() || '',
-        requiredSpace: document.getElementById('inq-space')?.value.trim() || '',
+        requiredWarehouseSpace: document.getElementById('inq-space')?.value.trim() || '',
+        storageRequirement: document.getElementById('inq-message')?.value.trim() || '',
         message: document.getElementById('inq-message')?.value.trim() || '',
-        warehouseRequirement: 'Warehouse Space',
-        sourcePage: 'CONTACT',
+        sourcePage: 'CONTACT_SECTION',
       };
 
-      const response = await submitSpaceInquiryApi(payload);
+      const response = await submitInquiryApi(payload);
 
       if (response.success) {
         const container = document.getElementById('inquiry-form-container');

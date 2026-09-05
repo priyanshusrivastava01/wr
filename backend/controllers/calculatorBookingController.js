@@ -5,6 +5,7 @@
 import mongoose from 'mongoose';
 import { CalculatorBooking } from '../models/CalculatorBooking.js';
 import { connectDB } from '../config/db.js';
+import { sendCalculatorBookingNotification } from '../services/emailService.js';
 
 /**
  * Generates a human-friendly unique reference number
@@ -152,6 +153,11 @@ export const createCalculatorBooking = async (req, res, next) => {
     });
 
     console.log(`✓ [MongoDB Saved: calculatorbookings] Ref: ${booking.referenceNumber} | Area: ${booking.areaSqFt} sq. ft. | Total: ₹${booking.estimatedMonthlyTotal}`);
+
+    // Trigger Admin Email Notification via Resend (Non-blocking / safe)
+    sendCalculatorBookingNotification(booking).catch((emailErr) => {
+      console.error('⚠️ [Email Notification Warning]:', emailErr);
+    });
 
     return res.status(201).json({
       success: true,

@@ -343,10 +343,17 @@
   display: block;
 }
 
-.mobile-drawer-link:hover,
-.mobile-drawer-link:active {
+.mobile-drawer-link:hover {
   color: var(--color-accent);
   background: var(--color-accent-light);
+  padding-left: var(--space-4);
+}
+
+.mobile-drawer-link.active {
+  color: var(--color-accent, #C8965A);
+  background: var(--color-accent-light, rgba(200, 150, 90, 0.1));
+  font-weight: 700;
+  border-left: 3px solid var(--color-accent, #C8965A);
   padding-left: var(--space-4);
 }
 

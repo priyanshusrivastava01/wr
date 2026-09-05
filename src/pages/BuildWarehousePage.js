@@ -20,29 +20,6 @@ export function renderBuildWarehousePage(container) {
 
   container.innerHTML = `
     <div class="build-page-visual">
-
-      <!-- ══ IN-PAGE STICKY SUB-NAV BAR ══ -->
-      <nav class="build-v-subnav" aria-label="Build Page Navigation">
-        <div class="container build-v-subnav-container">
-          <div class="build-v-subnav-links">
-            <a href="#build-hero" class="build-v-subnav-link">Overview</a>
-            <a href="#build-pipeline" class="build-v-subnav-link">Quick Journey</a>
-            <a href="#build-about" class="build-v-subnav-link">About Service</a>
-            <a href="#build-blueprint" class="build-v-subnav-link">Why Vardha</a>
-            <a href="#build-capabilities" class="build-v-subnav-link">Capabilities</a>
-            <a href="#build-land" class="build-v-subnav-link">Land Options</a>
-            <a href="#build-design" class="build-v-subnav-link">Planning & Design</a>
-            <a href="#build-construction" class="build-v-subnav-link">Construction</a>
-            <a href="#build-endresult" class="build-v-subnav-link">End Result</a>
-            <a href="#build-inquiry" class="build-v-subnav-link highlight-pill">Request Quote</a>
-          </div>
-          <a href="#build-inquiry" class="build-v-subnav-cta">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
-            <span>Plan Your Build</span>
-          </a>
-        </div>
-      </nav>
-
       <!-- ══ SECTION 1: HIGH-IMPACT VISUAL HERO ══ -->
       <section class="build-v-hero" id="build-hero">
         <div class="build-v-hero-bg">

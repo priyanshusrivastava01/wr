@@ -138,12 +138,20 @@ export async function submitWarehouseBuildApi(payload) {
   return apiRequest('/warehouse-build-requests', payload);
 }
 
+/**
+ * FORM 3: Warehouse Space & Contact Inquiry Submission
+ * Endpoint: POST /api/inquiries
+ * Target Collection: inquiries
+ */
+export async function submitInquiryApi(payload) {
+  return apiRequest('/inquiries', payload);
+}
+
 // Aliases for compatibility across components
 export const submitBuildWarehouseApi = submitWarehouseBuildApi;
-export const submitSpaceInquiryApi = submitCalculatorBookingApi;
-export const submitInquiryApi = submitCalculatorBookingApi;
-export const submitEnquiryApi = submitCalculatorBookingApi;
-export const submitContactApi = submitCalculatorBookingApi;
+export const submitSpaceInquiryApi = submitInquiryApi;
+export const submitEnquiryApi = submitInquiryApi;
+export const submitContactApi = submitInquiryApi;
 
 /**
  * Non-blocking fire-and-forget backend warmup

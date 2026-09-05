@@ -87,7 +87,7 @@ export function renderWarehouseRentingPage(container) {
 
   const whatsappBaseUrl = contact.whatsapp
     ? `https://wa.me/${contact.whatsapp}`
-    : 'https://wa.me/919999999999';
+    : 'https://wa.me/919670111167';
 
   // Initialize state with default: 5,000 sq. ft.
   rentState = {
@@ -107,28 +107,6 @@ export function renderWarehouseRentingPage(container) {
 
   container.innerHTML = `
     <div class="renting-page-visual">
-
-      <!-- ══ IN-PAGE STICKY NAV BAR ══ -->
-      <nav class="rent-v-subnav" aria-label="Quick Section Navigation">
-        <div class="container rent-v-subnav-container">
-          <div class="rent-v-subnav-links">
-            <a href="#rent-hero" class="rent-v-subnav-link">Overview</a>
-            <a href="#rent-about" class="rent-v-subnav-link">About Space</a>
-            <a href="#rent-usecases" class="rent-v-subnav-link">Use Cases</a>
-            <a href="#rent-how-it-works" class="rent-v-subnav-link">How It Works</a>
-            <a href="#rent-why-us" class="rent-v-subnav-link">Why Vardha</a>
-            <a href="#rent-showcase" class="rent-v-subnav-link">Facility Tour</a>
-            <a href="#rent-scale-guide" class="rent-v-subnav-link">Choose Space</a>
-            <a href="#rent-calculator" class="rent-v-subnav-link highlight-pill">Calculator</a>
-            <a href="#rent-faq" class="rent-v-subnav-link">FAQ</a>
-          </div>
-          <a href="#rent-calculator" class="rent-v-subnav-cta">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-            <span>Estimate Rent</span>
-          </a>
-        </div>
-      </nav>
-
       <!-- ══ SECTION 1: PREMIUM VISUAL HERO ══ -->
       <section class="rent-v-hero" id="rent-hero">
         <div class="rent-v-hero-bg">

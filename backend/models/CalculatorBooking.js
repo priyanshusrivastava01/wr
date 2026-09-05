@@ -142,7 +142,6 @@ const calculatorBookingSchema = new mongoose.Schema(
 
 calculatorBookingSchema.index({ status: 1 });
 calculatorBookingSchema.index({ createdAt: -1 });
-calculatorBookingSchema.index({ referenceNumber: 1 });
 
 export const CalculatorBooking = mongoose.model(
   'CalculatorBooking',

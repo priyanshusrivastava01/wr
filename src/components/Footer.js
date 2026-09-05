@@ -21,16 +21,16 @@ export function renderFooter(container) {
             <h4>Warehouse Services</h4>
             <a href="/warehouse-renting">Rent Warehouse Space</a>
             <a href="/build-a-warehouse">Build a Custom Warehouse</a>
-            <a href="/warehouse-renting#facilities">24×7 Operations & Facilities</a>
-            <a href="/warehouse-renting#connectivity">Location & Connectivity</a>
+            <a href="/#connectivity">Location & Connectivity</a>
+            <a href="/#contact">Contact & Inquiries</a>
           </div>
 
           <div class="footer-col">
             <h4>Quick Links</h4>
             <a href="/">Home</a>
-            <a href="/warehouse-renting#renting-inquiry">Space Inquiry Form</a>
-            <a href="/build-a-warehouse#build-inquiry">Project Discussion Form</a>
-            <a href="/warehouse-renting#video-tour">Warehouse Video Tour</a>
+            <a href="/warehouse-renting">Space Calculator</a>
+            <a href="/build-a-warehouse">Project Discussion</a>
+            <a href="/#connectivity">Gorakhpur Transit Routes</a>
           </div>
 
           <div class="footer-col">

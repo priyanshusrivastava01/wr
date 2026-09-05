@@ -5,6 +5,7 @@
 import mongoose from 'mongoose';
 import { WarehouseBuildRequest } from '../models/WarehouseBuildRequest.js';
 import { connectDB } from '../config/db.js';
+import { sendWarehouseBuildNotification } from '../services/emailService.js';
 
 /**
  * @desc    Submit Warehouse Build Request (Form 2)
@@ -115,6 +116,11 @@ export const createWarehouseBuildRequest = async (req, res, next) => {
     });
 
     console.log(`✓ [Saved in Collection: warehousebuildrequests] ID: ${buildRequest._id} | Location: ${buildRequest.preferredLocation}`);
+
+    // Trigger Admin Email Notification via Resend (Non-blocking / safe)
+    sendWarehouseBuildNotification(buildRequest).catch((emailErr) => {
+      console.error('⚠️ [Email Notification Warning]:', emailErr);
+    });
 
     return res.status(201).json({
       success: true,

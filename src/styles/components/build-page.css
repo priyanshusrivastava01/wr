@@ -15,95 +15,6 @@
 }
 
 /* ══════════════════════════════════════════════
-   1. IN-PAGE STICKY SUB-NAV BAR
-   ══════════════════════════════════════════════ */
-.build-v-subnav {
-  position: sticky;
-  top: 72px;
-  z-index: 95;
-  background: rgba(15, 23, 42, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(200, 150, 90, 0.25);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-}
-
-.build-v-subnav-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-  gap: var(--space-4);
-}
-
-.build-v-subnav-links {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  padding: 2px 0;
-}
-
-.build-v-subnav-links::-webkit-scrollbar {
-  display: none;
-}
-
-.build-v-subnav-link {
-  font-family: var(--font-heading);
-  font-size: 0.8125rem;
-  font-weight: var(--weight-medium);
-  color: #94A3B8;
-  padding: 6px 14px;
-  border-radius: var(--radius-full);
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.build-v-subnav-link:hover {
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.build-v-subnav-link.highlight-pill {
-  color: #FFFFFF;
-  background: #C8965A;
-  font-weight: var(--weight-semibold);
-  box-shadow: 0 2px 8px rgba(200, 150, 90, 0.3);
-}
-
-.build-v-subnav-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(200, 150, 90, 0.18);
-  border: 1px solid rgba(200, 150, 90, 0.5);
-  color: #E2B178;
-  font-family: var(--font-heading);
-  font-size: 0.8125rem;
-  font-weight: var(--weight-semibold);
-  padding: 7px 16px;
-  border-radius: var(--radius-full);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-.build-v-subnav-cta:hover {
-  background: #C8965A;
-  color: #FFFFFF;
-  border-color: #C8965A;
-  transform: translateY(-1px);
-}
-
-/* ══════════════════════════════════════════════
    2. HIGH-IMPACT HERO SECTION
    ══════════════════════════════════════════════ */
 .build-v-hero {
@@ -1362,14 +1273,6 @@
 
   .j-phase-deliverable {
     grid-column: auto;
-  }
-
-  .build-v-subnav {
-    top: 60px;
-  }
-
-  .build-v-subnav-cta {
-    display: none;
   }
 }
 

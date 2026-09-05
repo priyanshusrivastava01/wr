@@ -429,3 +429,13 @@ textarea.form-input {
 body.no-scroll {
   overflow: hidden;
 }
+
+/* ── Section Scroll Margins (Offset for Fixed Header) ── */
+#connectivity,
+#contact,
+#choose-service,
+#warehouse,
+#home-top,
+.section[id] {
+  scroll-margin-top: calc(var(--header-height, 72px) + 16px);
+}

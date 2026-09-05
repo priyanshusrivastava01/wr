@@ -15,6 +15,7 @@ import { connectDB } from './config/db.js';
 // Dedicated Route Handlers
 import calculatorBookingRoutes from './routes/calculatorBookingRoutes.js';
 import warehouseBuildRoutes from './routes/warehouseBuildRoutes.js';
+import inquiryRoutes from './routes/inquiryRoutes.js';
 
 // Central Error Handlers
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -90,6 +91,11 @@ app.get('/', (req, res) => {
         collection: 'warehousebuildrequests',
         description: 'Stores all custom warehouse planning, PEB construction & development project requests',
       },
+      form3_contact_space_inquiry: {
+        endpoint: '/api/inquiries',
+        collection: 'inquiries',
+        description: 'Stores all general warehouse space inquiries and contact form submissions',
+      },
     },
   });
 });
@@ -100,23 +106,19 @@ app.get('/', (req, res) => {
 app.use('/api/calculator-bookings', calculatorBookingRoutes);
 app.use('/api/calculator-booking', calculatorBookingRoutes);
 app.use('/api/booking-inquiries', calculatorBookingRoutes);
-app.use('/api/space-inquiries', calculatorBookingRoutes);
-app.use('/api/space-inquiry', calculatorBookingRoutes);
-app.use('/api/contact', calculatorBookingRoutes);
 
 // FORM 2: Custom Warehouse Build Request -> warehousebuildrequests
 app.use('/api/warehouse-build-requests', warehouseBuildRoutes);
 app.use('/api/warehouse-build-request', warehouseBuildRoutes);
 app.use('/api/warehouse-build', warehouseBuildRoutes);
 
-// Legacy General Inquiries: Smart router to prevent duplicate collections
-app.use('/api/inquiries', (req, res, next) => {
-  const reqType = String(req.body?.warehouseRequirement || req.body?.intendedUsage || '').toLowerCase();
-  if (reqType.includes('build')) {
-    return warehouseBuildRoutes(req, res, next);
-  }
-  return calculatorBookingRoutes(req, res, next);
-});
+// FORM 3: Contact & Space Inquiry -> inquiries
+app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/inquiry', inquiryRoutes);
+app.use('/api/contact-inquiries', inquiryRoutes);
+app.use('/api/space-inquiries', inquiryRoutes);
+app.use('/api/space-inquiry', inquiryRoutes);
+app.use('/api/contact', inquiryRoutes);
 
 // ── 6. Centralized Error Handling ──
 app.use(notFound);
@@ -133,6 +135,7 @@ const startServer = async () => {
     console.log(`🩺 Health check: http://localhost:${PORT}/api/health`);
     console.log(`📦 Form 1 (Calculator & Space): http://localhost:${PORT}/api/calculator-bookings [-> calculatorbookings]`);
     console.log(`🏗️ Form 2 (Warehouse Build):    http://localhost:${PORT}/api/warehouse-build-requests [-> warehousebuildrequests]`);
+    console.log(`✉️ Form 3 (Inquiries & Contact): http://localhost:${PORT}/api/inquiries [-> inquiries]`);
     console.log(`🌍 Environment: ${NODE_ENV}`);
     console.log(`==================================================\n`);
   });

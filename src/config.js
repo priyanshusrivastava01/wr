@@ -78,9 +78,9 @@ export const CONFIG = {
 
   // ── Contact ──
   contact: {
-    whatsapp: '', // e.g. '919876543210'
-    phone: '',    // e.g. '+91 98765 43210'
-    email: '',    // e.g. 'info@vardhawarehousing.com'
+    whatsapp: '919670111167', // Integrated WhatsApp Number
+    phone: '+91 96701 11167', // Display Phone Number
+    email: '', // e.g. 'info@vardhawarehousing.com'
     address: 'Main Gorakhnath Temple Road, Bargadwa, Gorakhpur, Uttar Pradesh',
   },
 
@@ -243,7 +243,7 @@ export const CONFIG = {
     { label: 'Home', href: '/' },
     { label: 'Warehouse Space', href: '/warehouse-renting' },
     { label: 'Build a Warehouse', href: '/build-a-warehouse' },
-    { label: 'Location & Connectivity', href: '/warehouse-renting#connectivity' },
-    { label: 'Contact', href: '/warehouse-renting#contact' },
+    { label: 'Location & Connectivity', href: '/#connectivity' },
+    { label: 'Contact', href: '/#contact' },
   ],
 };
