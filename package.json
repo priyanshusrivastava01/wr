@@ -7,9 +7,17 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "postinstall": "cd backend && npm install",
     "start": "node backend/server.js",
-    "render-build": "cd backend && npm install",
-    "render-start": "cd backend && node server.js"
+    "render-build": "npm install && cd backend && npm install",
+    "render-start": "node backend/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.5",
+    "resend": "^6.26.0"
   },
   "devDependencies": {
     "vite": "^6.3.5"
