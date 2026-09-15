@@ -335,6 +335,14 @@ export async function sendWarehouseBuildNotification(buildReq) {
       { label: 'Intended Usage / Sector', value: formatValue(buildReq.intendedUsage) },
     ];
 
+    // Include construction estimate if available
+    if (buildReq.estimatedConstructionLow && buildReq.estimatedConstructionHigh) {
+      requirementDetails.push({
+        label: 'Estimated Construction Cost',
+        value: `<strong>${formatCurrency(buildReq.estimatedConstructionLow)} – ${formatCurrency(buildReq.estimatedConstructionHigh)}</strong>`,
+      });
+    }
+
     const notesAndTimeline = [
       { label: 'Project Notes & Timeline', value: formatValue(buildReq.projectNotes) },
       { label: 'Request Status', value: `<span style="background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">${buildReq.status || 'NEW'}</span>` },
@@ -370,6 +378,7 @@ BUILD PROJECT DETAILS:
 - Plot Area: ${buildReq.plotArea || 'N/A'}
 - Required Space: ${buildReq.requiredSpace || 'N/A'}
 - Intended Usage: ${buildReq.intendedUsage || 'N/A'}
+- Estimated Construction Cost: ${buildReq.estimatedConstructionLow && buildReq.estimatedConstructionHigh ? `₹${Number(buildReq.estimatedConstructionLow).toLocaleString('en-IN')} – ₹${Number(buildReq.estimatedConstructionHigh).toLocaleString('en-IN')}` : 'Not Calculated'}
 - Project Notes: ${buildReq.projectNotes || 'N/A'}
     `.trim();
 

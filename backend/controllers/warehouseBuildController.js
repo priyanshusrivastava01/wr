@@ -35,6 +35,8 @@ export const createWarehouseBuildRequest = async (req, res, next) => {
       projectNotes,
       requirement,
       message,
+      estimatedConstructionLow,
+      estimatedConstructionHigh,
     } = req.body;
 
     const resolvedName = (fullName || name || '').trim();
@@ -112,6 +114,8 @@ export const createWarehouseBuildRequest = async (req, res, next) => {
       requiredSpace: resolvedSpace.slice(0, 100),
       intendedUsage: resolvedUsage.slice(0, 150),
       projectNotes: resolvedNotes.slice(0, 2000),
+      estimatedConstructionLow: (typeof estimatedConstructionLow === 'number' && isFinite(estimatedConstructionLow)) ? estimatedConstructionLow : null,
+      estimatedConstructionHigh: (typeof estimatedConstructionHigh === 'number' && isFinite(estimatedConstructionHigh)) ? estimatedConstructionHigh : null,
       status: 'NEW',
     });
 

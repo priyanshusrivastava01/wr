@@ -4,22 +4,185 @@
    Route: /build-a-warehouse
    Stand-alone, visual-first warehouse planning and construction experience.
    Principle: SEE → UNDERSTAND → EXPLORE → PLAN → DISCUSS
+   Supports seamless English & Hindi language switching.
    ============================================ */
 
 import { CONFIG } from '../config.js';
 import { submitBuildWarehouseApi } from '../utils/api.js';
 import { attachPhoneMask } from '../utils/validation.js';
+import { buildWarehouseTranslations } from '../translations/buildWarehouseTranslations.js';
+import {
+  calculateWarehouseEstimate,
+  formatLakhCrore,
+  parseAreaInput,
+  WAREHOUSE_MIN_AREA,
+} from '../utils/warehouseConstructionPricing.js';
+
+// Global / module language state for Build a Warehouse page
+let currentLang = 'en';
+
+// Form preserved state across language toggles
+let formState = {
+  fullName: '',
+  companyName: '',
+  phone: '',
+  email: '',
+  location: '',
+  landStatus: 'Yes, I have land',
+  plotArea: '',
+  size: '',
+  notes: '',
+  warehouseArea: '',
+  selectedPurpose: 'E-Commerce & Logistics Fulfillment',
+  selectedTimeline: '1–3 Months (Immediate)',
+};
+
+/**
+ * Resolves the initial language preference:
+ * 1. URL search parameter: ?lang=hi or ?lang=en
+ * 2. Stored localStorage preference
+ * 3. Default to 'en'
+ */
+function resolveInitialLanguage() {
+  if (typeof window !== 'undefined' && window.location) {
+    const params = new URLSearchParams(window.location.search);
+    const paramLang = params.get('lang');
+    if (paramLang === 'hi' || paramLang === 'en') {
+      return paramLang;
+    }
+  }
+
+  try {
+    const saved = localStorage.getItem('vardha_build_lang');
+    if (saved === 'hi' || saved === 'en') {
+      return saved;
+    }
+  } catch (e) {}
+
+  return 'en';
+}
+
+/**
+ * Updates URL search parameter smoothly without triggering page reload
+ */
+function updateLanguageUrl(lang) {
+  if (typeof window !== 'undefined' && window.history && window.location) {
+    const url = new URL(window.location.href);
+    if (lang === 'hi') {
+      url.searchParams.set('lang', 'hi');
+    } else {
+      url.searchParams.delete('lang'); // clean URL for default 'en'
+    }
+    window.history.replaceState(null, '', url.toString());
+  }
+}
+
+/**
+ * Captures currently typed form inputs from DOM before switching language
+ */
+function captureCurrentFormInputs(container) {
+  if (!container) return;
+  const nameEl = container.querySelector('#build-name');
+  const compEl = container.querySelector('#build-company');
+  const phoneEl = container.querySelector('#build-phone');
+  const emailEl = container.querySelector('#build-email');
+  const locEl = container.querySelector('#build-location');
+  const landEl = container.querySelector('#build-land-status');
+  const plotEl = container.querySelector('#build-plot-area');
+  const sizeEl = container.querySelector('#build-size');
+  const notesEl = container.querySelector('#build-notes');
+  const warehouseAreaEl = container.querySelector('#build-warehouse-area');
+
+  if (nameEl) formState.fullName = nameEl.value;
+  if (compEl) formState.companyName = compEl.value;
+  if (phoneEl) formState.phone = phoneEl.value;
+  if (emailEl) formState.email = emailEl.value;
+  if (locEl) formState.location = locEl.value;
+  if (landEl) formState.landStatus = landEl.value;
+  if (plotEl) formState.plotArea = plotEl.value;
+  if (sizeEl) formState.size = sizeEl.value;
+  if (notesEl) formState.notes = notesEl.value;
+  if (warehouseAreaEl) formState.warehouseArea = warehouseAreaEl.value;
+}
+
+/**
+ * Restores previously entered form inputs into the DOM after re-render
+ */
+function restoreFormInputs(container) {
+  if (!container) return;
+  const nameEl = container.querySelector('#build-name');
+  const compEl = container.querySelector('#build-company');
+  const phoneEl = container.querySelector('#build-phone');
+  const emailEl = container.querySelector('#build-email');
+  const locEl = container.querySelector('#build-location');
+  const landEl = container.querySelector('#build-land-status');
+  const plotEl = container.querySelector('#build-plot-area');
+  const sizeEl = container.querySelector('#build-size');
+  const notesEl = container.querySelector('#build-notes');
+  const warehouseAreaEl = container.querySelector('#build-warehouse-area');
+
+  if (nameEl && formState.fullName) nameEl.value = formState.fullName;
+  if (compEl && formState.companyName) compEl.value = formState.companyName;
+  if (phoneEl && formState.phone) phoneEl.value = formState.phone;
+  if (emailEl && formState.email) emailEl.value = formState.email;
+  if (locEl && formState.location) locEl.value = formState.location;
+  if (landEl && formState.landStatus) landEl.value = formState.landStatus;
+  if (plotEl && formState.plotArea) plotEl.value = formState.plotArea;
+  if (sizeEl && formState.size) sizeEl.value = formState.size;
+  if (notesEl && formState.notes) notesEl.value = formState.notes;
+  if (warehouseAreaEl && formState.warehouseArea) warehouseAreaEl.value = formState.warehouseArea;
+}
 
 export function renderBuildWarehousePage(container) {
-  document.title = 'Build a Custom Warehouse in Gorakhpur & Eastern UP — Vardha Warehousing';
-  const { contact, whatsapp } = CONFIG;
+  currentLang = resolveInitialLanguage();
+  renderBuildWarehouseContent(container);
+}
 
-  const whatsappUrl = contact.whatsapp 
-    ? `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(whatsapp.constructionMessage || 'Hi Vardha Team, I want to discuss a custom warehouse construction project in Gorakhpur/UP.')}`
+function renderBuildWarehouseContent(container) {
+  const t = buildWarehouseTranslations[currentLang] || buildWarehouseTranslations.en;
+  document.title = t.pageTitle;
+
+  const { contact, whatsapp } = CONFIG;
+  const whatsappUrl = contact.whatsapp
+    ? `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(
+        whatsapp.constructionMessage ||
+          'Hi Vardha Team, I want to discuss a custom warehouse construction project in Gorakhpur/UP.'
+      )}`
     : '#build-inquiry';
 
   container.innerHTML = `
     <div class="build-page-visual">
+      
+      <!-- ══ GOOGLE FORMS STYLE LANGUAGE SWITCHER ══ -->
+      <nav class="build-lang-switch-bar" aria-label="${t.langSwitcher.ariaLabel}">
+        <div class="container build-lang-switch-container">
+          <div class="build-lang-tabs" role="tablist" aria-label="${t.langSwitcher.ariaLabel}">
+            <button
+              type="button"
+              class="build-lang-tab-btn ${currentLang === 'hi' ? 'active' : ''}"
+              id="lang-btn-hi"
+              role="tab"
+              aria-selected="${currentLang === 'hi'}"
+              aria-label="Switch to Hindi"
+            >
+              ${currentLang === 'hi' ? '<span class="tab-dot"></span>' : ''}
+              <span>${t.langSwitcher.hi}</span>
+            </button>
+            <button
+              type="button"
+              class="build-lang-tab-btn ${currentLang === 'en' ? 'active' : ''}"
+              id="lang-btn-en"
+              role="tab"
+              aria-selected="${currentLang === 'en'}"
+              aria-label="Switch to English"
+            >
+              ${currentLang === 'en' ? '<span class="tab-dot"></span>' : ''}
+              <span>${t.langSwitcher.en}</span>
+            </button>
+          </div>
+        </div>
+      </nav>
+
       <!-- ══ SECTION 1: HIGH-IMPACT VISUAL HERO ══ -->
       <section class="build-v-hero" id="build-hero">
         <div class="build-v-hero-bg">
@@ -36,37 +199,37 @@ export function renderBuildWarehousePage(container) {
             <div class="build-v-hero-text">
               <div class="build-v-hero-badge">
                 <span class="badge-pulse"></span>
-                <span>CUSTOM WAREHOUSE PLANNING & CONSTRUCTION • GORAKHPUR & UP</span>
+                <span>${t.hero.badge}</span>
               </div>
               <h1 class="build-v-hero-title">
-                Build a Warehouse<br />
-                <span class="highlight">Built for Your Business</span>
+                ${t.hero.titleMain}<br />
+                <span class="highlight">${t.hero.titleHighlight}</span>
               </h1>
               <p class="build-v-hero-subtitle">
-                From land assessment and layout planning to heavy industrial PEB construction, we build high-clearance, high-capacity commercial warehouses tailored to your exact business needs.
+                ${t.hero.subtitle}
               </p>
               <div class="build-v-hero-actions">
                 <a href="#build-inquiry" class="btn-primary" id="build-hero-cta">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
-                  <span>Discuss Your Warehouse Project</span>
+                  <span>${t.hero.ctaPrimary}</span>
                 </a>
                 <a href="#build-pipeline" class="btn-secondary-ghost">
-                  <span>See How It Works ↓</span>
+                  <span>${t.hero.ctaSecondary}</span>
                 </a>
               </div>
 
               <div class="build-v-hero-metrics">
                 <div class="hero-metric-item">
-                  <span class="hero-metric-value">Turnkey</span>
-                  <span class="hero-metric-label">Concept to Handover</span>
+                  <span class="hero-metric-value">${t.hero.metric1Val}</span>
+                  <span class="hero-metric-label">${t.hero.metric1Label}</span>
                 </div>
                 <div class="hero-metric-item">
-                  <span class="hero-metric-value">PEB Steel</span>
-                  <span class="hero-metric-label">High-Span Engineering</span>
+                  <span class="hero-metric-value">${t.hero.metric2Val}</span>
+                  <span class="hero-metric-label">${t.hero.metric2Label}</span>
                 </div>
                 <div class="hero-metric-item">
-                  <span class="hero-metric-value">Gorakhpur</span>
-                  <span class="hero-metric-label">Prime Highway Access</span>
+                  <span class="hero-metric-value">${t.hero.metric3Val}</span>
+                  <span class="hero-metric-label">${t.hero.metric3Label}</span>
                 </div>
               </div>
             </div>
@@ -76,8 +239,8 @@ export function renderBuildWarehousePage(container) {
                 <img src="/images/warehouse-hero.jpg" alt="Completed modern Indian commercial warehouse park" />
                 <div class="hero-floating-badge">
                   <div class="hfb-text">
-                    <h4>Turnkey Facility Delivery</h4>
-                    <p>Designed for logistics, FMCG & industry</p>
+                    <h4>${t.hero.floatingBadgeTitle}</h4>
+                    <p>${t.hero.floatingBadgeSub}</p>
                   </div>
                   <div class="hfb-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -93,10 +256,10 @@ export function renderBuildWarehousePage(container) {
       <section class="build-v-pipeline-section" id="build-pipeline">
         <div class="container">
           <div class="section-header text-center">
-            <span class="section-label" style="color: #E2B178;">END-TO-END DEVELOPMENT FLOW</span>
-            <h2 class="section-title" style="color: #FFFFFF;">From Requirement to Ready Warehouse</h2>
+            <span class="section-label" style="color: #E2B178;">${t.pipeline.label}</span>
+            <h2 class="section-title" style="color: #FFFFFF;">${t.pipeline.title}</h2>
             <p class="section-subtitle centered" style="color: #94A3B8;">
-              A simple, transparent 5-stage roadmap turning your space requirement into an operational commercial facility.
+              ${t.pipeline.subtitle}
             </p>
           </div>
 
@@ -105,45 +268,45 @@ export function renderBuildWarehousePage(container) {
               <div class="pipeline-node-icon">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </div>
-              <span class="pipeline-node-step">Stage 01</span>
-              <h4 class="pipeline-node-title">Your Idea</h4>
-              <p class="pipeline-node-desc">Share space requirement, usage type & target location</p>
+              <span class="pipeline-node-step">${t.pipeline.stages[0].step}</span>
+              <h4 class="pipeline-node-title">${t.pipeline.stages[0].title}</h4>
+              <p class="pipeline-node-desc">${t.pipeline.stages[0].desc}</p>
             </div>
 
             <div class="pipeline-node">
               <div class="pipeline-node-icon">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
               </div>
-              <span class="pipeline-node-step">Stage 02</span>
-              <h4 class="pipeline-node-title">Site & Planning</h4>
-              <p class="pipeline-node-desc">Plot evaluation, truck turning radiuses & highway connectivity</p>
+              <span class="pipeline-node-step">${t.pipeline.stages[1].step}</span>
+              <h4 class="pipeline-node-title">${t.pipeline.stages[1].title}</h4>
+              <p class="pipeline-node-desc">${t.pipeline.stages[1].desc}</p>
             </div>
 
             <div class="pipeline-node">
               <div class="pipeline-node-icon">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
               </div>
-              <span class="pipeline-node-step">Stage 03</span>
-              <h4 class="pipeline-node-title">Custom Design</h4>
-              <p class="pipeline-node-desc">Clear span framing, dock bays, height & racking blueprints</p>
+              <span class="pipeline-node-step">${t.pipeline.stages[2].step}</span>
+              <h4 class="pipeline-node-title">${t.pipeline.stages[2].title}</h4>
+              <p class="pipeline-node-desc">${t.pipeline.stages[2].desc}</p>
             </div>
 
             <div class="pipeline-node">
               <div class="pipeline-node-icon">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
               </div>
-              <span class="pipeline-node-step">Stage 04</span>
-              <h4 class="pipeline-node-title">PEB Construction</h4>
-              <p class="pipeline-node-desc">Heavy structural steel erection, FM2 floor & roof cladding</p>
+              <span class="pipeline-node-step">${t.pipeline.stages[3].step}</span>
+              <h4 class="pipeline-node-title">${t.pipeline.stages[3].title}</h4>
+              <p class="pipeline-node-desc">${t.pipeline.stages[3].desc}</p>
             </div>
 
             <div class="pipeline-node">
               <div class="pipeline-node-icon">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               </div>
-              <span class="pipeline-node-step">Stage 05</span>
-              <h4 class="pipeline-node-title">Ready to Operate</h4>
-              <p class="pipeline-node-desc">Final safety checks, dock commissioning & facility handover</p>
+              <span class="pipeline-node-step">${t.pipeline.stages[4].step}</span>
+              <h4 class="pipeline-node-title">${t.pipeline.stages[4].title}</h4>
+              <p class="pipeline-node-desc">${t.pipeline.stages[4].desc}</p>
             </div>
           </div>
         </div>
@@ -161,56 +324,56 @@ export function renderBuildWarehousePage(container) {
                 <span class="about-tag-icon">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </span>
-                <span>Industrial Grade PEB</span>
+                <span>${t.about.tagPeb}</span>
               </div>
               <div class="about-tag-chip bottom-right">
                 <span class="about-tag-icon">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 </span>
-                <span>Gorakhpur Hub: <span class="chip-val">NH-28 / NH-27</span></span>
+                <span>${t.about.tagHub} <span class="chip-val">${t.about.tagHighway}</span></span>
               </div>
             </div>
 
             <div class="build-v-about-content">
-              <span class="section-label">WHO WE ARE & WHAT WE DO</span>
-              <h2>Your End-to-End Warehouse Development Partner</h2>
+              <span class="section-label">${t.about.label}</span>
+              <h2>${t.about.title}</h2>
               <p class="lead">
-                Building a commercial warehouse requires seamless coordination between land suitability, vehicular logistics, heavy structural engineering, and regulatory compliance. We eliminate this complexity by managing your entire warehouse construction lifecycle under one roof.
+                ${t.about.lead}
               </p>
 
               <div class="about-pill-grid">
                 <div class="about-pill-item">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                   <div>
-                    <h5>Site & Land Planning</h5>
-                    <p>Highway access, road width & soil analysis</p>
+                    <h5>${t.about.pills[0].title}</h5>
+                    <p>${t.about.pills[0].desc}</p>
                   </div>
                 </div>
                 <div class="about-pill-item">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                   <div>
-                    <h5>Engineered Blueprints</h5>
-                    <p>Dock height, column spacing & racking</p>
+                    <h5>${t.about.pills[1].title}</h5>
+                    <p>${t.about.pills[1].desc}</p>
                   </div>
                 </div>
                 <div class="about-pill-item">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                   <div>
-                    <h5>Civil & Steel Erection</h5>
-                    <p>High-grade PEB steel & FM2 laser floors</p>
+                    <h5>${t.about.pills[2].title}</h5>
+                    <p>${t.about.pills[2].desc}</p>
                   </div>
                 </div>
                 <div class="about-pill-item">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                   <div>
-                    <h5>Turnkey Handover</h5>
-                    <p>Delivered fully ready for live operations</p>
+                    <h5>${t.about.pills[3].title}</h5>
+                    <p>${t.about.pills[3].desc}</p>
                   </div>
                 </div>
               </div>
 
               <a href="#build-inquiry" class="btn btn-primary">
-                Discuss Your Construction Plan →
+                ${t.about.cta}
               </a>
             </div>
           </div>
@@ -221,66 +384,66 @@ export function renderBuildWarehousePage(container) {
       <section class="build-v-blueprint-section" id="build-blueprint">
         <div class="container">
           <div class="section-header text-center">
-            <span class="section-label" style="color: #E2B178;">ENGINEERING & DESIGN EXCELLENCE</span>
-            <h2 class="section-title" style="color: #FFFFFF;">Why Build With Vardha?</h2>
+            <span class="section-label" style="color: #E2B178;">${t.blueprint.label}</span>
+            <h2 class="section-title" style="color: #FFFFFF;">${t.blueprint.title}</h2>
             <p class="section-subtitle centered" style="color: #94A3B8;">
-              Modern logistics demands practical, heavy-duty engineering. Here is how we design every facility for operational efficiency.
+              ${t.blueprint.subtitle}
             </p>
           </div>
 
           <div class="blueprint-showcase-grid">
             <div class="blueprint-card">
-              <span class="blueprint-card-corner">01 // SITE</span>
+              <span class="blueprint-card-corner">${t.blueprint.cards[0].corner}</span>
               <div class="blueprint-card-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
               </div>
-              <h3>Smart Site Layout</h3>
-              <p>Wide truck turnaround aprons, dedicated security gates, and multi-bay loading docks designed for smooth commercial vehicle traffic.</p>
+              <h3>${t.blueprint.cards[0].title}</h3>
+              <p>${t.blueprint.cards[0].desc}</p>
             </div>
 
             <div class="blueprint-card">
-              <span class="blueprint-card-corner">02 // STEEL</span>
+              <span class="blueprint-card-corner">${t.blueprint.cards[1].corner}</span>
               <div class="blueprint-card-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
               </div>
-              <h3>High Clear-Span PEB</h3>
-              <p>Pre-engineered structural steel framing providing 14 ft. to 30+ ft. clear ceiling heights with minimal interior column obstruction.</p>
+              <h3>${t.blueprint.cards[1].title}</h3>
+              <p>${t.blueprint.cards[1].desc}</p>
             </div>
 
             <div class="blueprint-card">
-              <span class="blueprint-card-corner">03 // FLOOR</span>
+              <span class="blueprint-card-corner">${t.blueprint.cards[2].corner}</span>
               <div class="blueprint-card-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
               </div>
-              <h3>FM2 Laser Screed Floor</h3>
-              <p>Reinforced concrete flooring designed for heavy forklift wheel loads, high-density pallet racks, and dust-free warehouse environments.</p>
+              <h3>${t.blueprint.cards[2].title}</h3>
+              <p>${t.blueprint.cards[2].desc}</p>
             </div>
 
             <div class="blueprint-card">
-              <span class="blueprint-card-corner">04 // DOCKS</span>
+              <span class="blueprint-card-corner">${t.blueprint.cards[3].corner}</span>
               <div class="blueprint-card-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
               </div>
-              <h3>Hydraulic Dock Bays</h3>
-              <p>Elevated loading docks with motorized rolling shutters, dock levelers, and canopy rain protection for 24x7 all-weather dispatch.</p>
+              <h3>${t.blueprint.cards[3].title}</h3>
+              <p>${t.blueprint.cards[3].desc}</p>
             </div>
 
             <div class="blueprint-card">
-              <span class="blueprint-card-corner">05 // UTILITY</span>
+              <span class="blueprint-card-corner">${t.blueprint.cards[4].corner}</span>
               <div class="blueprint-card-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               </div>
-              <h3>Industrial Utilities</h3>
-              <p>Dedicated commercial transformer capacity, fire hydrant loop lines, high-bay LED lighting, and natural roof skylights.</p>
+              <h3>${t.blueprint.cards[4].title}</h3>
+              <p>${t.blueprint.cards[4].desc}</p>
             </div>
 
             <div class="blueprint-card">
-              <span class="blueprint-card-corner">06 // TRUST</span>
+              <span class="blueprint-card-corner">${t.blueprint.cards[5].corner}</span>
               <div class="blueprint-card-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
               </div>
-              <h3>Single-Point Delivery</h3>
-              <p>One accountable development partner managing civil work, structural fabrication, government approvals, and handover milestones.</p>
+              <h3>${t.blueprint.cards[5].title}</h3>
+              <p>${t.blueprint.cards[5].desc}</p>
             </div>
           </div>
         </div>
@@ -290,10 +453,10 @@ export function renderBuildWarehousePage(container) {
       <section class="build-v-capabilities-section" id="build-capabilities">
         <div class="container">
           <div class="section-header text-center">
-            <span class="section-label">WHAT WE BUILD</span>
-            <h2 class="section-title">Warehouse Capabilities & Formats</h2>
+            <span class="section-label">${t.capabilities.label}</span>
+            <h2 class="section-title">${t.capabilities.title}</h2>
             <p class="section-subtitle centered">
-              Tailored industrial structures built for your specific sector and operational workflow.
+              ${t.capabilities.subtitle}
             </p>
           </div>
 
@@ -301,15 +464,13 @@ export function renderBuildWarehousePage(container) {
             <div class="cap-visual-card">
               <div class="cap-card-img-wrap">
                 <img src="/images/service-build-warehouse.jpg" alt="Pre-Engineered Industrial Warehouse Shed" />
-                <span class="cap-card-badge">Format A</span>
+                <span class="cap-card-badge">${t.capabilities.cards[0].badge}</span>
               </div>
               <div class="cap-card-body">
-                <h3>Industrial PEB Warehouse Sheds</h3>
-                <p>Large open-span pre-engineered steel buildings with insulated roof sheeting, turbo ventilators, and high clearance for maximum storage volume.</p>
+                <h3>${t.capabilities.cards[0].title}</h3>
+                <p>${t.capabilities.cards[0].desc}</p>
                 <div class="cap-card-highlights">
-                  <span class="cap-chip">Clear Height 18–30+ ft.</span>
-                  <span class="cap-chip">Pre-Engineered Steel</span>
-                  <span class="cap-chip">Rapid Erection</span>
+                  ${t.capabilities.cards[0].chips.map(chip => `<span class="cap-chip">${chip}</span>`).join('')}
                 </div>
               </div>
             </div>
@@ -317,15 +478,13 @@ export function renderBuildWarehousePage(container) {
             <div class="cap-visual-card">
               <div class="cap-card-img-wrap">
                 <img src="/images/warehouse-indian-dock.jpg" alt="Logistics & Distribution Hub with Truck Bays" />
-                <span class="cap-card-badge">Format B</span>
+                <span class="cap-card-badge">${t.capabilities.cards[1].badge}</span>
               </div>
               <div class="cap-card-body">
-                <h3>Logistics & Distribution Hubs</h3>
-                <p>Multi-dock fulfillment facilities optimized for fast truck turnaround, cross-dock operations, motorized shutters, and forklift maneuvering.</p>
+                <h3>${t.capabilities.cards[1].title}</h3>
+                <p>${t.capabilities.cards[1].desc}</p>
                 <div class="cap-card-highlights">
-                  <span class="cap-chip">Elevated Docks</span>
-                  <span class="cap-chip">Wide Truck Apron</span>
-                  <span class="cap-chip">FM2 Laser Floor</span>
+                  ${t.capabilities.cards[1].chips.map(chip => `<span class="cap-chip">${chip}</span>`).join('')}
                 </div>
               </div>
             </div>
@@ -333,15 +492,13 @@ export function renderBuildWarehousePage(container) {
             <div class="cap-visual-card">
               <div class="cap-card-img-wrap">
                 <img src="/images/warehouse-interior-lux.jpg" alt="Manufacturing & Raw Material Storage Facility" />
-                <span class="cap-card-badge">Format C</span>
+                <span class="cap-card-badge">${t.capabilities.cards[2].badge}</span>
               </div>
               <div class="cap-card-body">
-                <h3>Manufacturing & Storage Units</h3>
-                <p>Heavy industrial facilities equipped for machinery loads, heavy raw stock storage, robust power load, and integrated administration offices.</p>
+                <h3>${t.capabilities.cards[2].title}</h3>
+                <p>${t.capabilities.cards[2].desc}</p>
                 <div class="cap-card-highlights">
-                  <span class="cap-chip">High Floor Load (5–8 MT)</span>
-                  <span class="cap-chip">Office Space</span>
-                  <span class="cap-chip">3-Phase Power</span>
+                  ${t.capabilities.cards[2].chips.map(chip => `<span class="cap-chip">${chip}</span>`).join('')}
                 </div>
               </div>
             </div>
@@ -353,59 +510,53 @@ export function renderBuildWarehousePage(container) {
       <section class="build-v-land-section" id="build-land">
         <div class="container">
           <div class="section-header text-center">
-            <span class="section-label">WHERE ARE YOU STARTING FROM?</span>
-            <h2 class="section-title">Select Your Land & Project Status</h2>
+            <span class="section-label">${t.landMatrix.label}</span>
+            <h2 class="section-title">${t.landMatrix.title}</h2>
             <p class="section-subtitle centered">
-              Whether you already own land or need end-to-end site sourcing, we adapt our process to where you are today.
+              ${t.landMatrix.subtitle}
             </p>
           </div>
 
           <div class="land-decision-grid">
-            <div class="land-decision-card selected" data-land-val="Yes, I have land" id="land-card-a">
-              <span class="land-card-tag">PATH A</span>
-              <h3>I Already Have Land</h3>
+            <div class="land-decision-card ${formState.landStatus === 'Yes, I have land' ? 'selected' : ''}" data-land-val="Yes, I have land" id="land-card-a">
+              <span class="land-card-tag">${t.landMatrix.cardA.tag}</span>
+              <h3>${t.landMatrix.cardA.title}</h3>
               <p class="land-summary">
-                You have a commercial or industrial plot. We survey your site, design an optimized warehouse layout for your plot dimensions, and execute construction.
+                ${t.landMatrix.cardA.summary}
               </p>
               <div class="land-flow-timeline">
-                <div class="land-flow-step"><span class="lfs-dot"></span> Plot Survey & Boundary Analysis</div>
-                <div class="land-flow-step"><span class="lfs-dot"></span> Custom Architectural Layout</div>
-                <div class="land-flow-step"><span class="lfs-dot"></span> Structural Fabrication & Build</div>
+                ${t.landMatrix.cardA.steps.map(step => `<div class="land-flow-step"><span class="lfs-dot"></span> ${step}</div>`).join('')}
               </div>
               <div class="land-card-action">
-                <span>Selected: Plan on My Land →</span>
+                <span>${formState.landStatus === 'Yes, I have land' ? t.landMatrix.cardA.selectedAction : t.landMatrix.cardA.selectAction}</span>
               </div>
             </div>
 
-            <div class="land-decision-card" data-land-val="No, I need land + build" id="land-card-b">
-              <span class="land-card-tag">PATH B</span>
-              <h3>I Need Land + Warehouse</h3>
+            <div class="land-decision-card ${formState.landStatus === 'No, I need land + build' ? 'selected' : ''}" data-land-val="No, I need land + build" id="land-card-b">
+              <span class="land-card-tag">${t.landMatrix.cardB.tag}</span>
+              <h3>${t.landMatrix.cardB.title}</h3>
               <p class="land-summary">
-                You need a warehouse in a prime location. We help identify suitable highway-connected land in Gorakhpur/UP and build a turnkey facility for you.
+                ${t.landMatrix.cardB.summary}
               </p>
               <div class="land-flow-timeline">
-                <div class="land-flow-step"><span class="lfs-dot"></span> Location & Highway Feasibility</div>
-                <div class="land-flow-step"><span class="lfs-dot"></span> Plot Acquisition & Planning</div>
-                <div class="land-flow-step"><span class="lfs-dot"></span> Turnkey Construction</div>
+                ${t.landMatrix.cardB.steps.map(step => `<div class="land-flow-step"><span class="lfs-dot"></span> ${step}</div>`).join('')}
               </div>
               <div class="land-card-action">
-                <span>Select: Need Land + Build →</span>
+                <span>${formState.landStatus === 'No, I need land + build' ? t.landMatrix.cardB.selectedAction : t.landMatrix.cardB.selectAction}</span>
               </div>
             </div>
 
-            <div class="land-decision-card" data-land-val="Just exploring" id="land-card-c">
-              <span class="land-card-tag">PATH C</span>
-              <h3>I Am Exploring Options</h3>
+            <div class="land-decision-card ${formState.landStatus === 'Just exploring' ? 'selected' : ''}" data-land-val="Just exploring" id="land-card-c">
+              <span class="land-card-tag">${t.landMatrix.cardC.tag}</span>
+              <h3>${t.landMatrix.cardC.title}</h3>
               <p class="land-summary">
-                You are evaluating warehouse feasibility, approximate build costs, and space requirements for an upcoming business expansion.
+                ${t.landMatrix.cardC.summary}
               </p>
               <div class="land-flow-timeline">
-                <div class="land-flow-step"><span class="lfs-dot"></span> Business Need Discussion</div>
-                <div class="land-flow-step"><span class="lfs-dot"></span> Preliminary Cost Estimation</div>
-                <div class="land-flow-step"><span class="lfs-dot"></span> Feasibility Consultation</div>
+                ${t.landMatrix.cardC.steps.map(step => `<div class="land-flow-step"><span class="lfs-dot"></span> ${step}</div>`).join('')}
               </div>
               <div class="land-card-action">
-                <span>Select: Explore Feasibility →</span>
+                <span>${formState.landStatus === 'Just exploring' ? t.landMatrix.cardC.selectedAction : t.landMatrix.cardC.selectAction}</span>
               </div>
             </div>
           </div>
@@ -416,37 +567,25 @@ export function renderBuildWarehousePage(container) {
       <section class="build-v-design-section" id="build-design">
         <div class="container">
           <div class="section-header text-center">
-            <span class="section-label" style="color: #E2B178;">ARCHITECTURAL PROGRESSION</span>
-            <h2 class="section-title" style="color: #FFFFFF;">How Your Warehouse Is Planned</h2>
+            <span class="section-label" style="color: #E2B178;">${t.planning.label}</span>
+            <h2 class="section-title" style="color: #FFFFFF;">${t.planning.title}</h2>
             <p class="section-subtitle centered" style="color: #94A3B8;">
-              Every square foot is engineered for smooth internal logistics, safety, and future scalability.
+              ${t.planning.subtitle}
             </p>
           </div>
 
           <div class="design-progression-grid">
-            <div class="design-step-card">
-              <div class="design-step-num">01</div>
-              <h3>Space & Capacity Sizing</h3>
-              <p>We calculate your optimal square footage based on pallet counts, SKU diversity, and growth projections.</p>
-            </div>
-
-            <div class="design-step-card">
-              <div class="design-step-num">02</div>
-              <h3>Aisle & Racking Geometry</h3>
-              <p>Clear forklift pathways, pallet rack spacing, and staging zones mapped out for zero operational bottlenecks.</p>
-            </div>
-
-            <div class="design-step-card">
-              <div class="design-step-num">03</div>
-              <h3>Dock & Truck Flow Design</h3>
-              <p>Dock height matched to 32 ft. / 20 ft. commercial containers with turning radius engineered on the apron.</p>
-            </div>
-
-            <div class="design-step-card">
-              <div class="design-step-num">04</div>
-              <h3>PEB Engineering & Load</h3>
-              <p>Structural steel calculations ensuring cyclone resistance, heavy floor point loads, and roof skylight placement.</p>
-            </div>
+            ${t.planning.steps
+              .map(
+                step => `
+              <div class="design-step-card">
+                <div class="design-step-num">${step.num}</div>
+                <h3>${step.title}</h3>
+                <p>${step.desc}</p>
+              </div>
+            `
+              )
+              .join('')}
           </div>
         </div>
       </section>
@@ -455,58 +594,28 @@ export function renderBuildWarehousePage(container) {
       <section class="build-v-construction-section" id="build-construction">
         <div class="container">
           <div class="section-header text-center">
-            <span class="section-label">THE BUILD ROADMAP</span>
-            <h2 class="section-title">5-Stage Construction Process</h2>
+            <span class="section-label">${t.construction.label}</span>
+            <h2 class="section-title">${t.construction.title}</h2>
             <p class="section-subtitle centered">
-              Structured civil execution with milestone updates at every step.
+              ${t.construction.subtitle}
             </p>
           </div>
 
           <div class="construction-journey-list">
-            <div class="journey-row-item">
-              <div class="j-phase-badge">Phase 01</div>
-              <div class="j-phase-content">
-                <h3>Site Preparation & Deep Foundation</h3>
-                <p>Land clearing, soil compaction, plinth beam construction, and heavy RCC anchor bolt foundations.</p>
+            ${t.construction.phases
+              .map(
+                phase => `
+              <div class="journey-row-item">
+                <div class="j-phase-badge">${phase.badge}</div>
+                <div class="j-phase-content">
+                  <h3>${phase.title}</h3>
+                  <p>${phase.desc}</p>
+                </div>
+                <div class="j-phase-deliverable">${phase.deliverable}</div>
               </div>
-              <div class="j-phase-deliverable">✓ Engineered Plinth</div>
-            </div>
-
-            <div class="journey-row-item">
-              <div class="j-phase-badge">Phase 02</div>
-              <div class="j-phase-content">
-                <h3>PEB Structural Steel Erection</h3>
-                <p>Assembly of high-strength structural steel columns, rafters, purlins, and crane girder brackets.</p>
-              </div>
-              <div class="j-phase-deliverable">✓ Steel Frame Erected</div>
-            </div>
-
-            <div class="journey-row-item">
-              <div class="j-phase-badge">Phase 03</div>
-              <div class="j-phase-content">
-                <h3>Roofing & Wall Metal Cladding</h3>
-                <p>Installation of galvalume corrugated roof sheeting, polycarbonate daylight strips, and side louvers.</p>
-              </div>
-              <div class="j-phase-deliverable">✓ Weatherproof Shell</div>
-            </div>
-
-            <div class="journey-row-item">
-              <div class="j-phase-badge">Phase 04</div>
-              <div class="j-phase-content">
-                <h3>FM2 Laser Flooring & Dock Levelers</h3>
-                <p>Laser screed concrete pour with hardener, motorized rolling shutters, dock ramp, and drainage aprons.</p>
-              </div>
-              <div class="j-phase-deliverable">✓ High-Load Floor & Docks</div>
-            </div>
-
-            <div class="journey-row-item">
-              <div class="j-phase-badge">Phase 05</div>
-              <div class="j-phase-content">
-                <h3>Electricals, Safety & Final Handover</h3>
-                <p>High-bay LED lighting, fire safety loops, perimeter security boundary wall, and final operational sign-off.</p>
-              </div>
-              <div class="j-phase-deliverable">✓ Keys & Handover</div>
-            </div>
+            `
+              )
+              .join('')}
           </div>
         </div>
       </section>
@@ -519,41 +628,27 @@ export function renderBuildWarehousePage(container) {
               <img src="/images/warehouse-hero.jpg" alt="Delivered operational Indian commercial warehouse" />
             </div>
             <div class="endresult-info-side">
-              <span class="section-label" style="color: #C8965A; font-weight: bold; font-size: 0.8125rem; text-transform: uppercase;">THE COMPLETED FACILITY</span>
-              <h3>What You Receive at Handover</h3>
+              <span class="section-label" style="color: #C8965A; font-weight: bold; font-size: 0.8125rem; text-transform: uppercase;">${t.endResult.label}</span>
+              <h3>${t.endResult.title}</h3>
               <p class="intro">
-                A fully functional, robust commercial warehouse ready for immediate inventory move-in and business operations.
+                ${t.endResult.intro}
               </p>
 
               <div class="endresult-checklist">
-                <div class="endresult-check-item">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span>Ready Commercial Structure</span>
-                </div>
-                <div class="endresult-check-item">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span>Motorized Shutter Bays</span>
-                </div>
-                <div class="endresult-check-item">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span>Laser-Screed FM2 Floor</span>
-                </div>
-                <div class="endresult-check-item">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span>Wide Concrete Yard</span>
-                </div>
-                <div class="endresult-check-item">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span>3-Phase Power Setup</span>
-                </div>
-                <div class="endresult-check-item">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span>Gated Perimeter Wall</span>
-                </div>
+                ${t.endResult.checklist
+                  .map(
+                    item => `
+                  <div class="endresult-check-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>${item}</span>
+                  </div>
+                `
+                  )
+                  .join('')}
               </div>
 
               <a href="#build-inquiry" class="btn btn-primary" style="align-self: flex-start;">
-                Request Your Warehouse Plan →
+                ${t.endResult.cta}
               </a>
             </div>
           </div>
@@ -564,10 +659,10 @@ export function renderBuildWarehousePage(container) {
       <section class="build-v-form-section" id="build-inquiry">
         <div class="container">
           <div class="section-header text-center">
-            <span class="section-label">PROJECT CONSULTATION</span>
-            <h2 class="section-title">Tell Us About Your Warehouse Requirement</h2>
+            <span class="section-label">${t.form.label}</span>
+            <h2 class="section-title">${t.form.title}</h2>
             <p class="section-subtitle centered">
-              Select your basic project preferences below. Our commercial construction team will review your requirements and connect for a detailed discussion.
+              ${t.form.subtitle}
             </p>
           </div>
 
@@ -575,110 +670,182 @@ export function renderBuildWarehousePage(container) {
             <!-- Step 1: Visual Purpose Selector -->
             <div class="form-step-block">
               <div class="form-step-block-title">
-                <span class="f-num">1</span>
-                <span class="f-label">Intended Warehouse Use / Sector</span>
+                <span class="f-num">${t.form.step1Num}</span>
+                <span class="f-label">${t.form.step1Title}</span>
               </div>
               <div class="purpose-visual-selector">
-                <button type="button" class="purpose-btn active" data-purpose="E-Commerce & Logistics Fulfillment">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                  <span>E-Commerce Logistics</span>
-                </button>
-                <button type="button" class="purpose-btn" data-purpose="FMCG & Consumer Goods Distribution">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                  <span>FMCG Distribution</span>
-                </button>
-                <button type="button" class="purpose-btn" data-purpose="Manufacturing & Raw Material Stock">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
-                  <span>Industrial / Factory</span>
-                </button>
-                <button type="button" class="purpose-btn" data-purpose="Cold Storage & Food Processing">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                  <span>Cold Chain / Storage</span>
-                </button>
-                <button type="button" class="purpose-btn" data-purpose="Retail Buffer & Wholesale Yard">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-                  <span>Retail Buffer Yard</span>
-                </button>
-                <button type="button" class="purpose-btn" data-purpose="General Commercial Warehouse">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span>General Warehouse</span>
-                </button>
+                ${t.form.purposes
+                  .map(
+                    p => `
+                  <button type="button" class="purpose-btn ${formState.selectedPurpose === p.val ? 'active' : ''}" data-purpose="${p.val}">
+                    ${getPurposeSvg(p.key)}
+                    <span>${p.label}</span>
+                  </button>
+                `
+                  )
+                  .join('')}
               </div>
             </div>
 
             <!-- Step 2: Project Timeline Selector -->
             <div class="form-step-block">
               <div class="form-step-block-title">
-                <span class="f-num">2</span>
-                <span class="f-label">Expected Project Timeline</span>
+                <span class="f-num">${t.form.step2Num}</span>
+                <span class="f-label">${t.form.step2Title}</span>
               </div>
               <div class="timeline-pill-selector">
-                <button type="button" class="timeline-pill active" data-timeline="1–3 Months (Immediate)">1–3 Months</button>
-                <button type="button" class="timeline-pill" data-timeline="3–6 Months">3–6 Months</button>
-                <button type="button" class="timeline-pill" data-timeline="6–12 Months">6–12 Months</button>
-                <button type="button" class="timeline-pill" data-timeline="Exploring / Planning Stage">Just Exploring</button>
+                ${t.form.timelines
+                  .map(
+                    tl => `
+                  <button type="button" class="timeline-pill ${formState.selectedTimeline === tl.val ? 'active' : ''}" data-timeline="${tl.val}">
+                    ${tl.label}
+                  </button>
+                `
+                  )
+                  .join('')}
               </div>
             </div>
 
-            <!-- Step 3: Detailed Information Form -->
+            <!-- Step 3: Instant Construction Estimate -->
+            <div class="form-step-block">
+              <div class="form-step-block-title">
+                <span class="f-num">${t.costEstimator.stepNum}</span>
+                <span class="f-label">${t.costEstimator.stepTitle}</span>
+              </div>
+
+              <div class="build-estimate-input-group">
+                <label class="form-label" for="build-warehouse-area">${t.costEstimator.inputLabel}</label>
+                <div class="estimate-input-wrapper">
+                  <input
+                    type="text"
+                    class="form-input estimate-area-input"
+                    id="build-warehouse-area"
+                    placeholder="${t.costEstimator.inputPlaceholder}"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    aria-label="${t.costEstimator.inputLabel}"
+                    value="${formState.warehouseArea || ''}"
+                  />
+                  <span class="estimate-input-suffix">${t.costEstimator.inputSuffix}</span>
+                </div>
+                <div id="build-estimate-validation" class="estimate-validation-error" style="display: none;" role="alert"></div>
+              </div>
+
+              <div id="build-estimate-result" class="build-estimate-result-card" style="display: none;">
+                <div class="estimate-result-header">
+                  <h4 class="estimate-result-title">${t.costEstimator.resultTitle}</h4>
+                  <div class="estimate-result-area">
+                    <span class="estimate-area-label">${t.costEstimator.resultAreaLabel}:</span>
+                    <span class="estimate-area-value" id="estimate-area-display">—</span>
+                  </div>
+                  <div class="estimate-total-cost">
+                    <span class="estimate-cost-label">${t.costEstimator.resultCostLabel}</span>
+                    <span class="estimate-cost-value" id="estimate-total-display">—</span>
+                  </div>
+                </div>
+
+                <div class="estimate-breakdown">
+                  <h5 class="estimate-breakdown-heading">${t.costEstimator.breakdownTitle}</h5>
+                  <div class="estimate-breakdown-list">
+                    <div class="estimate-breakdown-item">
+                      <span class="ebi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg></span>
+                      <span class="ebi-label">${t.costEstimator.steelStructure}</span>
+                      <span class="ebi-value" id="estimate-steel">—</span>
+                    </div>
+                    <div class="estimate-breakdown-item">
+                      <span class="ebi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg></span>
+                      <span class="ebi-label">${t.costEstimator.roofingSheet}</span>
+                      <span class="ebi-value" id="estimate-roofing">—</span>
+                    </div>
+                    <div class="estimate-breakdown-item">
+                      <span class="ebi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/></svg></span>
+                      <span class="ebi-label">${t.costEstimator.fabricationErection}</span>
+                      <span class="ebi-value" id="estimate-fabrication">—</span>
+                    </div>
+                    <div class="estimate-breakdown-item">
+                      <span class="ebi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M12 2v9"/><path d="M7 5l5-3 5 3"/></svg></span>
+                      <span class="ebi-label">${t.costEstimator.civilFooting}</span>
+                      <span class="ebi-value" id="estimate-civil">—</span>
+                    </div>
+                    <div class="estimate-breakdown-item">
+                      <span class="ebi-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+                      <span class="ebi-label">${t.costEstimator.paintingMiscellaneous}</span>
+                      <span class="ebi-value" id="estimate-painting">—</span>
+                    </div>
+                  </div>
+                  <div class="estimate-breakdown-total">
+                    <span class="ebt-label">${t.costEstimator.estimatedTotal}</span>
+                    <span class="ebt-value" id="estimate-breakdown-total">—</span>
+                  </div>
+                </div>
+
+                <p class="estimate-disclaimer">${t.costEstimator.disclaimer}</p>
+              </div>
+            </div>
+
+            <!-- Step 4: Detailed Information Form -->
             <form id="build-project-form" novalidate>
               <div class="form-step-block">
                 <div class="form-step-block-title">
-                  <span class="f-num">3</span>
-                  <span class="f-label">Contact & Project Specifications</span>
+                  <span class="f-num">${t.form.step3Num}</span>
+                  <span class="f-label">${t.form.step3Title}</span>
                 </div>
 
                 <div class="form-row-2">
                   <div class="form-group">
-                    <label class="form-label" for="build-name">Full Name *</label>
-                    <input type="text" class="form-input" id="build-name" placeholder="Amit Verma" required />
+                    <label class="form-label" for="build-name">${t.form.fieldName}</label>
+                    <input type="text" class="form-input" id="build-name" placeholder="${t.form.placeholderName}" required />
                   </div>
                   <div class="form-group">
-                    <label class="form-label" for="build-company">Business / Company Name</label>
-                    <input type="text" class="form-input" id="build-company" placeholder="Verma Enterprises" />
-                  </div>
-                </div>
-
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label class="form-label" for="build-phone">Indian Mobile Number *</label>
-                    <input type="tel" class="form-input" id="build-phone" placeholder="9876543210" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" required />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label" for="build-email">Email Address</label>
-                    <input type="email" class="form-input" id="build-email" placeholder="amit@example.com" />
+                    <label class="form-label" for="build-company">${t.form.fieldCompany}</label>
+                    <input type="text" class="form-input" id="build-company" placeholder="${t.form.placeholderCompany}" />
                   </div>
                 </div>
 
                 <div class="form-row-2">
                   <div class="form-group">
-                    <label class="form-label" for="build-location">Target Location / Highway</label>
-                    <input type="text" class="form-input" id="build-location" placeholder="e.g. Gorakhpur / NH-28 / GIDA area" />
+                    <label class="form-label" for="build-phone">${t.form.fieldPhone}</label>
+                    <input type="tel" class="form-input" id="build-phone" placeholder="${t.form.placeholderPhone}" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" required />
                   </div>
                   <div class="form-group">
-                    <label class="form-label" for="build-land-status">Land Status</label>
+                    <label class="form-label" for="build-email">${t.form.fieldEmail}</label>
+                    <input type="email" class="form-input" id="build-email" placeholder="${t.form.placeholderEmail}" />
+                  </div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label" for="build-location">${t.form.fieldLocation}</label>
+                    <input type="text" class="form-input" id="build-location" placeholder="${t.form.placeholderLocation}" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="build-land-status">${t.form.fieldLandStatus}</label>
                     <select class="form-input form-select" id="build-land-status">
-                      <option value="Yes, I have land" selected>Yes, I have land (Path A)</option>
-                      <option value="No, I need land + build">No, I need land + build (Path B)</option>
-                      <option value="Just exploring">Just exploring (Path C)</option>
+                      ${t.form.landOptions
+                        .map(
+                          opt => `
+                        <option value="${opt.val}" ${formState.landStatus === opt.val ? 'selected' : ''}>${opt.label}</option>
+                      `
+                        )
+                        .join('')}
                     </select>
                   </div>
                 </div>
 
                 <div class="form-row-2">
                   <div class="form-group">
-                    <label class="form-label" for="build-plot-area">Plot Area (if known)</label>
-                    <input type="text" class="form-input" id="build-plot-area" placeholder="e.g. 2 Acres / 50,000 sq. ft." />
+                    <label class="form-label" for="build-plot-area">${t.form.fieldPlotArea}</label>
+                    <input type="text" class="form-input" id="build-plot-area" placeholder="${t.form.placeholderPlotArea}" />
                   </div>
                   <div class="form-group">
-                    <label class="form-label" for="build-size">Required Warehouse Size</label>
-                    <input type="text" class="form-input" id="build-size" placeholder="e.g. 20,000 sq. ft." />
+                    <label class="form-label" for="build-size">${t.form.fieldSize}</label>
+                    <input type="text" class="form-input" id="build-size" placeholder="${t.form.placeholderSize}" />
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" for="build-notes">Project Notes / Specific Requirements</label>
-                  <textarea class="form-input" id="build-notes" rows="3" placeholder="e.g. Looking for 24 ft ceiling height, 4 truck loading bays, and heavy laser screed flooring for racking."></textarea>
+                  <label class="form-label" for="build-notes">${t.form.fieldNotes}</label>
+                  <textarea class="form-input" id="build-notes" rows="3" placeholder="${t.form.placeholderNotes}"></textarea>
                 </div>
 
                 <div id="build-global-error" style="display: none; color: #EF4444; font-size: 0.875rem; margin-bottom: var(--space-4); background: rgba(239, 68, 68, 0.1); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.25);"></div>
@@ -686,7 +853,7 @@ export function renderBuildWarehousePage(container) {
 
                 <div class="form-submit-row">
                   <button type="submit" class="btn btn-primary btn-full" id="build-submit-btn" style="padding: 16px; font-size: 1rem;">
-                    <span>Request a Warehouse Project Discussion</span>
+                    <span>${t.form.submitBtn}</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                   </button>
                 </div>
@@ -700,16 +867,16 @@ export function renderBuildWarehousePage(container) {
       <section class="build-v-final-cta">
         <div class="container">
           <div class="final-cta-dark-box">
-            <span class="cta-mini-tag" style="display: inline-block; background: rgba(200, 150, 90, 0.15); color: #E2B178; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; margin-bottom: 12px; letter-spacing: 0.05em;">TURNKEY COMMERCIAL DEVELOPMENT</span>
-            <h2>Ready to Plan & Build Your Warehouse?</h2>
-            <p>Connect directly with our commercial development engineers in Gorakhpur to discuss your site, blueprints, and build timeline.</p>
+            <span class="cta-mini-tag" style="display: inline-block; background: rgba(200, 150, 90, 0.15); color: #E2B178; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; margin-bottom: 12px; letter-spacing: 0.05em;">${t.finalCta.miniTag}</span>
+            <h2>${t.finalCta.title}</h2>
+            <p>${t.finalCta.desc}</p>
             <div class="cta-buttons-row">
               <a href="#build-inquiry" class="btn btn-primary" style="padding: 14px 28px;">
-                Request a Discussion
+                ${t.finalCta.ctaPrimary}
               </a>
               <a href="${whatsappUrl}" target="_blank" rel="noopener" class="btn-whatsapp-direct">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824z"/></svg>
-                <span>Chat on WhatsApp</span>
+                <span>${t.finalCta.ctaWhatsApp}</span>
               </a>
             </div>
           </div>
@@ -719,20 +886,57 @@ export function renderBuildWarehousePage(container) {
     </div>
   `;
 
-  initBuildPageInteractions();
+  // Restore form inputs after re-render
+  restoreFormInputs(container);
+
+  // Initialize all interactive listeners
+  initBuildPageInteractions(container, t);
 }
 
-function initBuildPageInteractions() {
-  const form = document.getElementById('build-project-form');
-  const phoneInput = document.getElementById('build-phone');
-  const errorBox = document.getElementById('build-global-error');
-  const successBox = document.getElementById('build-global-success');
-  const submitBtn = document.getElementById('build-submit-btn');
-  const landStatusSelect = document.getElementById('build-land-status');
+function getPurposeSvg(key) {
+  switch (key) {
+    case 'ecommerce':
+      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`;
+    case 'fmcg':
+      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`;
+    case 'factory':
+      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>`;
+    case 'cold':
+      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`;
+    case 'retail':
+      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>`;
+    case 'general':
+    default:
+      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+  }
+}
 
-  // Selected state
-  let selectedPurpose = 'E-Commerce & Logistics Fulfillment';
-  let selectedTimeline = '1–3 Months (Immediate)';
+function initBuildPageInteractions(container, t) {
+  // ── Language Switcher Listeners (Dynamic / No Page Reload) ──
+  const btnHi = container.querySelector('#lang-btn-hi');
+  const btnEn = container.querySelector('#lang-btn-en');
+
+  const switchLanguage = (newLang) => {
+    if (newLang === currentLang) return;
+    captureCurrentFormInputs(container);
+    currentLang = newLang;
+    try {
+      localStorage.setItem('vardha_build_lang', newLang);
+    } catch (e) {}
+    updateLanguageUrl(newLang);
+    renderBuildWarehouseContent(container);
+  };
+
+  btnHi?.addEventListener('click', () => switchLanguage('hi'));
+  btnEn?.addEventListener('click', () => switchLanguage('en'));
+
+  // ── Form Elements & Handlers ──
+  const form = container.querySelector('#build-project-form');
+  const phoneInput = container.querySelector('#build-phone');
+  const errorBox = container.querySelector('#build-global-error');
+  const successBox = container.querySelector('#build-global-success');
+  const submitBtn = container.querySelector('#build-submit-btn');
+  const landStatusSelect = container.querySelector('#build-land-status');
 
   // 1. Phone Input Masking
   if (phoneInput) {
@@ -740,107 +944,247 @@ function initBuildPageInteractions() {
   }
 
   // 2. Land Decision Cards Click -> Auto-select in form
-  const landCards = document.querySelectorAll('.land-decision-card');
+  const landCards = container.querySelectorAll('.land-decision-card');
   landCards.forEach(card => {
     card.addEventListener('click', () => {
-      landCards.forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
+      landCards.forEach(c => {
+        c.classList.remove('selected');
+        const actionSpan = c.querySelector('.land-card-action span');
+        const cVal = c.getAttribute('data-land-val');
+        if (actionSpan) {
+          if (cVal === 'Yes, I have land') actionSpan.textContent = t.landMatrix.cardA.selectAction;
+          else if (cVal === 'No, I need land + build') actionSpan.textContent = t.landMatrix.cardB.selectAction;
+          else if (cVal === 'Just exploring') actionSpan.textContent = t.landMatrix.cardC.selectAction;
+        }
+      });
 
+      card.classList.add('selected');
       const landVal = card.getAttribute('data-land-val');
-      if (landStatusSelect && landVal) {
-        landStatusSelect.value = landVal;
+      if (landVal) {
+        formState.landStatus = landVal;
+        if (landStatusSelect) landStatusSelect.value = landVal;
+        const selectedSpan = card.querySelector('.land-card-action span');
+        if (selectedSpan) {
+          if (landVal === 'Yes, I have land') selectedSpan.textContent = t.landMatrix.cardA.selectedAction;
+          else if (landVal === 'No, I need land + build') selectedSpan.textContent = t.landMatrix.cardB.selectedAction;
+          else if (landVal === 'Just exploring') selectedSpan.textContent = t.landMatrix.cardC.selectedAction;
+        }
       }
 
       // Smooth scroll to form
-      const formEl = document.getElementById('build-inquiry');
+      const formEl = container.querySelector('#build-inquiry');
       if (formEl) {
         formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
   });
 
-  // Sync select change back to cards
+  // Sync select dropdown change back to cards
   landStatusSelect?.addEventListener('change', (e) => {
     const val = e.target.value;
+    formState.landStatus = val;
     landCards.forEach(card => {
-      if (card.getAttribute('data-land-val') === val) {
+      const cVal = card.getAttribute('data-land-val');
+      const actionSpan = card.querySelector('.land-card-action span');
+      if (cVal === val) {
         card.classList.add('selected');
+        if (actionSpan) {
+          if (val === 'Yes, I have land') actionSpan.textContent = t.landMatrix.cardA.selectedAction;
+          else if (val === 'No, I need land + build') actionSpan.textContent = t.landMatrix.cardB.selectedAction;
+          else if (val === 'Just exploring') actionSpan.textContent = t.landMatrix.cardC.selectedAction;
+        }
       } else {
         card.classList.remove('selected');
+        if (actionSpan) {
+          if (cVal === 'Yes, I have land') actionSpan.textContent = t.landMatrix.cardA.selectAction;
+          else if (cVal === 'No, I need land + build') actionSpan.textContent = t.landMatrix.cardB.selectAction;
+          else if (cVal === 'Just exploring') actionSpan.textContent = t.landMatrix.cardC.selectAction;
+        }
       }
     });
   });
 
   // 3. Purpose Selector Buttons
-  const purposeBtns = document.querySelectorAll('.purpose-btn');
+  const purposeBtns = container.querySelectorAll('.purpose-btn');
   purposeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       purposeBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      selectedPurpose = btn.getAttribute('data-purpose') || 'General Commercial Warehouse';
+      formState.selectedPurpose = btn.getAttribute('data-purpose') || 'General Commercial Warehouse';
     });
   });
 
   // 4. Timeline Pill Buttons
-  const timelinePills = document.querySelectorAll('.timeline-pill');
+  const timelinePills = container.querySelectorAll('.timeline-pill');
   timelinePills.forEach(pill => {
     pill.addEventListener('click', () => {
       timelinePills.forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
-      selectedTimeline = pill.getAttribute('data-timeline') || '1–3 Months';
+      formState.selectedTimeline = pill.getAttribute('data-timeline') || '1–3 Months (Immediate)';
     });
   });
 
-  // 5. Form Submission (with duplicate submission guard)
+  // 5. Live Construction Cost Estimator
+  const warehouseAreaInput = container.querySelector('#build-warehouse-area');
+  const estimateResultCard = container.querySelector('#build-estimate-result');
+  const estimateValidation = container.querySelector('#build-estimate-validation');
+
+  function updateEstimateDisplay() {
+    if (!warehouseAreaInput || !estimateResultCard) return;
+
+    const rawVal = warehouseAreaInput.value;
+    formState.warehouseArea = rawVal;
+
+    // Empty input — hide everything
+    if (!rawVal || rawVal.trim() === '') {
+      estimateResultCard.style.display = 'none';
+      if (estimateValidation) estimateValidation.style.display = 'none';
+      return;
+    }
+
+    const parsedArea = parseAreaInput(rawVal);
+
+    if (parsedArea === null) {
+      estimateResultCard.style.display = 'none';
+      if (estimateValidation) {
+        estimateValidation.textContent = t.costEstimator.validationError;
+        estimateValidation.style.display = 'block';
+      }
+      return;
+    }
+
+    // Below minimum area
+    if (parsedArea < WAREHOUSE_MIN_AREA) {
+      estimateResultCard.style.display = 'none';
+      if (estimateValidation) {
+        estimateValidation.textContent = t.costEstimator.minimumAreaError;
+        estimateValidation.style.display = 'block';
+      }
+      return;
+    }
+
+    // Valid area — calculate and display
+    if (estimateValidation) estimateValidation.style.display = 'none';
+
+    const estimate = calculateWarehouseEstimate(parsedArea);
+    if (!estimate) {
+      estimateResultCard.style.display = 'none';
+      return;
+    }
+
+    const lbl = t.costEstimator.lakhLabel;
+    const crl = t.costEstimator.croreLabel;
+    const fmt = (val) => formatLakhCrore(val, lbl, crl);
+
+    // Update area display
+    const areaDisplay = container.querySelector('#estimate-area-display');
+    if (areaDisplay) areaDisplay.textContent = `${Math.round(parsedArea).toLocaleString('en-IN')} ${t.costEstimator.inputSuffix}`;
+
+    // Update total cost
+    const totalDisplay = container.querySelector('#estimate-total-display');
+    if (totalDisplay) totalDisplay.textContent = `${fmt(estimate.total.low)} – ${fmt(estimate.total.high)}`;
+
+    // Update component breakdown
+    const steelEl = container.querySelector('#estimate-steel');
+    if (steelEl) steelEl.textContent = `${fmt(estimate.steelStructure.low)} – ${fmt(estimate.steelStructure.high)}`;
+
+    const roofingEl = container.querySelector('#estimate-roofing');
+    if (roofingEl) roofingEl.textContent = `${fmt(estimate.roofingSheet.low)} – ${fmt(estimate.roofingSheet.high)}`;
+
+    const fabEl = container.querySelector('#estimate-fabrication');
+    if (fabEl) fabEl.textContent = `${fmt(estimate.fabricationErection.low)} – ${fmt(estimate.fabricationErection.high)}`;
+
+    const civilEl = container.querySelector('#estimate-civil');
+    if (civilEl) civilEl.textContent = `${fmt(estimate.civilFooting.low)} – ${fmt(estimate.civilFooting.high)}`;
+
+    const paintEl = container.querySelector('#estimate-painting');
+    if (paintEl) paintEl.textContent = `${fmt(estimate.paintingMiscellaneous.low)} – ${fmt(estimate.paintingMiscellaneous.high)}`;
+
+    const breakdownTotal = container.querySelector('#estimate-breakdown-total');
+    if (breakdownTotal) breakdownTotal.textContent = `${fmt(estimate.total.low)} – ${fmt(estimate.total.high)}`;
+
+    estimateResultCard.style.display = 'block';
+  }
+
+  if (warehouseAreaInput) {
+    warehouseAreaInput.addEventListener('input', updateEstimateDisplay);
+    // If area was restored from formState, trigger calculation
+    if (formState.warehouseArea) {
+      updateEstimateDisplay();
+    }
+  }
+
+  // 6. Form Submission (with duplicate submission guard)
   let isSubmitting = false;
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-
     if (isSubmitting) return;
 
     if (errorBox) errorBox.style.display = 'none';
     if (successBox) successBox.style.display = 'none';
 
-    const name = document.getElementById('build-name')?.value.trim();
-    const company = document.getElementById('build-company')?.value.trim();
-    const phone = document.getElementById('build-phone')?.value.trim();
-    const email = document.getElementById('build-email')?.value.trim();
-    const location = document.getElementById('build-location')?.value.trim();
+    const name = container.querySelector('#build-name')?.value.trim();
+    const company = container.querySelector('#build-company')?.value.trim();
+    const phone = container.querySelector('#build-phone')?.value.trim();
+    const email = container.querySelector('#build-email')?.value.trim();
+    const location = container.querySelector('#build-location')?.value.trim();
     const landStatus = landStatusSelect?.value || 'Yes, I have land';
-    const plotArea = document.getElementById('build-plot-area')?.value.trim();
-    const size = document.getElementById('build-size')?.value.trim();
-    const notes = document.getElementById('build-notes')?.value.trim();
+    const plotArea = container.querySelector('#build-plot-area')?.value.trim();
+    const size = container.querySelector('#build-size')?.value.trim();
+    const notes = container.querySelector('#build-notes')?.value.trim();
 
     // Validation
     if (!name || name.length < 2) {
-      showError('Please enter your full name (at least 2 characters).');
+      showError(t.form.validation.nameRequired);
       return;
     }
 
     const cleanPhone = String(phone || '').replace(/\D/g, '').slice(-10);
     if (!cleanPhone || !/^[6-9]\d{9}$/.test(cleanPhone)) {
-      showError('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.');
+      showError(t.form.validation.phoneRequired);
       return;
     }
 
     if (!location) {
-      showError('Please specify your project location or preferred city.');
+      showError(t.form.validation.locationRequired);
       return;
     }
 
     isSubmitting = true;
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>Submitting Project Requirement...</span>';
+      submitBtn.innerHTML = `<span>${t.form.submittingText}</span>`;
     }
 
     try {
+      // Calculate construction estimate for submission
+      const warehouseAreaInput = container.querySelector('#build-warehouse-area');
+      const parsedArea = warehouseAreaInput ? parseAreaInput(warehouseAreaInput.value) : null;
+      const estimate = parsedArea ? calculateWarehouseEstimate(parsedArea) : null;
+
+      let estimateNoteParts = [];
+      if (estimate) {
+        const lbl = t.costEstimator.lakhLabel;
+        const crl = t.costEstimator.croreLabel;
+        estimateNoteParts.push(
+          `[Est. Cost]: ${formatLakhCrore(estimate.total.low, lbl, crl)} – ${formatLakhCrore(estimate.total.high, lbl, crl)}`,
+          `[Steel]: ${formatLakhCrore(estimate.steelStructure.low, lbl, crl)}–${formatLakhCrore(estimate.steelStructure.high, lbl, crl)}`,
+          `[Roofing]: ${formatLakhCrore(estimate.roofingSheet.low, lbl, crl)}–${formatLakhCrore(estimate.roofingSheet.high, lbl, crl)}`,
+          `[Fabrication]: ${formatLakhCrore(estimate.fabricationErection.low, lbl, crl)}–${formatLakhCrore(estimate.fabricationErection.high, lbl, crl)}`,
+          `[Civil]: ${formatLakhCrore(estimate.civilFooting.low, lbl, crl)}–${formatLakhCrore(estimate.civilFooting.high, lbl, crl)}`,
+          `[Painting/Misc]: ${formatLakhCrore(estimate.paintingMiscellaneous.low, lbl, crl)}–${formatLakhCrore(estimate.paintingMiscellaneous.high, lbl, crl)}`
+        );
+      }
+
       const combinedNotes = [
-        `[Sector/Purpose]: ${selectedPurpose}`,
-        `[Timeline]: ${selectedTimeline}`,
-        notes ? `[Notes]: ${notes}` : ''
-      ].filter(Boolean).join(' | ');
+        `[Sector/Purpose]: ${formState.selectedPurpose}`,
+        `[Timeline]: ${formState.selectedTimeline}`,
+        ...estimateNoteParts,
+        notes ? `[Notes]: ${notes}` : '',
+      ]
+        .filter(Boolean)
+        .join(' | ');
 
       const payload = {
         fullName: name,
@@ -851,29 +1195,47 @@ function initBuildPageInteractions() {
         landAvailability: landStatus || undefined,
         plotArea: plotArea || undefined,
         requiredSpace: size || undefined,
-        intendedUsage: selectedPurpose,
+        intendedUsage: formState.selectedPurpose,
         projectNotes: combinedNotes,
+        estimatedConstructionLow: estimate ? Math.round(estimate.total.low) : undefined,
+        estimatedConstructionHigh: estimate ? Math.round(estimate.total.high) : undefined,
       };
 
       const result = await submitBuildWarehouseApi(payload);
 
       if (result.success) {
         form.reset();
+        // Reset state
+        formState.fullName = '';
+        formState.companyName = '';
+        formState.phone = '';
+        formState.email = '';
+        formState.location = '';
+        formState.plotArea = '';
+        formState.size = '';
+        formState.notes = '';
+        formState.warehouseArea = '';
+        // Reset estimate display
+        const estimateResult = container.querySelector('#build-estimate-result');
+        if (estimateResult) estimateResult.style.display = 'none';
+        const areaInput = container.querySelector('#build-warehouse-area');
+        if (areaInput) areaInput.value = '';
+
         if (successBox) {
           successBox.style.display = 'block';
-          successBox.innerHTML = `<strong>✓ Project Request Received!</strong> Thank you, ${name}. Our warehouse development engineers will contact you at ${cleanPhone} to discuss your site, blueprints, and build estimate.`;
+          successBox.innerHTML = t.form.successMessage(name, cleanPhone);
           successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       } else {
-        showError(result.message || 'Unable to submit your request. Please try again.');
+        showError(result.message || t.form.validation.genericError);
       }
     } catch (err) {
-      showError('Unable to submit your request right now. Please verify your connection or try again.');
+      showError(t.form.validation.genericError);
     } finally {
       isSubmitting = false;
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = `<span>Request a Warehouse Project Discussion</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+        submitBtn.innerHTML = `<span>${t.form.submitBtn}</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
       }
     }
   });

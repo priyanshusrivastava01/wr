@@ -81,6 +81,14 @@ const warehouseBuildRequestSchema = new mongoose.Schema(
       maxlength: [2000, 'Project notes cannot exceed 2000 characters.'],
       default: '',
     },
+    estimatedConstructionLow: {
+      type: Number,
+      default: null,
+    },
+    estimatedConstructionHigh: {
+      type: Number,
+      default: null,
+    },
     status: {
       type: String,
       required: true,
