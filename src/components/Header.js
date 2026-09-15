@@ -36,8 +36,8 @@ export function renderHeader(container) {
             </svg>
           </a>
 
-          <a href="/warehouse-renting" class="btn-navbar-cta" id="header-find-space" aria-label="Find warehouse space">
-            Find Warehouse Space
+          <a href="/warehouse-renting" class="btn-navbar-cta" id="header-find-space" aria-label="Rent a warehouse">
+            Rent a Warehouse
           </a>
 
           <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
@@ -83,7 +83,7 @@ export function renderHeader(container) {
 
           <div class="mobile-drawer-footer">
             <a href="/warehouse-renting" class="btn btn-primary btn-full mobile-find-space">
-              Find Warehouse Space
+              Rent a Warehouse
             </a>
             <a href="/build-a-warehouse" class="btn btn-outline btn-full mobile-build-warehouse" style="border-color: var(--color-border); color: var(--color-primary); margin-top: var(--space-2);">
               Build a Warehouse

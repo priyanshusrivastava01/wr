@@ -11,7 +11,7 @@
   min-height: 82vh;
   display: flex;
   align-items: center;
-  padding: var(--space-24) 0 var(--space-16);
+  padding: calc(var(--header-height) + var(--space-12, 48px)) 0 var(--space-16);
   background: #0B132B;
   overflow: hidden;
 }
@@ -462,7 +462,7 @@
   min-height: 82vh;
   display: flex;
   align-items: center;
-  padding: var(--space-24) 0 var(--space-16);
+  padding: calc(var(--header-height) + var(--space-12, 48px)) 0 var(--space-16);
   background: #0B132B;
   color: #FFFFFF;
   overflow: hidden;
@@ -2828,12 +2828,84 @@
 
 @media (max-width: 768px) {
   .rent-v-hero {
-    padding: var(--space-20) 0 var(--space-12);
+    padding: calc(var(--header-height) + 24px) 0 44px;
     min-height: auto;
+  }
+
+  .rent-v-hero-badge {
+    font-size: 0.6875rem;
+    font-weight: 800;
+    padding: 6px 14px;
+    letter-spacing: 0.08em;
+    border-radius: 9999px;
+    margin-bottom: 14px;
+  }
+
+  .rent-v-hero-title {
+    font-size: clamp(2.1rem, 8.2vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -0.03em;
+  }
+
+  .rent-v-hero-subtitle {
+    font-size: 0.9375rem;
+    color: #CBD5E1;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .rent-v-hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .rent-v-hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 15px 22px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    border-radius: 14px;
+  }
+
+  .rent-v-section-title {
+    font-size: clamp(1.7rem, 6.8vw, 2.2rem);
+    font-weight: 800;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+    margin-bottom: 12px;
+  }
+
+  .rent-v-section-sub {
+    font-size: 0.875rem;
+    color: #64748B;
+    line-height: 1.6;
+    margin: 0 auto 28px;
+    max-width: 92%;
   }
 
   .rent-v-usecases-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .usecase-tile-card {
+    height: 380px;
+    border-radius: 18px;
+  }
+
+  .usecase-tile-card .tile-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .usecase-tile-card .tile-desc {
+    font-size: 0.8125rem;
+    line-height: 1.5;
   }
 
   .rent-v-process-track {
@@ -2847,10 +2919,22 @@
 
   .scale-spectrum-row {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .scale-tier-card {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
+  .scale-tier-card h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
   }
 
   .rent-v-showcase-mosaic {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .mosaic-item.mosaic-large {
@@ -2874,11 +2958,17 @@
 
   .console-actions-row {
     flex-direction: column;
+    gap: 12px;
   }
 
   .btn-console-submit,
   .btn-whatsapp-console {
     width: 100%;
+    justify-content: center;
+    padding: 15px 20px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    border-radius: 14px;
   }
 
   .form-row-2col {
@@ -2887,6 +2977,7 @@
 
   .trust-metrics-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 
@@ -3300,7 +3391,10 @@
   .home-hero-title,
   .rent-hero-title,
   .build-hero-title {
-    font-size: var(--text-h2);
+    font-size: clamp(2.1rem, 8.2vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
   }
 
   .home-doors-grid {
@@ -3317,7 +3411,8 @@
   }
 
   .service-door-title {
-    font-size: var(--text-h3);
+    font-size: 1.25rem;
+    font-weight: 800;
   }
 
   .home-trust-grid,
@@ -3330,10 +3425,12 @@
   .rent-trust-cards-grid,
   .rent-audience-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .rent-hero-stat-pills {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .rent-gallery-grid {
@@ -3352,11 +3449,13 @@
 
   .build-form-card {
     padding: var(--space-5);
+    border-radius: 18px;
   }
 
   .final-cta-box,
   .rent-final-cta-card {
     padding: var(--space-8) var(--space-5);
+    border-radius: 20px;
   }
 
   .rent-visual-steps-grid {
@@ -3367,10 +3466,12 @@
   .rent-vstep-card {
     width: 100%;
     flex: none;
+    border-radius: 18px;
   }
 
   .rent-calc-box {
     padding: var(--space-6) var(--space-4);
+    border-radius: 18px;
   }
 
   .height-options-grid {
@@ -3390,16 +3491,23 @@
   }
 
   .price-item-total-val {
-    font-size: 1.75rem;
+    font-size: 1.65rem;
+    font-weight: 800;
   }
 
   .rent-actions-row {
     flex-direction: column;
+    gap: 12px;
   }
 
   .btn-continue-inquiry,
   .btn-whatsapp-secondary {
     width: 100%;
+    justify-content: center;
+    padding: 15px 20px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    border-radius: 14px;
     flex: none;
   }
 
@@ -3407,6 +3515,7 @@
   .rent-modal-card {
     padding: var(--space-5) var(--space-4);
     max-height: 94vh;
+    border-radius: 20px;
   }
 
   .modal-summary-grid {
@@ -3418,6 +3527,7 @@
 @media (max-width: 480px) {
   .home-intro-card {
     padding: var(--space-5);
+    border-radius: 16px;
   }
 
   .rent-tabs-bar {
@@ -3455,17 +3565,22 @@
     flex-direction: column;
     gap: var(--space-3);
     padding: var(--space-4);
+    border-radius: 16px;
   }
 
   .success-actions-row {
     flex-direction: column;
     width: 100%;
+    gap: 10px;
   }
 
   .btn-back-site,
   .btn-success-whatsapp {
     width: 100%;
     justify-content: center;
+    padding: 14px 18px;
+    font-size: 0.875rem;
+    border-radius: 12px;
   }
 }
 
@@ -3476,7 +3591,7 @@
   }
 
   .rent-hero-title {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
   }
 
   .price-item-total-val {

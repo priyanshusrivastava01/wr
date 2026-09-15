@@ -82,7 +82,7 @@ let rentState = {
 };
 
 export function renderWarehouseRentingPage(container) {
-  document.title = 'Rent Ready Commercial Warehouse Space in Gorakhpur — Vardha Warehousing';
+  document.title = 'Rent a Warehouse in Gorakhpur — Ready Commercial Space — Vardha Warehousing';
   const { contact } = CONFIG;
 
   const whatsappBaseUrl = contact.whatsapp
@@ -123,10 +123,10 @@ export function renderWarehouseRentingPage(container) {
             <div class="rent-v-hero-text">
               <div class="rent-v-hero-badge">
                 <span class="badge-pulse"></span>
-                <span>READY COMMERCIAL WAREHOUSE SPACE • GORAKHPUR</span>
+                <span>READY COMMERCIAL WAREHOUSES • GORAKHPUR</span>
               </div>
               <h1 class="rent-v-hero-title">
-                Find the Right Warehouse Space<br />
+                Rent a Warehouse<br />
                 <span class="text-gold-gradient">for Your Business</span>
               </h1>
               <p class="rent-v-hero-subtitle">

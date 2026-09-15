@@ -119,25 +119,48 @@
   --z-toast: 1100;
 }
 
-/* ── Responsive Typography ── */
+/* ── Responsive Typography & Spacing Scale ── */
 @media (max-width: 1024px) {
   :root {
-    --text-h1: 2.75rem;
-    --text-h2: 2rem;
+    --text-h1: 2.85rem;
+    --text-h2: 2.15rem;
     --text-h3: 1.5rem;
-    --text-h4: 1.125rem;
+    --text-h4: 1.2rem;
     --text-body: 1rem;
+    --text-body-sm: 0.9375rem;
+    --text-small: 0.875rem;
+    --text-caption: 0.75rem;
+    --text-xs: 0.6875rem;
     --header-height: 64px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   :root {
-    --text-h1: 2.125rem;
-    --text-h2: 1.625rem;
+    --text-h1: clamp(2.15rem, 8.2vw, 2.75rem);
+    --text-h2: clamp(1.7rem, 6.8vw, 2.2rem);
     --text-h3: 1.25rem;
-    --text-h4: 1.0625rem;
+    --text-h4: 1.125rem;
     --text-body: 0.9375rem;
+    --text-body-sm: 0.875rem;
+    --text-small: 0.8125rem;
+    --text-caption: 0.6875rem;
+    --text-xs: 0.625rem;
     --header-height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --text-h1: clamp(1.95rem, 8.5vw, 2.45rem);
+    --text-h2: clamp(1.55rem, 7vw, 1.95rem);
+    --text-h3: 1.1875rem;
+    --text-h4: 1.05rem;
+    --text-body: 0.875rem;
+    --text-body-sm: 0.8125rem;
+    --text-small: 0.78125rem;
+    --text-caption: 0.65rem;
+    --text-xs: 0.58rem;
+    --header-height: 56px;
   }
 }

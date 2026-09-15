@@ -241,7 +241,7 @@ export const CONFIG = {
   // ── Navigation ──
   navigation: [
     { label: 'Home', href: '/' },
-    { label: 'Warehouse Space', href: '/warehouse-renting' },
+    { label: 'Rent a Warehouse', href: '/warehouse-renting' },
     { label: 'Build a Warehouse', href: '/build-a-warehouse' },
     { label: 'Location & Connectivity', href: '/#connectivity' },
     { label: 'Contact', href: '/#contact' },

@@ -35,7 +35,7 @@ function init() {
   if (footerContainer) renderFooter(footerContainer);
   if (whatsappContainer) renderWhatsAppButton(whatsappContainer);
 
-  // 2. Define page routes
+  // 2. Define page routes & canonical aliases
   const routes = {
     '/': (path) => {
       if (appRoot) renderHomePage(appRoot);
@@ -43,7 +43,22 @@ function init() {
     '/warehouse-renting': (path) => {
       if (appRoot) renderWarehouseRentingPage(appRoot);
     },
+    '/warehouse-space': (path) => {
+      if (appRoot) renderWarehouseRentingPage(appRoot);
+    },
+    '/rent': (path) => {
+      if (appRoot) renderWarehouseRentingPage(appRoot);
+    },
+    '/renting': (path) => {
+      if (appRoot) renderWarehouseRentingPage(appRoot);
+    },
     '/build-a-warehouse': (path) => {
+      if (appRoot) renderBuildWarehousePage(appRoot);
+    },
+    '/build-warehouse': (path) => {
+      if (appRoot) renderBuildWarehousePage(appRoot);
+    },
+    '/build': (path) => {
       if (appRoot) renderBuildWarehousePage(appRoot);
     },
   };

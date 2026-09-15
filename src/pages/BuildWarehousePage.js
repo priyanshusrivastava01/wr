@@ -1,9 +1,9 @@
 /* ============================================
-   BUILD A WAREHOUSE PAGE — DEDICATED SERVICE WEBSITE
+   BUILD A WAREHOUSE PAGE — DEDICATED CONSTRUCTION SERVICE WEBSITE
    ============================================
    Route: /build-a-warehouse
-   Stand-alone, visual-first warehouse planning and construction experience.
-   Principle: SEE → UNDERSTAND → EXPLORE → PLAN → DISCUSS
+   Visual-first warehouse planning, engineering, and construction journey:
+   LAND → FOUNDATION → STEEL → ROOF → FLOOR → DOCK → UTILITIES → HANDOVER.
    Supports seamless English & Hindi language switching.
    ============================================ */
 
@@ -32,7 +32,7 @@ let formState = {
   plotArea: '',
   size: '',
   notes: '',
-  warehouseArea: '',
+  warehouseArea: '10000',
   selectedPurpose: 'E-Commerce & Logistics Fulfillment',
   selectedTimeline: '1–3 Months (Immediate)',
 };
@@ -71,7 +71,7 @@ function updateLanguageUrl(lang) {
     if (lang === 'hi') {
       url.searchParams.set('lang', 'hi');
     } else {
-      url.searchParams.delete('lang'); // clean URL for default 'en'
+      url.searchParams.delete('lang');
     }
     window.history.replaceState(null, '', url.toString());
   }
@@ -145,15 +145,26 @@ function renderBuildWarehouseContent(container) {
   const { contact, whatsapp } = CONFIG;
   const whatsappUrl = contact.whatsapp
     ? `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(
-        whatsapp.constructionMessage ||
+        whatsapp?.constructionMessage ||
           'Hi Vardha Team, I want to discuss a custom warehouse construction project in Gorakhpur/UP.'
       )}`
     : '#build-inquiry';
 
+  const quickAreaPresets = [5000, 10000, 20000, 35000, 50000, 100000];
+
+  // Construction timeline image mapping
+  const timelineImages = [
+    '/images/build-foundation-rcc.jpg',
+    '/images/build-steel-framing.jpg',
+    '/images/build-roofing-cladding.jpg',
+    '/images/build-flooring-laser.jpg',
+    '/images/build-handover-facility.jpg',
+  ];
+
   container.innerHTML = `
     <div class="build-page-visual">
       
-      <!-- ══ GOOGLE FORMS STYLE LANGUAGE SWITCHER ══ -->
+      <!-- ══ LANGUAGE SWITCHER BAR ══ -->
       <nav class="build-lang-switch-bar" aria-label="${t.langSwitcher.ariaLabel}">
         <div class="container build-lang-switch-container">
           <div class="build-lang-tabs" role="tablist" aria-label="${t.langSwitcher.ariaLabel}">
@@ -183,12 +194,12 @@ function renderBuildWarehouseContent(container) {
         </div>
       </nav>
 
-      <!-- ══ SECTION 1: HIGH-IMPACT VISUAL HERO ══ -->
+      <!-- ══ SECTION 1: HERO (ACTIVE WAREHOUSE CONSTRUCTION) ══ -->
       <section class="build-v-hero" id="build-hero">
         <div class="build-v-hero-bg">
           <img 
-            src="/images/service-build-warehouse.jpg" 
-            alt="Modern Indian industrial warehouse construction and steel shed in Uttar Pradesh" 
+            src="/images/build-hero-construction.jpg" 
+            alt="Active commercial PEB warehouse construction site in Uttar Pradesh India with crane, steel frame and workers" 
             loading="eager" 
           />
         </div>
@@ -196,6 +207,8 @@ function renderBuildWarehouseContent(container) {
 
         <div class="container build-v-hero-container">
           <div class="build-v-hero-grid">
+            
+            <!-- Left Hero Content -->
             <div class="build-v-hero-text">
               <div class="build-v-hero-badge">
                 <span class="badge-pulse"></span>
@@ -203,415 +216,108 @@ function renderBuildWarehouseContent(container) {
               </div>
               <h1 class="build-v-hero-title">
                 ${t.hero.titleMain}<br />
-                <span class="highlight">${t.hero.titleHighlight}</span>
+                <span class="text-gold-gradient">${t.hero.titleHighlight}</span>
               </h1>
               <p class="build-v-hero-subtitle">
                 ${t.hero.subtitle}
               </p>
+
+              <!-- Dual CTAs -->
               <div class="build-v-hero-actions">
-                <a href="#build-inquiry" class="btn-primary" id="build-hero-cta">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
+                <a href="#build-inquiry" class="btn btn-primary btn-hero-main" id="build-hero-cta">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
                   <span>${t.hero.ctaPrimary}</span>
                 </a>
-                <a href="#build-pipeline" class="btn-secondary-ghost">
-                  <span>${t.hero.ctaSecondary}</span>
+                <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-hero-secondary">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                  <span>${t.finalCta.ctaWhatsApp}</span>
                 </a>
               </div>
 
-              <div class="build-v-hero-metrics">
-                <div class="hero-metric-item">
-                  <span class="hero-metric-value">${t.hero.metric1Val}</span>
-                  <span class="hero-metric-label">${t.hero.metric1Label}</span>
-                </div>
-                <div class="hero-metric-item">
-                  <span class="hero-metric-value">${t.hero.metric2Val}</span>
-                  <span class="hero-metric-label">${t.hero.metric2Label}</span>
-                </div>
-                <div class="hero-metric-item">
-                  <span class="hero-metric-value">${t.hero.metric3Val}</span>
-                  <span class="hero-metric-label">${t.hero.metric3Label}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="build-v-hero-visual-card">
-              <div class="hero-visual-img-wrap">
-                <img src="/images/warehouse-hero.jpg" alt="Completed modern Indian commercial warehouse park" />
-                <div class="hero-floating-badge">
-                  <div class="hfb-text">
-                    <h4>${t.hero.floatingBadgeTitle}</h4>
-                    <p>${t.hero.floatingBadgeSub}</p>
+              <!-- 3 Visual Step Indicator Pills Inside Hero -->
+              <div class="build-v-hero-steps-bar">
+                <div class="hero-step-node">
+                  <div class="node-number">1</div>
+                  <div class="node-text">
+                    <span class="node-title">${t.pipeline.stages[0].title}</span>
+                    <span class="node-sub">${t.hero.metric1Val}</span>
                   </div>
-                  <div class="hfb-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="hero-step-line"></div>
+                <div class="hero-step-node">
+                  <div class="node-number">2</div>
+                  <div class="node-text">
+                    <span class="node-title">${t.pipeline.stages[3].title}</span>
+                    <span class="node-sub">${t.hero.metric2Val}</span>
+                  </div>
+                </div>
+                <div class="hero-step-line"></div>
+                <div class="hero-step-node">
+                  <div class="node-number">3</div>
+                  <div class="node-text">
+                    <span class="node-title">${t.pipeline.stages[4].title}</span>
+                    <span class="node-sub">${t.hero.node3Sub}</span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <!-- ══ SECTION 2: QUICK VISUAL PIPELINE ══ -->
-      <section class="build-v-pipeline-section" id="build-pipeline">
-        <div class="container">
-          <div class="section-header text-center">
-            <span class="section-label" style="color: #E2B178;">${t.pipeline.label}</span>
-            <h2 class="section-title" style="color: #FFFFFF;">${t.pipeline.title}</h2>
-            <p class="section-subtitle centered" style="color: #94A3B8;">
-              ${t.pipeline.subtitle}
-            </p>
-          </div>
-
-          <div class="pipeline-diagram">
-            <div class="pipeline-node">
-              <div class="pipeline-node-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              </div>
-              <span class="pipeline-node-step">${t.pipeline.stages[0].step}</span>
-              <h4 class="pipeline-node-title">${t.pipeline.stages[0].title}</h4>
-              <p class="pipeline-node-desc">${t.pipeline.stages[0].desc}</p>
-            </div>
-
-            <div class="pipeline-node">
-              <div class="pipeline-node-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-              </div>
-              <span class="pipeline-node-step">${t.pipeline.stages[1].step}</span>
-              <h4 class="pipeline-node-title">${t.pipeline.stages[1].title}</h4>
-              <p class="pipeline-node-desc">${t.pipeline.stages[1].desc}</p>
-            </div>
-
-            <div class="pipeline-node">
-              <div class="pipeline-node-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-              </div>
-              <span class="pipeline-node-step">${t.pipeline.stages[2].step}</span>
-              <h4 class="pipeline-node-title">${t.pipeline.stages[2].title}</h4>
-              <p class="pipeline-node-desc">${t.pipeline.stages[2].desc}</p>
-            </div>
-
-            <div class="pipeline-node">
-              <div class="pipeline-node-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
-              </div>
-              <span class="pipeline-node-step">${t.pipeline.stages[3].step}</span>
-              <h4 class="pipeline-node-title">${t.pipeline.stages[3].title}</h4>
-              <p class="pipeline-node-desc">${t.pipeline.stages[3].desc}</p>
-            </div>
-
-            <div class="pipeline-node">
-              <div class="pipeline-node-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              </div>
-              <span class="pipeline-node-step">${t.pipeline.stages[4].step}</span>
-              <h4 class="pipeline-node-title">${t.pipeline.stages[4].title}</h4>
-              <p class="pipeline-node-desc">${t.pipeline.stages[4].desc}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══ SECTION 3: ASYMMETRIC ABOUT SECTION ══ -->
-      <section class="build-v-about-section" id="build-about">
-        <div class="container">
-          <div class="build-v-about-grid">
-            <div class="build-v-about-visual">
-              <div class="about-visual-main">
-                <img src="/images/warehouse-exterior.jpg" alt="Modern Indian warehouse campus infrastructure in Uttar Pradesh" />
-              </div>
-              <div class="about-tag-chip top-left">
-                <span class="about-tag-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </span>
-                <span>${t.about.tagPeb}</span>
-              </div>
-              <div class="about-tag-chip bottom-right">
-                <span class="about-tag-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                </span>
-                <span>${t.about.tagHub} <span class="chip-val">${t.about.tagHighway}</span></span>
-              </div>
-            </div>
-
-            <div class="build-v-about-content">
-              <span class="section-label">${t.about.label}</span>
-              <h2>${t.about.title}</h2>
-              <p class="lead">
-                ${t.about.lead}
-              </p>
-
-              <div class="about-pill-grid">
-                <div class="about-pill-item">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <div>
-                    <h5>${t.about.pills[0].title}</h5>
-                    <p>${t.about.pills[0].desc}</p>
-                  </div>
+            <!-- Right: Floating Hero Visual Card (Construction In Progress) -->
+            <div class="build-v-hero-visual">
+              <div class="hero-visual-card">
+                <div class="hero-card-img-wrap">
+                  <img src="/images/build-steel-framing.jpg" alt="${t.hero.floatingBadgeTitle}" />
+                  <div class="hero-card-tag">${t.hero.floatingBadgeTitle}</div>
                 </div>
-                <div class="about-pill-item">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <div>
-                    <h5>${t.about.pills[1].title}</h5>
-                    <p>${t.about.pills[1].desc}</p>
+                <div class="hero-card-stats">
+                  <div class="card-stat-box">
+                    <span class="stat-label">${t.hero.statClearHeightLabel}</span>
+                    <span class="stat-val">${t.hero.statClearHeightVal}</span>
                   </div>
-                </div>
-                <div class="about-pill-item">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <div>
-                    <h5>${t.about.pills[2].title}</h5>
-                    <p>${t.about.pills[2].desc}</p>
+                  <div class="card-stat-divider"></div>
+                  <div class="card-stat-box">
+                    <span class="stat-label">${t.hero.statFloorRatingLabel}</span>
+                    <span class="stat-val">${t.hero.statFloorRatingVal}</span>
                   </div>
-                </div>
-                <div class="about-pill-item">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  <div>
-                    <h5>${t.about.pills[3].title}</h5>
-                    <p>${t.about.pills[3].desc}</p>
+                  <div class="card-stat-divider"></div>
+                  <div class="card-stat-box">
+                    <span class="stat-label">${t.hero.statExecutionLabel}</span>
+                    <span class="stat-val">${t.hero.statExecutionVal}</span>
                   </div>
                 </div>
               </div>
-
-              <a href="#build-inquiry" class="btn btn-primary">
-                ${t.about.cta}
-              </a>
             </div>
+
           </div>
         </div>
       </section>
 
-      <!-- ══ SECTION 4: BLUEPRINT VISUAL STORYTELLING ══ -->
-      <section class="build-v-blueprint-section" id="build-blueprint">
+      <!-- ══ SECTION 2: 5-STAGE CONSTRUCTION PROCESS (VISUAL ROADMAP WITH IMAGES) ══ -->
+      <section class="build-v-process-section" id="build-process">
         <div class="container">
-          <div class="section-header text-center">
-            <span class="section-label" style="color: #E2B178;">${t.blueprint.label}</span>
-            <h2 class="section-title" style="color: #FFFFFF;">${t.blueprint.title}</h2>
-            <p class="section-subtitle centered" style="color: #94A3B8;">
-              ${t.blueprint.subtitle}
-            </p>
-          </div>
-
-          <div class="blueprint-showcase-grid">
-            <div class="blueprint-card">
-              <span class="blueprint-card-corner">${t.blueprint.cards[0].corner}</span>
-              <div class="blueprint-card-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
-              </div>
-              <h3>${t.blueprint.cards[0].title}</h3>
-              <p>${t.blueprint.cards[0].desc}</p>
-            </div>
-
-            <div class="blueprint-card">
-              <span class="blueprint-card-corner">${t.blueprint.cards[1].corner}</span>
-              <div class="blueprint-card-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
-              </div>
-              <h3>${t.blueprint.cards[1].title}</h3>
-              <p>${t.blueprint.cards[1].desc}</p>
-            </div>
-
-            <div class="blueprint-card">
-              <span class="blueprint-card-corner">${t.blueprint.cards[2].corner}</span>
-              <div class="blueprint-card-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
-              </div>
-              <h3>${t.blueprint.cards[2].title}</h3>
-              <p>${t.blueprint.cards[2].desc}</p>
-            </div>
-
-            <div class="blueprint-card">
-              <span class="blueprint-card-corner">${t.blueprint.cards[3].corner}</span>
-              <div class="blueprint-card-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-              </div>
-              <h3>${t.blueprint.cards[3].title}</h3>
-              <p>${t.blueprint.cards[3].desc}</p>
-            </div>
-
-            <div class="blueprint-card">
-              <span class="blueprint-card-corner">${t.blueprint.cards[4].corner}</span>
-              <div class="blueprint-card-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              </div>
-              <h3>${t.blueprint.cards[4].title}</h3>
-              <p>${t.blueprint.cards[4].desc}</p>
-            </div>
-
-            <div class="blueprint-card">
-              <span class="blueprint-card-corner">${t.blueprint.cards[5].corner}</span>
-              <div class="blueprint-card-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
-              </div>
-              <h3>${t.blueprint.cards[5].title}</h3>
-              <p>${t.blueprint.cards[5].desc}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══ SECTION 5: CAPABILITIES SHOWCASE ══ -->
-      <section class="build-v-capabilities-section" id="build-capabilities">
-        <div class="container">
-          <div class="section-header text-center">
-            <span class="section-label">${t.capabilities.label}</span>
-            <h2 class="section-title">${t.capabilities.title}</h2>
-            <p class="section-subtitle centered">
-              ${t.capabilities.subtitle}
-            </p>
-          </div>
-
-          <div class="capabilities-visual-grid">
-            <div class="cap-visual-card">
-              <div class="cap-card-img-wrap">
-                <img src="/images/service-build-warehouse.jpg" alt="Pre-Engineered Industrial Warehouse Shed" />
-                <span class="cap-card-badge">${t.capabilities.cards[0].badge}</span>
-              </div>
-              <div class="cap-card-body">
-                <h3>${t.capabilities.cards[0].title}</h3>
-                <p>${t.capabilities.cards[0].desc}</p>
-                <div class="cap-card-highlights">
-                  ${t.capabilities.cards[0].chips.map(chip => `<span class="cap-chip">${chip}</span>`).join('')}
-                </div>
-              </div>
-            </div>
-
-            <div class="cap-visual-card">
-              <div class="cap-card-img-wrap">
-                <img src="/images/warehouse-indian-dock.jpg" alt="Logistics & Distribution Hub with Truck Bays" />
-                <span class="cap-card-badge">${t.capabilities.cards[1].badge}</span>
-              </div>
-              <div class="cap-card-body">
-                <h3>${t.capabilities.cards[1].title}</h3>
-                <p>${t.capabilities.cards[1].desc}</p>
-                <div class="cap-card-highlights">
-                  ${t.capabilities.cards[1].chips.map(chip => `<span class="cap-chip">${chip}</span>`).join('')}
-                </div>
-              </div>
-            </div>
-
-            <div class="cap-visual-card">
-              <div class="cap-card-img-wrap">
-                <img src="/images/warehouse-interior-lux.jpg" alt="Manufacturing & Raw Material Storage Facility" />
-                <span class="cap-card-badge">${t.capabilities.cards[2].badge}</span>
-              </div>
-              <div class="cap-card-body">
-                <h3>${t.capabilities.cards[2].title}</h3>
-                <p>${t.capabilities.cards[2].desc}</p>
-                <div class="cap-card-highlights">
-                  ${t.capabilities.cards[2].chips.map(chip => `<span class="cap-chip">${chip}</span>`).join('')}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══ SECTION 6: LAND DECISION MATRIX ══ -->
-      <section class="build-v-land-section" id="build-land">
-        <div class="container">
-          <div class="section-header text-center">
-            <span class="section-label">${t.landMatrix.label}</span>
-            <h2 class="section-title">${t.landMatrix.title}</h2>
-            <p class="section-subtitle centered">
-              ${t.landMatrix.subtitle}
-            </p>
-          </div>
-
-          <div class="land-decision-grid">
-            <div class="land-decision-card ${formState.landStatus === 'Yes, I have land' ? 'selected' : ''}" data-land-val="Yes, I have land" id="land-card-a">
-              <span class="land-card-tag">${t.landMatrix.cardA.tag}</span>
-              <h3>${t.landMatrix.cardA.title}</h3>
-              <p class="land-summary">
-                ${t.landMatrix.cardA.summary}
-              </p>
-              <div class="land-flow-timeline">
-                ${t.landMatrix.cardA.steps.map(step => `<div class="land-flow-step"><span class="lfs-dot"></span> ${step}</div>`).join('')}
-              </div>
-              <div class="land-card-action">
-                <span>${formState.landStatus === 'Yes, I have land' ? t.landMatrix.cardA.selectedAction : t.landMatrix.cardA.selectAction}</span>
-              </div>
-            </div>
-
-            <div class="land-decision-card ${formState.landStatus === 'No, I need land + build' ? 'selected' : ''}" data-land-val="No, I need land + build" id="land-card-b">
-              <span class="land-card-tag">${t.landMatrix.cardB.tag}</span>
-              <h3>${t.landMatrix.cardB.title}</h3>
-              <p class="land-summary">
-                ${t.landMatrix.cardB.summary}
-              </p>
-              <div class="land-flow-timeline">
-                ${t.landMatrix.cardB.steps.map(step => `<div class="land-flow-step"><span class="lfs-dot"></span> ${step}</div>`).join('')}
-              </div>
-              <div class="land-card-action">
-                <span>${formState.landStatus === 'No, I need land + build' ? t.landMatrix.cardB.selectedAction : t.landMatrix.cardB.selectAction}</span>
-              </div>
-            </div>
-
-            <div class="land-decision-card ${formState.landStatus === 'Just exploring' ? 'selected' : ''}" data-land-val="Just exploring" id="land-card-c">
-              <span class="land-card-tag">${t.landMatrix.cardC.tag}</span>
-              <h3>${t.landMatrix.cardC.title}</h3>
-              <p class="land-summary">
-                ${t.landMatrix.cardC.summary}
-              </p>
-              <div class="land-flow-timeline">
-                ${t.landMatrix.cardC.steps.map(step => `<div class="land-flow-step"><span class="lfs-dot"></span> ${step}</div>`).join('')}
-              </div>
-              <div class="land-card-action">
-                <span>${formState.landStatus === 'Just exploring' ? t.landMatrix.cardC.selectedAction : t.landMatrix.cardC.selectAction}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══ SECTION 7: PLANNING & DESIGN PROGRESSION ══ -->
-      <section class="build-v-design-section" id="build-design">
-        <div class="container">
-          <div class="section-header text-center">
-            <span class="section-label" style="color: #E2B178;">${t.planning.label}</span>
-            <h2 class="section-title" style="color: #FFFFFF;">${t.planning.title}</h2>
-            <p class="section-subtitle centered" style="color: #94A3B8;">
-              ${t.planning.subtitle}
-            </p>
-          </div>
-
-          <div class="design-progression-grid">
-            ${t.planning.steps
-              .map(
-                step => `
-              <div class="design-step-card">
-                <div class="design-step-num">${step.num}</div>
-                <h3>${step.title}</h3>
-                <p>${step.desc}</p>
-              </div>
-            `
-              )
-              .join('')}
-          </div>
-        </div>
-      </section>
-
-      <!-- ══ SECTION 8: 5-STAGE CONSTRUCTION JOURNEY ══ -->
-      <section class="build-v-construction-section" id="build-construction">
-        <div class="container">
-          <div class="section-header text-center">
-            <span class="section-label">${t.construction.label}</span>
-            <h2 class="section-title">${t.construction.title}</h2>
-            <p class="section-subtitle centered">
+          <div class="text-center section-heading-block">
+            <span class="section-pill-tag">${t.construction.label}</span>
+            <h2 class="build-v-section-title">${t.construction.title}</h2>
+            <p class="build-v-section-sub">
               ${t.construction.subtitle}
             </p>
           </div>
 
-          <div class="construction-journey-list">
+          <div class="construction-timeline-grid">
             ${t.construction.phases
               .map(
-                phase => `
-              <div class="journey-row-item">
-                <div class="j-phase-badge">${phase.badge}</div>
-                <div class="j-phase-content">
-                  <h3>${phase.title}</h3>
-                  <p>${phase.desc}</p>
+                (phase, idx) => `
+              <div class="construction-phase-card">
+                <div class="phase-card-img-wrap">
+                  <img src="${timelineImages[idx]}" alt="${phase.title}" loading="lazy" />
+                  <span class="phase-card-badge">${phase.badge}</span>
+                  <span class="phase-card-deliverable">${phase.deliverable}</span>
                 </div>
-                <div class="j-phase-deliverable">${phase.deliverable}</div>
+                <div class="phase-card-body">
+                  <div class="phase-num-circle">${idx + 1}</div>
+                  <h3 class="phase-title">${phase.title}</h3>
+                  <p class="phase-desc">${phase.desc}</p>
+                </div>
               </div>
             `
               )
@@ -620,26 +326,367 @@ function renderBuildWarehouseContent(container) {
         </div>
       </section>
 
-      <!-- ══ SECTION 9: THE END RESULT ══ -->
-      <section class="build-v-endresult-section" id="build-endresult">
+      <!-- ══ SECTION 3: ENGINEERING EXCELLENCE & PLANNING (SPLIT STORY) ══ -->
+      <section class="build-v-about-section" id="build-about">
         <div class="container">
-          <div class="endresult-showcase-box">
-            <div class="endresult-img-side">
-              <img src="/images/warehouse-hero.jpg" alt="Delivered operational Indian commercial warehouse" />
+          <div class="build-v-about-grid">
+            
+            <!-- Left: High Impact Construction Media Composition -->
+            <div class="build-v-about-media">
+              <div class="about-media-primary">
+                <img src="/images/build-planning-engineer.jpg" alt="Indian Civil Engineers reviewing warehouse blueprints on site" />
+                <div class="about-media-badge">
+                  <div class="badge-icon-gold">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                  </div>
+                  <div>
+                    <strong>${t.about.tagPeb}</strong>
+                    <span>${t.about.tagHub} ${t.about.tagHighway}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="about-media-secondary">
+                <img src="/images/build-dock-construction.jpg" alt="${t.about.dockCaption}" />
+                <span class="media-caption-chip">${t.about.dockCaption}</span>
+              </div>
             </div>
-            <div class="endresult-info-side">
-              <span class="section-label" style="color: #C8965A; font-weight: bold; font-size: 0.8125rem; text-transform: uppercase;">${t.endResult.label}</span>
-              <h3>${t.endResult.title}</h3>
-              <p class="intro">
-                ${t.endResult.intro}
+
+            <!-- Right: Infographic Engineering Value Pillars -->
+            <div class="build-v-about-info">
+              <span class="section-pill-tag">${t.about.label}</span>
+              <h2 class="build-v-section-title">
+                ${t.about.titleMain}<br />
+                <span class="text-gold">${t.about.titleHighlight}</span>
+              </h2>
+              <p class="build-v-lead-text">
+                ${t.about.lead}
               </p>
 
-              <div class="endresult-checklist">
+              <div class="about-pillars-list">
+                <div class="about-pillar-item">
+                  <div class="pillar-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                  </div>
+                  <div class="pillar-text">
+                    <h4>${t.about.pills[0].title}</h4>
+                    <p>${t.about.pills[0].desc}</p>
+                  </div>
+                </div>
+
+                <div class="about-pillar-item">
+                  <div class="pillar-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                  </div>
+                  <div class="pillar-text">
+                    <h4>${t.about.pills[1].title}</h4>
+                    <p>${t.about.pills[1].desc}</p>
+                  </div>
+                </div>
+
+                <div class="about-pillar-item">
+                  <div class="pillar-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
+                  </div>
+                  <div class="pillar-text">
+                    <h4>${t.about.pills[2].title}</h4>
+                    <p>${t.about.pills[2].desc}</p>
+                  </div>
+                </div>
+
+                <div class="about-pillar-item">
+                  <div class="pillar-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  </div>
+                  <div class="pillar-text">
+                    <h4>${t.about.pills[3].title}</h4>
+                    <p>${t.about.pills[3].desc}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ SECTION 4: WAREHOUSE CAPABILITIES & FORMATS ══ -->
+      <section class="build-v-usecases-section" id="build-capabilities">
+        <div class="container">
+          <div class="text-center section-heading-block">
+            <span class="section-pill-tag">${t.capabilities.label}</span>
+            <h2 class="build-v-section-title">${t.capabilities.title}</h2>
+            <p class="build-v-section-sub">
+              ${t.capabilities.subtitle}
+            </p>
+          </div>
+
+          <div class="build-v-capabilities-grid">
+            <!-- Format 1 -->
+            <div class="build-cap-tile-card">
+              <div class="build-cap-bg-img">
+                <img src="/images/build-steel-framing.jpg" alt="${t.capabilities.cards[0].title}" loading="lazy" />
+              </div>
+              <div class="build-cap-overlay"></div>
+              <div class="build-cap-content">
+                <div class="build-cap-icon-circle">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>
+                </div>
+                <h3 class="build-cap-title">${t.capabilities.cards[0].title}</h3>
+                <p class="build-cap-desc">${t.capabilities.cards[0].desc}</p>
+                <div class="build-cap-chips-row">
+                  ${t.capabilities.cards[0].chips.map(chip => `<span class="build-cap-tag">${chip}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+
+            <!-- Format 2 -->
+            <div class="build-cap-tile-card">
+              <div class="build-cap-bg-img">
+                <img src="/images/build-dock-construction.jpg" alt="${t.capabilities.cards[1].title}" loading="lazy" />
+              </div>
+              <div class="build-cap-overlay"></div>
+              <div class="build-cap-content">
+                <div class="build-cap-icon-circle">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                </div>
+                <h3 class="build-cap-title">${t.capabilities.cards[1].title}</h3>
+                <p class="build-cap-desc">${t.capabilities.cards[1].desc}</p>
+                <div class="build-cap-chips-row">
+                  ${t.capabilities.cards[1].chips.map(chip => `<span class="build-cap-tag">${chip}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+
+            <!-- Format 3 -->
+            <div class="build-cap-tile-card">
+              <div class="build-cap-bg-img">
+                <img src="/images/warehouse-interior-lux.jpg" alt="${t.capabilities.cards[2].title}" loading="lazy" />
+              </div>
+              <div class="build-cap-overlay"></div>
+              <div class="build-cap-content">
+                <div class="build-cap-icon-circle">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                </div>
+                <h3 class="build-cap-title">${t.capabilities.cards[2].title}</h3>
+                <p class="build-cap-desc">${t.capabilities.cards[2].desc}</p>
+                <div class="build-cap-chips-row">
+                  ${t.capabilities.cards[2].chips.map(chip => `<span class="build-cap-tag">${chip}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ SECTION 5: FROM GROUND TO READY WAREHOUSE (VISUAL PROGRESSION GRID) ══ -->
+      <section class="build-v-showcase-section" id="build-showcase">
+        <div class="container">
+          <div class="text-center section-heading-block">
+            <span class="section-pill-tag">${t.transformation.label}</span>
+            <h2 class="build-v-section-title">${t.transformation.title}</h2>
+            <p class="build-v-section-sub">
+              ${t.transformation.subtitle}
+            </p>
+          </div>
+
+          <div class="transformation-cards-grid">
+            ${t.transformation.steps
+              .map((step, sIdx) => {
+                const transformImages = [
+                  '/images/build-land-site-prep.jpg',
+                  '/images/build-foundation-rcc.jpg',
+                  '/images/build-steel-framing.jpg',
+                  '/images/build-roofing-cladding.jpg',
+                  '/images/build-flooring-laser.jpg',
+                  '/images/build-handover-facility.jpg',
+                ];
+                const isLast = sIdx === t.transformation.steps.length - 1;
+                return `
+              <div class="transformation-card ${isLast ? 'highlight-card' : ''}">
+                <div class="transformation-img-wrap">
+                  <img src="${transformImages[sIdx]}" alt="${step.title}" loading="lazy" />
+                  <span class="transformation-step-badge ${isLast ? 'highlight' : ''}">${step.stepBadge}</span>
+                </div>
+                <div class="transformation-card-body">
+                  <span class="transformation-tag ${isLast ? 'highlight' : ''}">${step.tag}</span>
+                  <h4 class="transformation-title">${step.title}</h4>
+                  <p class="transformation-desc">${step.desc}</p>
+                </div>
+              </div>
+            `;
+              })
+              .join('')}
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ SECTION 7: MATERIAL SOURCING ADVANTAGE ══ -->
+      <section class="build-v-sourcing-section" id="build-sourcing">
+        <div class="container">
+          <!-- Heading Block -->
+          <div class="text-center section-heading-block">
+            <span class="section-pill-tag sourcing-pill">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+              ${t.sourcing.tag}
+            </span>
+            <h2 class="build-v-section-title text-white">
+              ${t.sourcing.titleMain} <span class="text-gold-gradient">${t.sourcing.titleHighlight}</span>
+            </h2>
+            <p class="build-v-section-sub sourcing-sub">
+              ${t.sourcing.subtitle}
+            </p>
+          </div>
+
+          <!-- Main Sourcing Showcase Split: Left Hero Visual + Right Dealer Network -->
+          <div class="sourcing-showcase-split">
+            <!-- Left: High-Impact Raw Material / PEB Construction Visual -->
+            <div class="sourcing-hero-visual-card">
+              <div class="sourcing-hero-img-wrap">
+                <img src="/images/build-steel-framing.jpg" alt="Industrial structural steel framing and warehouse material assembly in India" loading="lazy" />
+                <div class="sourcing-visual-gradient-overlay"></div>
+                <div class="sourcing-badge-float">
+                  <div class="sourcing-badge-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                  </div>
+                  <div class="sourcing-badge-text">
+                    <span class="sbt-title">${t.sourcing.badgeDirect}</span>
+                    <span class="sbt-sub">${t.sourcing.badgeDirectSub}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Premium Material Supply Network Grid -->
+            <div class="sourcing-network-card">
+              <div class="sourcing-network-header">
+                <div class="snh-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="sourcing-network-title">${t.sourcing.networkHeading}</h3>
+                  <p class="sourcing-network-sub">${t.sourcing.networkSub}</p>
+                </div>
+              </div>
+
+              <!-- 6 Dealer Logos Responsive Grid -->
+              <div class="sourcing-dealers-grid">
+                ${t.sourcing.dealers
+                  .map(
+                    d => `
+                  <div class="dealer-logo-card">
+                    <div class="dealer-logo-img-wrap">
+                      <img src="${d.logo}" alt="${d.name}" loading="lazy" />
+                    </div>
+                    <span class="dealer-category-label">${d.category}</span>
+                  </div>
+                `
+                  )
+                  .join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom: 5 Key Material Categories -->
+          <div class="sourcing-materials-container">
+            <h4 class="sourcing-materials-heading">${t.sourcing.materialsHeading}</h4>
+            <div class="sourcing-materials-grid">
+              ${t.sourcing.materials
+                .map(
+                  m => `
+                <div class="sourcing-mat-card">
+                  <div class="sourcing-mat-img-wrap">
+                    <img src="${m.image}" alt="${m.name}" loading="lazy" />
+                  </div>
+                  <div class="sourcing-mat-content">
+                    <h5 class="sourcing-mat-name">${m.name}</h5>
+                    <p class="sourcing-mat-desc">${m.desc}</p>
+                  </div>
+                </div>
+              `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Value Progression Flow Banner -->
+          <div class="sourcing-flow-banner">
+            <div class="sourcing-flow-grid">
+              <div class="sourcing-flow-card">
+                <div class="sfc-step-num">01</div>
+                <div class="sfc-step-body">
+                  <span class="sfc-step-title">${t.sourcing.flow.step1}</span>
+                </div>
+              </div>
+              <div class="sourcing-flow-connector">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="sourcing-flow-card">
+                <div class="sfc-step-num">02</div>
+                <div class="sfc-step-body">
+                  <span class="sfc-step-title">${t.sourcing.flow.step2}</span>
+                </div>
+              </div>
+              <div class="sourcing-flow-connector">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="sourcing-flow-card">
+                <div class="sfc-step-num">03</div>
+                <div class="sfc-step-body">
+                  <span class="sfc-step-title">${t.sourcing.flow.step3}</span>
+                </div>
+              </div>
+              <div class="sourcing-flow-connector">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="sourcing-flow-card highlight-card">
+                <div class="sfc-step-num">04</div>
+                <div class="sfc-step-body">
+                  <span class="sfc-step-title">${t.sourcing.flow.step4}</span>
+                </div>
+              </div>
+            </div>
+            <div class="sourcing-flow-footer">
+              <div class="sourcing-flow-note-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>${t.sourcing.flow.footerNote}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ SECTION 8: WHAT YOU RECEIVE AT HANDOVER ══ -->
+      <section class="build-v-handover-section" id="build-handover">
+        <div class="container">
+          <div class="handover-grid">
+            <div class="handover-image-wrap">
+              <img src="/images/build-handover-facility.jpg" alt="${t.endResult.title}" />
+              <div class="handover-status-badge">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>${t.endResult.handoverBadge}</span>
+              </div>
+            </div>
+
+            <div class="handover-content">
+              <span class="section-pill-tag">${t.endResult.label}</span>
+              <h2 class="build-v-section-title">${t.endResult.title}</h2>
+              <p class="build-v-lead-text">${t.endResult.intro}</p>
+
+              <div class="handover-checklist-grid">
                 ${t.endResult.checklist
                   .map(
                     item => `
-                  <div class="endresult-check-item">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <div class="handover-check-item">
+                    <div class="check-icon-circle">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
                     <span>${item}</span>
                   </div>
                 `
@@ -647,26 +694,29 @@ function renderBuildWarehouseContent(container) {
                   .join('')}
               </div>
 
-              <a href="#build-inquiry" class="btn btn-primary" style="align-self: flex-start;">
-                ${t.endResult.cta}
-              </a>
+              <div class="handover-cta-wrap">
+                <a href="#build-inquiry" class="btn btn-primary btn-hero-main">
+                  <span>${t.endResult.cta}</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ══ SECTION 10: INTERACTIVE REQUIREMENT DISCOVERY & CONSULTATION FORM ══ -->
+      <!-- ══ SECTION 8: INTERACTIVE COST ESTIMATOR & CONSULTATION FORM ══ -->
       <section class="build-v-form-section" id="build-inquiry">
         <div class="container">
-          <div class="section-header text-center">
-            <span class="section-label">${t.form.label}</span>
-            <h2 class="section-title">${t.form.title}</h2>
-            <p class="section-subtitle centered">
+          <div class="text-center section-heading-block">
+            <span class="section-pill-tag">${t.form.label}</span>
+            <h2 class="build-v-section-title">${t.form.title}</h2>
+            <p class="build-v-section-sub">
               ${t.form.subtitle}
             </p>
           </div>
 
           <div class="build-form-outer-card">
+            
             <!-- Step 1: Visual Purpose Selector -->
             <div class="form-step-block">
               <div class="form-step-block-title">
@@ -706,7 +756,7 @@ function renderBuildWarehouseContent(container) {
               </div>
             </div>
 
-            <!-- Step 3: Instant Construction Estimate -->
+            <!-- Step 3: Instant Construction Cost Estimator -->
             <div class="form-step-block">
               <div class="form-step-block-title">
                 <span class="f-num">${t.costEstimator.stepNum}</span>
@@ -715,6 +765,16 @@ function renderBuildWarehouseContent(container) {
 
               <div class="build-estimate-input-group">
                 <label class="form-label" for="build-warehouse-area">${t.costEstimator.inputLabel}</label>
+                
+                <!-- Quick Preset Pills -->
+                <div class="estimate-preset-pills">
+                  ${quickAreaPresets.map(preset => `
+                    <button type="button" class="preset-pill ${String(formState.warehouseArea) === String(preset) ? 'active' : ''}" data-area="${preset}">
+                      ${preset.toLocaleString(currentLang === 'hi' ? 'hi-IN' : 'en-IN')} ${t.costEstimator.inputSuffix}
+                    </button>
+                  `).join('')}
+                </div>
+
                 <div class="estimate-input-wrapper">
                   <input
                     type="text"
@@ -724,23 +784,25 @@ function renderBuildWarehouseContent(container) {
                     inputmode="numeric"
                     autocomplete="off"
                     aria-label="${t.costEstimator.inputLabel}"
-                    value="${formState.warehouseArea || ''}"
+                    value="${formState.warehouseArea || '10000'}"
                   />
                   <span class="estimate-input-suffix">${t.costEstimator.inputSuffix}</span>
                 </div>
                 <div id="build-estimate-validation" class="estimate-validation-error" style="display: none;" role="alert"></div>
               </div>
 
-              <div id="build-estimate-result" class="build-estimate-result-card" style="display: none;">
+              <div id="build-estimate-result" class="build-estimate-result-card">
                 <div class="estimate-result-header">
-                  <h4 class="estimate-result-title">${t.costEstimator.resultTitle}</h4>
-                  <div class="estimate-result-area">
-                    <span class="estimate-area-label">${t.costEstimator.resultAreaLabel}:</span>
-                    <span class="estimate-area-value" id="estimate-area-display">—</span>
+                  <div>
+                    <h4 class="estimate-result-title">${t.costEstimator.resultTitle}</h4>
+                    <div class="estimate-result-area">
+                      <span class="estimate-area-label">${t.costEstimator.resultAreaLabel}:</span>
+                      <span class="estimate-area-value" id="estimate-area-display">10,000 sq. ft.</span>
+                    </div>
                   </div>
                   <div class="estimate-total-cost">
                     <span class="estimate-cost-label">${t.costEstimator.resultCostLabel}</span>
-                    <span class="estimate-cost-value" id="estimate-total-display">—</span>
+                    <span class="estimate-cost-value" id="estimate-total-display">₹37.20 – ₹46.80 Lakh</span>
                   </div>
                 </div>
 
@@ -783,7 +845,7 @@ function renderBuildWarehouseContent(container) {
               </div>
             </div>
 
-            <!-- Step 4: Detailed Information Form -->
+            <!-- Step 4: Detailed Project Information Form -->
             <form id="build-project-form" novalidate>
               <div class="form-step-block">
                 <div class="form-step-block-title">
@@ -793,8 +855,9 @@ function renderBuildWarehouseContent(container) {
 
                 <div class="form-row-2">
                   <div class="form-group">
-                    <label class="form-label" for="build-name">${t.form.fieldName}</label>
+                    <label class="form-label" for="build-name">${t.form.fieldName} <span class="req">*</span></label>
                     <input type="text" class="form-input" id="build-name" placeholder="${t.form.placeholderName}" required />
+                    <div class="field-error-msg" id="err-build-name"></div>
                   </div>
                   <div class="form-group">
                     <label class="form-label" for="build-company">${t.form.fieldCompany}</label>
@@ -804,8 +867,9 @@ function renderBuildWarehouseContent(container) {
 
                 <div class="form-row-2">
                   <div class="form-group">
-                    <label class="form-label" for="build-phone">${t.form.fieldPhone}</label>
-                    <input type="tel" class="form-input" id="build-phone" placeholder="${t.form.placeholderPhone}" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" required />
+                    <label class="form-label" for="build-phone">${t.form.fieldPhone} <span class="req">*</span></label>
+                    <input type="tel" class="form-input" id="build-phone" placeholder="${t.form.placeholderPhone}" maxlength="10" inputmode="numeric" required />
+                    <div class="field-error-msg" id="err-build-phone"></div>
                   </div>
                   <div class="form-group">
                     <label class="form-label" for="build-email">${t.form.fieldEmail}</label>
@@ -815,8 +879,9 @@ function renderBuildWarehouseContent(container) {
 
                 <div class="form-row-2">
                   <div class="form-group">
-                    <label class="form-label" for="build-location">${t.form.fieldLocation}</label>
-                    <input type="text" class="form-input" id="build-location" placeholder="${t.form.placeholderLocation}" />
+                    <label class="form-label" for="build-location">${t.form.fieldLocation} <span class="req">*</span></label>
+                    <input type="text" class="form-input" id="build-location" placeholder="${t.form.placeholderLocation}" required />
+                    <div class="field-error-msg" id="err-build-location"></div>
                   </div>
                   <div class="form-group">
                     <label class="form-label" for="build-land-status">${t.form.fieldLandStatus}</label>
@@ -848,33 +913,35 @@ function renderBuildWarehouseContent(container) {
                   <textarea class="form-input" id="build-notes" rows="3" placeholder="${t.form.placeholderNotes}"></textarea>
                 </div>
 
-                <div id="build-global-error" style="display: none; color: #EF4444; font-size: 0.875rem; margin-bottom: var(--space-4); background: rgba(239, 68, 68, 0.1); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.25);"></div>
-                <div id="build-global-success" style="display: none; color: #10B981; font-size: 0.9375rem; margin-bottom: var(--space-4); background: rgba(16, 185, 129, 0.1); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.25);"></div>
+                <div id="build-global-error" style="display: none;" class="build-msg-box error-box"></div>
+                <div id="build-global-success" style="display: none;" class="build-msg-box success-box"></div>
 
                 <div class="form-submit-row">
-                  <button type="submit" class="btn btn-primary btn-full" id="build-submit-btn" style="padding: 16px; font-size: 1rem;">
+                  <button type="submit" class="btn btn-primary btn-submit-full" id="build-submit-btn">
                     <span>${t.form.submitBtn}</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                   </button>
                 </div>
               </div>
             </form>
+
           </div>
         </div>
       </section>
 
-      <!-- ══ SECTION 11: STRONG FINAL CTA ══ -->
-      <section class="build-v-final-cta">
+      <!-- ══ SECTION 9: LUXURY FINAL CTA ══ -->
+      <section class="build-v-final-cta-section">
         <div class="container">
-          <div class="final-cta-dark-box">
-            <span class="cta-mini-tag" style="display: inline-block; background: rgba(200, 150, 90, 0.15); color: #E2B178; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; margin-bottom: 12px; letter-spacing: 0.05em;">${t.finalCta.miniTag}</span>
-            <h2>${t.finalCta.title}</h2>
-            <p>${t.finalCta.desc}</p>
-            <div class="cta-buttons-row">
-              <a href="#build-inquiry" class="btn btn-primary" style="padding: 14px 28px;">
-                ${t.finalCta.ctaPrimary}
+          <div class="build-v-final-cta-box">
+            <span class="cta-gold-badge">${t.finalCta.miniTag}</span>
+            <h2 class="final-cta-title">${t.finalCta.title}</h2>
+            <p class="final-cta-subtitle">${t.finalCta.desc}</p>
+            <div class="final-cta-actions">
+              <a href="#build-inquiry" class="btn btn-primary btn-lg">
+                <span>${t.finalCta.ctaPrimary}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </a>
-              <a href="${whatsappUrl}" target="_blank" rel="noopener" class="btn-whatsapp-direct">
+              <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp btn-lg">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824z"/></svg>
                 <span>${t.finalCta.ctaWhatsApp}</span>
               </a>
@@ -896,18 +963,18 @@ function renderBuildWarehouseContent(container) {
 function getPurposeSvg(key) {
   switch (key) {
     case 'ecommerce':
-      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`;
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`;
     case 'fmcg':
-      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`;
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`;
     case 'factory':
-      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>`;
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg>`;
     case 'cold':
-      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`;
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`;
     case 'retail':
-      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>`;
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>`;
     case 'general':
     default:
-      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`;
   }
 }
 
@@ -943,65 +1010,9 @@ function initBuildPageInteractions(container, t) {
     attachPhoneMask(phoneInput);
   }
 
-  // 2. Land Decision Cards Click -> Auto-select in form
-  const landCards = container.querySelectorAll('.land-decision-card');
-  landCards.forEach(card => {
-    card.addEventListener('click', () => {
-      landCards.forEach(c => {
-        c.classList.remove('selected');
-        const actionSpan = c.querySelector('.land-card-action span');
-        const cVal = c.getAttribute('data-land-val');
-        if (actionSpan) {
-          if (cVal === 'Yes, I have land') actionSpan.textContent = t.landMatrix.cardA.selectAction;
-          else if (cVal === 'No, I need land + build') actionSpan.textContent = t.landMatrix.cardB.selectAction;
-          else if (cVal === 'Just exploring') actionSpan.textContent = t.landMatrix.cardC.selectAction;
-        }
-      });
-
-      card.classList.add('selected');
-      const landVal = card.getAttribute('data-land-val');
-      if (landVal) {
-        formState.landStatus = landVal;
-        if (landStatusSelect) landStatusSelect.value = landVal;
-        const selectedSpan = card.querySelector('.land-card-action span');
-        if (selectedSpan) {
-          if (landVal === 'Yes, I have land') selectedSpan.textContent = t.landMatrix.cardA.selectedAction;
-          else if (landVal === 'No, I need land + build') selectedSpan.textContent = t.landMatrix.cardB.selectedAction;
-          else if (landVal === 'Just exploring') selectedSpan.textContent = t.landMatrix.cardC.selectedAction;
-        }
-      }
-
-      // Smooth scroll to form
-      const formEl = container.querySelector('#build-inquiry');
-      if (formEl) {
-        formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  });
-
-  // Sync select dropdown change back to cards
+  // 2. Land Status Selection in Form
   landStatusSelect?.addEventListener('change', (e) => {
-    const val = e.target.value;
-    formState.landStatus = val;
-    landCards.forEach(card => {
-      const cVal = card.getAttribute('data-land-val');
-      const actionSpan = card.querySelector('.land-card-action span');
-      if (cVal === val) {
-        card.classList.add('selected');
-        if (actionSpan) {
-          if (val === 'Yes, I have land') actionSpan.textContent = t.landMatrix.cardA.selectedAction;
-          else if (val === 'No, I need land + build') actionSpan.textContent = t.landMatrix.cardB.selectedAction;
-          else if (val === 'Just exploring') actionSpan.textContent = t.landMatrix.cardC.selectedAction;
-        }
-      } else {
-        card.classList.remove('selected');
-        if (actionSpan) {
-          if (cVal === 'Yes, I have land') actionSpan.textContent = t.landMatrix.cardA.selectAction;
-          else if (cVal === 'No, I need land + build') actionSpan.textContent = t.landMatrix.cardB.selectAction;
-          else if (cVal === 'Just exploring') actionSpan.textContent = t.landMatrix.cardC.selectAction;
-        }
-      }
-    });
+    formState.landStatus = e.target.value;
   });
 
   // 3. Purpose Selector Buttons
@@ -1024,16 +1035,38 @@ function initBuildPageInteractions(container, t) {
     });
   });
 
-  // 5. Live Construction Cost Estimator
+  // 5. Preset Area Buttons & Live Estimator
   const warehouseAreaInput = container.querySelector('#build-warehouse-area');
   const estimateResultCard = container.querySelector('#build-estimate-result');
   const estimateValidation = container.querySelector('#build-estimate-validation');
+  const presetPills = container.querySelectorAll('.preset-pill');
+
+  presetPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      presetPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const areaVal = pill.getAttribute('data-area');
+      if (areaVal && warehouseAreaInput) {
+        warehouseAreaInput.value = areaVal;
+        updateEstimateDisplay();
+      }
+    });
+  });
 
   function updateEstimateDisplay() {
     if (!warehouseAreaInput || !estimateResultCard) return;
 
     const rawVal = warehouseAreaInput.value;
     formState.warehouseArea = rawVal;
+
+    // Update preset pills active state
+    presetPills.forEach(p => {
+      if (p.getAttribute('data-area') === String(rawVal).trim()) {
+        p.classList.add('active');
+      } else {
+        p.classList.remove('active');
+      }
+    });
 
     // Empty input — hide everything
     if (!rawVal || rawVal.trim() === '') {
@@ -1078,7 +1111,7 @@ function initBuildPageInteractions(container, t) {
 
     // Update area display
     const areaDisplay = container.querySelector('#estimate-area-display');
-    if (areaDisplay) areaDisplay.textContent = `${Math.round(parsedArea).toLocaleString('en-IN')} ${t.costEstimator.inputSuffix}`;
+    if (areaDisplay) areaDisplay.textContent = `${Math.round(parsedArea).toLocaleString(currentLang === 'hi' ? 'hi-IN' : 'en-IN')} ${t.costEstimator.inputSuffix}`;
 
     // Update total cost
     const totalDisplay = container.querySelector('#estimate-total-display');
@@ -1108,13 +1141,10 @@ function initBuildPageInteractions(container, t) {
 
   if (warehouseAreaInput) {
     warehouseAreaInput.addEventListener('input', updateEstimateDisplay);
-    // If area was restored from formState, trigger calculation
-    if (formState.warehouseArea) {
-      updateEstimateDisplay();
-    }
+    updateEstimateDisplay();
   }
 
-  // 6. Form Submission (with duplicate submission guard)
+  // 6. Form Submission (Connected directly to submitBuildWarehouseApi -> warehousebuildrequests)
   let isSubmitting = false;
 
   form?.addEventListener('submit', async (e) => {
@@ -1123,6 +1153,14 @@ function initBuildPageInteractions(container, t) {
 
     if (errorBox) errorBox.style.display = 'none';
     if (successBox) successBox.style.display = 'none';
+
+    // Clear individual field errors
+    const errName = container.querySelector('#err-build-name');
+    const errPhone = container.querySelector('#err-build-phone');
+    const errLoc = container.querySelector('#err-build-location');
+    [errName, errPhone, errLoc].forEach(el => {
+      if (el) el.textContent = '';
+    });
 
     const name = container.querySelector('#build-name')?.value.trim();
     const company = container.querySelector('#build-company')?.value.trim();
@@ -1134,20 +1172,27 @@ function initBuildPageInteractions(container, t) {
     const size = container.querySelector('#build-size')?.value.trim();
     const notes = container.querySelector('#build-notes')?.value.trim();
 
+    let hasError = false;
+
     // Validation
     if (!name || name.length < 2) {
-      showError(t.form.validation.nameRequired);
-      return;
+      if (errName) errName.textContent = t.form.validation.nameRequired;
+      hasError = true;
     }
 
     const cleanPhone = String(phone || '').replace(/\D/g, '').slice(-10);
     if (!cleanPhone || !/^[6-9]\d{9}$/.test(cleanPhone)) {
-      showError(t.form.validation.phoneRequired);
-      return;
+      if (errPhone) errPhone.textContent = t.form.validation.phoneRequired;
+      hasError = true;
     }
 
     if (!location) {
-      showError(t.form.validation.locationRequired);
+      if (errLoc) errLoc.textContent = t.form.validation.locationRequired;
+      hasError = true;
+    }
+
+    if (hasError) {
+      showError(t.form.validation.nameRequired || 'Please fill in all required fields.');
       return;
     }
 
@@ -1214,12 +1259,6 @@ function initBuildPageInteractions(container, t) {
         formState.plotArea = '';
         formState.size = '';
         formState.notes = '';
-        formState.warehouseArea = '';
-        // Reset estimate display
-        const estimateResult = container.querySelector('#build-estimate-result');
-        if (estimateResult) estimateResult.style.display = 'none';
-        const areaInput = container.querySelector('#build-warehouse-area');
-        if (areaInput) areaInput.value = '';
 
         if (successBox) {
           successBox.style.display = 'block';

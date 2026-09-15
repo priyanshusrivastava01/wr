@@ -1,5 +1,8 @@
 /* ============================================
-   VARDHA WAREHOUSING — CLIENT-SIDE ROUTER & ACTIVE NAV
+   VARDHA WAREHOUSING — PRODUCTION CLIENT-SIDE ROUTER & ACTIVE NAV
+   ============================================
+   Supports seamless SPA routing, browser Back/Forward (popstate),
+   direct deep-links, clean URLs, and anchor scrolling on Hostinger/Apache.
    ============================================ */
 
 let registeredRoutes = {};
@@ -32,9 +35,9 @@ export function setActiveNav(key) {
     if (key === 'home') {
       isMatch = (href === '/' || href === '/#' || href === '');
     } else if (key === 'renting') {
-      isMatch = href.startsWith('/warehouse-renting');
+      isMatch = href.startsWith('/warehouse-renting') || href.startsWith('/warehouse-space') || href.startsWith('/rent');
     } else if (key === 'build') {
-      isMatch = href.startsWith('/build-a-warehouse');
+      isMatch = href.startsWith('/build-a-warehouse') || href.startsWith('/build');
     } else if (key === 'connectivity') {
       isMatch = (href === '/#connectivity' || href === '#connectivity');
     } else if (key === 'contact') {
@@ -48,22 +51,36 @@ export function setActiveNav(key) {
 }
 
 /**
- * Normalizes the current pathname or hash into a route key.
+ * Normalizes any pathname or hash into a canonical route key.
  * e.g., "/", "/warehouse-renting", "/build-a-warehouse"
  */
-export function getRoutePath() {
-  const hash = window.location.hash;
-  if (hash.startsWith('#/')) {
-    return hash.slice(1).split('?')[0].split('#')[0] || '/';
-  }
+export function getRoutePath(pathString = null) {
+  let raw = pathString || (typeof window !== 'undefined' ? window.location.pathname : '/');
   
-  let path = window.location.pathname || '/';
+  // If hash-based routing is provided, extract route part
+  if (!pathString && typeof window !== 'undefined' && window.location.hash.startsWith('#/')) {
+    raw = window.location.hash.slice(1);
+  }
+
+  // Strip query strings and hash anchors for route lookup
+  const withoutHash = raw.split('#')[0];
+  const withoutQuery = withoutHash.split('?')[0];
+  
+  let path = withoutQuery.trim().toLowerCase();
   if (path.length > 1 && path.endsWith('/')) {
     path = path.slice(0, -1);
   }
-  if (path === '/index.html') {
+  if (path === '/index.html' || path === '') {
     path = '/';
   }
+
+  // Route alias normalization
+  if (path === '/warehouse-space' || path === '/rent' || path === '/renting') {
+    path = '/warehouse-renting';
+  } else if (path === '/build' || path === '/build-warehouse') {
+    path = '/build-a-warehouse';
+  }
+
   return path;
 }
 
@@ -71,7 +88,7 @@ export function getRoutePath() {
  * Smoothly scroll to an anchor element accounting for sticky header.
  */
 export function scrollToAnchor(anchorId) {
-  if (!anchorId) return;
+  if (!anchorId || typeof document === 'undefined') return;
   const el = document.getElementById(anchorId);
   if (!el) return;
 
@@ -89,15 +106,20 @@ export function scrollToAnchor(anchorId) {
  * Programmatic navigation with single source of truth active state.
  */
 export function navigateTo(path, replace = false) {
-  const [routePart, anchorPart] = path.split('#');
-  const targetRoute = routePart || '/';
+  if (!path || typeof window === 'undefined') return;
+
+  // Separate path, search query, and anchor
+  const [pathAndQuery, anchorPart] = path.split('#');
+  const [routePart, queryPart] = (pathAndQuery || '/').split('?');
+  const normalizedRoute = getRoutePath(routePart);
   const anchor = anchorPart || null;
+  const queryString = queryPart ? `?${queryPart}` : '';
 
   // Determine intended active key from path
   let activeKey = 'home';
-  if (targetRoute === '/warehouse-renting') {
+  if (normalizedRoute === '/warehouse-renting') {
     activeKey = 'renting';
-  } else if (targetRoute === '/build-a-warehouse') {
+  } else if (normalizedRoute === '/build-a-warehouse') {
     activeKey = 'build';
   } else if (anchor === 'connectivity') {
     activeKey = 'connectivity';
@@ -109,22 +131,26 @@ export function navigateTo(path, replace = false) {
   if (programmaticScrollTimeout) clearTimeout(programmaticScrollTimeout);
   programmaticScrollTimeout = setTimeout(() => {
     isProgrammaticNav = false;
-  }, 1000);
+  }, 800);
 
-  const fullUrl = anchor ? `${targetRoute}#${anchor}` : targetRoute;
+  const fullUrl = `${normalizedRoute}${queryString}${anchor ? `#${anchor}` : ''}`;
+  const currentFullUrl = window.location.pathname + window.location.search + window.location.hash;
+
   if (replace) {
-    window.history.replaceState({ route: targetRoute, anchor }, '', fullUrl);
-  } else {
-    window.history.pushState({ route: targetRoute, anchor }, '', fullUrl);
+    window.history.replaceState({ route: normalizedRoute, anchor }, '', fullUrl);
+  } else if (currentFullUrl !== fullUrl) {
+    window.history.pushState({ route: normalizedRoute, anchor }, '', fullUrl);
   }
 
-  handleRouteChange(targetRoute, anchor, activeKey);
+  handleRouteChange(normalizedRoute, anchor, activeKey);
 }
 
 /**
  * Handle route rendering and section scrolling.
  */
 function handleRouteChange(targetPath = null, targetAnchor = null, forcedActiveKey = null) {
+  if (typeof window === 'undefined') return;
+
   const path = targetPath || getRoutePath();
   const hash = window.location.hash;
   const anchor = targetAnchor || (hash.startsWith('#') && !hash.startsWith('#/') ? hash.slice(1) : null);
@@ -206,7 +232,7 @@ export function initRouter(routes) {
       return;
     }
 
-    // Pure same-page hash anchor (e.g. #connectivity, #contact, #choose-service)
+    // Pure same-page hash anchor (e.g. #connectivity, #contact, #choose-service, #rent-calculator)
     if (href.startsWith('#') && !href.startsWith('#/')) {
       e.preventDefault();
       const anchorId = href.slice(1);
@@ -215,11 +241,12 @@ export function initRouter(routes) {
       if (anchorId === 'connectivity') activeKey = 'connectivity';
       else if (anchorId === 'contact') activeKey = 'contact';
 
+      if (activeKey && getRoutePath() !== '/') {
+        navigateTo(`/#${anchorId}`);
+        return;
+      }
+
       if (activeKey) {
-        if (getRoutePath() !== '/') {
-          navigateTo(`/#${anchorId}`);
-          return;
-        }
         setActiveNav(activeKey);
       }
 
@@ -227,9 +254,12 @@ export function initRouter(routes) {
       if (programmaticScrollTimeout) clearTimeout(programmaticScrollTimeout);
       programmaticScrollTimeout = setTimeout(() => {
         isProgrammaticNav = false;
-      }, 1000);
+      }, 800);
 
-      window.history.pushState(null, '', href);
+      const targetUrl = `${window.location.pathname}${window.location.search}#${anchorId}`;
+      if (window.location.hash !== `#${anchorId}`) {
+        window.history.pushState(null, '', targetUrl);
+      }
       scrollToAnchor(anchorId);
       return;
     }
@@ -241,7 +271,7 @@ export function initRouter(routes) {
     }
   });
 
-  // Browser Back / Forward buttons
+  // Browser Back / Forward buttons (popstate)
   window.addEventListener('popstate', () => {
     handleRouteChange();
   });

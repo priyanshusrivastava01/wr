@@ -132,7 +132,7 @@ export function renderHomePage(container) {
 
                 <div class="service-door-action">
                   <a href="/warehouse-renting" class="btn btn-primary btn-full door-cta-rent">
-                    <span>Explore Warehouse Space</span>
+                    <span>Rent a Warehouse</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                   </a>
                   <span class="service-door-subtext">Find the right space for your business.</span>

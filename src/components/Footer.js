@@ -19,7 +19,7 @@ export function renderFooter(container) {
 
           <div class="footer-col">
             <h4>Warehouse Services</h4>
-            <a href="/warehouse-renting">Rent Warehouse Space</a>
+            <a href="/warehouse-renting">Rent a Warehouse</a>
             <a href="/build-a-warehouse">Build a Custom Warehouse</a>
             <a href="/#connectivity">Location & Connectivity</a>
             <a href="/#contact">Contact & Inquiries</a>
