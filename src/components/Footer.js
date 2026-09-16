@@ -13,7 +13,15 @@ export function renderFooter(container) {
       <div class="container">
         <div class="footer-grid">
           <div class="footer-brand">
-            <h3><span>V</span>ardha Warehousing</h3>
+            <a href="/" class="footer-brand-logo" aria-label="${brand.name}">
+              <div class="footer-brand-badge">
+                <img src="/images/vardha-logo.webp" alt="${brand.name} Logo" class="brand-logo-img" />
+              </div>
+              <div class="footer-brand-details">
+                <span class="footer-brand-title">Vardha</span>
+                <span class="footer-brand-sub">WAREHOUSING</span>
+              </div>
+            </a>
             <p>${brand.mission}</p>
           </div>
 

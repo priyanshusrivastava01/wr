@@ -40,23 +40,19 @@
 }
 
 .header-brand-badge {
-  width: 38px;
-  height: 38px;
-  background: linear-gradient(135deg, #D49A58 0%, #C8965A 100%);
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(200, 150, 90, 0.3);
   flex-shrink: 0;
 }
 
-.header-brand-badge span {
-  color: #FFFFFF;
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 1.25rem;
-  line-height: 1;
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .header-brand-details {

@@ -15,7 +15,7 @@ export function renderHeader(container) {
       <div class="header-inner">
         <a href="/" class="header-brand" aria-label="${brand.name} — Home">
           <div class="header-brand-badge">
-            <span>V</span>
+            <img src="/images/vardha-logo.webp" alt="${brand.name} Logo" class="brand-logo-img" />
           </div>
           <div class="header-brand-details">
             <span class="header-brand-title">Vardha</span>
@@ -60,7 +60,7 @@ export function renderHeader(container) {
           <div class="mobile-drawer-header">
             <a href="/" class="header-brand mobile-drawer-brand" aria-label="${brand.name} — Home">
               <div class="header-brand-badge">
-                <span>V</span>
+                <img src="/images/vardha-logo.webp" alt="${brand.name} Logo" class="brand-logo-img" />
               </div>
               <div class="header-brand-details">
                 <span class="header-brand-title">Vardha</span>
