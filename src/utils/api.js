@@ -46,6 +46,7 @@ async function apiRequest(endpoint, payload) {
   const primaryUrl = `${primaryBase}${targetPath}`;
 
   let response = null;
+  let isLocalProxyFailure = false;
 
   try {
     response = await fetch(primaryUrl, {
@@ -56,21 +57,29 @@ async function apiRequest(endpoint, payload) {
       },
       body: JSON.stringify(payload),
     });
+
+    // If on localhost and Vite proxy returns 500/502/504 (because local port 5000 is not started)
+    if (!response.ok && primaryBase === '/api' && response.status >= 500) {
+      isLocalProxyFailure = true;
+    }
   } catch (err) {
-    // If primary failed (e.g. Vite proxy down or CORS issue), try direct local port if on localhost
-    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-      try {
-        response = await fetch(`http://localhost:5000/api${targetPath}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
-      } catch (localErr) {
-        console.error('❌ Local API connection failed:', localErr);
-      }
+    isLocalProxyFailure = true;
+  }
+
+  // If local server is not running or returned a proxy error, automatically fallback to live Render backend
+  if (isLocalProxyFailure || !response) {
+    try {
+      console.warn(`⚠️ Local backend proxy on ${primaryUrl} returned error/unreachable, routing to live Render backend (${RENDER_PRODUCTION_URL})...`);
+      response = await fetch(`${RENDER_PRODUCTION_URL}/api${targetPath}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch (fallbackErr) {
+      console.error('❌ Live backend fallback failed:', fallbackErr);
     }
   }
 
@@ -78,7 +87,7 @@ async function apiRequest(endpoint, payload) {
     return {
       success: false,
       status: 0,
-      message: 'Unable to reach backend server. Please verify backend is running on port 5000 or check your internet connection.',
+      message: 'Unable to reach backend server. Please verify your internet connection.',
     };
   }
 

@@ -303,24 +303,61 @@ function renderBuildWarehouseContent(container) {
             </p>
           </div>
 
-          <div class="construction-timeline-grid">
+          <!-- Horizontal Stepper Progress Indicator -->
+          <div class="process-roadmap-stepper" aria-hidden="true">
+            <div class="roadmap-track-line"></div>
             ${t.construction.phases
               .map(
                 (phase, idx) => `
-              <div class="construction-phase-card">
-                <div class="phase-card-img-wrap">
-                  <img src="${timelineImages[idx]}" alt="${phase.title}" loading="lazy" />
-                  <span class="phase-card-badge">${phase.badge}</span>
-                  <span class="phase-card-deliverable">${phase.deliverable}</span>
+              <div class="roadmap-step-node ${idx === 4 ? 'is-final' : ''}">
+                <div class="step-node-dot">
+                  <span class="node-idx">0${idx + 1}</span>
                 </div>
-                <div class="phase-card-body">
-                  <div class="phase-num-circle">${idx + 1}</div>
-                  <h3 class="phase-title">${phase.title}</h3>
-                  <p class="phase-desc">${phase.desc}</p>
-                </div>
+                <span class="step-node-name">${phase.stepperLabel || phase.badge}</span>
               </div>
             `
               )
+              .join('')}
+          </div>
+
+          <!-- 5 Construction Phase Cards -->
+          <div class="construction-timeline-grid">
+            ${t.construction.phases
+              .map((phase, idx) => {
+                const isFinal = idx === t.construction.phases.length - 1;
+                const cleanDeliverable = phase.deliverable.replace(/^✓\s*/, '');
+                return `
+              <div class="construction-phase-card ${isFinal ? 'is-final-phase' : ''}">
+                <div class="phase-card-img-wrap">
+                  <img src="${timelineImages[idx]}" alt="${phase.title}" loading="lazy" />
+                  <div class="phase-img-gradient"></div>
+                  <span class="phase-card-badge">${phase.badge}</span>
+                </div>
+
+                <div class="phase-card-body">
+                  <h3 class="phase-title">${phase.title}</h3>
+
+                  <ul class="phase-points-list">
+                    ${(phase.points || []).map(pt => `
+                      <li>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>${pt}</span>
+                      </li>
+                    `).join('')}
+                  </ul>
+
+                  <div class="phase-card-footer">
+                    <div class="phase-milestone-pill ${isFinal ? 'milestone-success' : ''}">
+                      <span class="milestone-label-tag">MILESTONE</span>
+                      <span class="milestone-text-val">${cleanDeliverable}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+              })
               .join('')}
           </div>
         </div>
